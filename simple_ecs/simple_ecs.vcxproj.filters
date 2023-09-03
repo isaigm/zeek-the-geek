@@ -50,7 +50,10 @@
     <ClInclude Include="Tags.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="SFMLOrthogonalLayer.hpp">
+    <ClInclude Include="Level.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="TileSet.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
