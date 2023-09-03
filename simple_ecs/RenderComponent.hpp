@@ -1,12 +1,8 @@
 #pragma once
-#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 struct RenderComponent
 {
-	RenderComponent() : shape(5)
-	{
-		shape.setFillColor(sf::Color::Blue);
-	
-	}
-	sf::CircleShape shape;
+	RenderComponent(){}
+	sf::Sprite sprite;
 	static const int mask = 0b01;
 };

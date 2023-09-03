@@ -26,7 +26,8 @@ struct Level
 		assert(idx < m_tiles.size());
 		return m_tiles[idx];
 	}
+	int m_width, m_height;
 private:
 	std::vector<uint16_t> m_tiles;
-	int m_width, m_height;
+	
 };

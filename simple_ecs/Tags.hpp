@@ -1,5 +1,5 @@
 #pragma once
 struct Tags
 {
-	static const int particle = 0b1;
+	static const int OBJECT = 0b1;
 };

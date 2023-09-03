@@ -5,15 +5,9 @@
 #include "ComponentStorage.hpp"
 struct EntityManager
 {
-	EntityManager(int numEntities = 1) : m_entities(numEntities)
+	EntityManager(int numEntities = 1)
 	{
-		for (auto& e : m_entities)
-		{
-			e.addTag(Tags::particle);
-			m_componentStorage.addPhysicsComponent(PhysicsComponent{}, e);
-			m_componentStorage.addRenderComponent(RenderComponent{}, e);
-
-		}
+		m_entities.reserve(numEntities);
 	}
 	ComponentStorage& getComponentStorage()
 	{

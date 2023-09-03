@@ -8,10 +8,10 @@ struct RenderSystem
 		em.forAllMatching([&](auto& e) {
 			auto& renderCmp = em.getComponentStorage().getRenderComponent(e);
 			auto& phyCmp = em.getComponentStorage().getPhysicsComponent(e);
-			renderCmp.shape.setPosition(phyCmp.pos);
-			rt.draw(renderCmp.shape);
+			renderCmp.sprite.setPosition(phyCmp.pos);
+			rt.draw(renderCmp.sprite);
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
 	int m_cmpMaskToCheck = RenderComponent::mask | PhysicsComponent::mask;
-	int m_tagMask = Tags::particle;
+	int m_tagMask = Tags::OBJECT;
 };
