@@ -119,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +136,7 @@
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="EntityManager.hpp" />
     <ClInclude Include="Game.hpp" />
+    <ClInclude Include="GameManager.hpp" />
     <ClInclude Include="Level.hpp" />
     <ClInclude Include="PhysicsComponent.hpp" />
     <ClInclude Include="PhysicsSystem.hpp" />
@@ -143,6 +145,7 @@
     <ClInclude Include="SlotMap.hpp" />
     <ClInclude Include="Tags.hpp" />
     <ClInclude Include="TileSet.hpp" />
+    <ClInclude Include="TilesID.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

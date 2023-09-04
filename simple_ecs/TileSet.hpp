@@ -11,12 +11,9 @@ struct TileSet
 	}
 	void setTile(sf::Sprite& sprite, uint16_t tileId)
 	{
-		sprite.setTexture(m_texture);
 		sf::Vector2i tileCount { m_width / m_tileWidth, m_height / m_tileHeight};
-
-		sf::Vector2i tileCoords { tileId % tileCount.x, tileId / tileCount.x};
-
-		
+		sf::Vector2i tileCoords { tileId% tileCount.x, tileId / tileCount.x};
+		sprite.setTexture(m_texture);
 		sprite.setTextureRect(getTileRect(tileCoords.x, tileCoords.y));
 	}
 private:

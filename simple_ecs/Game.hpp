@@ -3,33 +3,15 @@
 #include "PhysicsSystem.hpp"
 #include "RenderSystem.hpp"
 #include "SlotMap.hpp"
-#include "Level.hpp"
-#include "TileSet.hpp"
-
+#include "GameManager.hpp"
 struct Game
 {
-	Game() : m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT),
-		m_window(sf::VideoMode(LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT), "Zeek the Geek"), 
-		m_currentLevel("assets/level1.tmx"), 
-		m_tileSet("assets/spritesheet.png", TILE_WIDTH, TILE_HEIGHT)
+	Game() : m_entityManager(GameManager::LEVEL_WIDTH * GameManager::LEVEL_HEIGHT),
+		m_window(sf::VideoMode(GameManager::LEVEL_WIDTH * GameManager::TILE_WIDTH, 
+		GameManager::LEVEL_HEIGHT * GameManager::TILE_HEIGHT), "Zeek the Geek")
 	{
 		m_window.setVerticalSyncEnabled(true);
-
-		for (int y = 0; y < m_currentLevel.m_height; y++)
-		{
-			for (int x = 0; x < m_currentLevel.m_width; x++)
-			{
-				if (m_currentLevel.getTileAt(x, y) == 0) continue;
-				auto& entity = m_entityManager.createEntity();
-				entity.addTag(Tags::OBJECT);
-				RenderComponent renderComponent;
-				m_tileSet.setTile(renderComponent.sprite, m_currentLevel.getTileAt(x, y) - 1);
-				PhysicsComponent physicsComponent;
-				physicsComponent.pos = { float(x * TILE_WIDTH), float(y * TILE_HEIGHT) };
-				m_entityManager.getComponentStorage().addRenderComponent(std::move(renderComponent), entity);
-				m_entityManager.getComponentStorage().addPhysicsComponent(std::move(physicsComponent), entity);
-			}
-		}
+		m_gameManager.loadLevel(m_entityManager, 2);
 	}
 	void run()
 	{
@@ -64,14 +46,11 @@ private:
 		m_renderSystem.render(m_entityManager, m_window);
 		m_window.display();
 	}
+	
 	sf::RenderWindow m_window;
 	EntityManager	 m_entityManager;
+	GameManager		 m_gameManager;
 	PhysicsSystem	 m_physicsSystem;
 	RenderSystem	 m_renderSystem;
-	Level			 m_currentLevel;
-	TileSet			 m_tileSet;
-	static const int TILE_WIDTH   = 36;
-	static const int TILE_HEIGHT  = 36;
-	static const int LEVEL_WIDTH  = 17;
-	static const int LEVEL_HEIGHT = 12;
+	
 };
