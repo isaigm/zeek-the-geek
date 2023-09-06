@@ -137,6 +137,8 @@
     <ClInclude Include="EntityManager.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameManager.hpp" />
+    <ClInclude Include="InputComponent.hpp" />
+    <ClInclude Include="InputSystem.hpp" />
     <ClInclude Include="Level.hpp" />
     <ClInclude Include="PhysicsComponent.hpp" />
     <ClInclude Include="PhysicsSystem.hpp" />

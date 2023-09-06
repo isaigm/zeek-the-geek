@@ -27,6 +27,11 @@ struct GameManager
 				physicsComponent.pos = { float(x * TILE_WIDTH), float(y * TILE_HEIGHT) };
 				entityManager.getComponentStorage().addRenderComponent(std::move(renderComponent), entity);
 				entityManager.getComponentStorage().addPhysicsComponent(std::move(physicsComponent), entity);
+				if (tileID == TilesID::PLAYER)
+				{
+					entityManager.getComponentStorage().addInputComponent(InputComponent{}, entity);
+					entity.addTag(Tags::PLAYER);
+				}
 			}
 		}
 	}
@@ -39,6 +44,6 @@ private:
 	{
 		return "assets/level" + std::to_string(level) + ".tmx";
 	}
-	Level			 m_currentLevel;
-	TileSet			 m_tileSet;
+	Level    m_currentLevel;
+	TileSet	 m_tileSet;
 };

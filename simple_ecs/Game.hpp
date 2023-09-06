@@ -2,6 +2,7 @@
 #include "EntityManager.hpp"
 #include "PhysicsSystem.hpp"
 #include "RenderSystem.hpp"
+#include "InputSystem.hpp"
 #include "SlotMap.hpp"
 #include "GameManager.hpp"
 struct Game
@@ -11,7 +12,7 @@ struct Game
 		GameManager::LEVEL_HEIGHT * GameManager::TILE_HEIGHT), "Zeek the Geek")
 	{
 		m_window.setVerticalSyncEnabled(true);
-		m_gameManager.loadLevel(m_entityManager, 2);
+		m_gameManager.loadLevel(m_entityManager, 1);
 	}
 	void run()
 	{
@@ -35,6 +36,7 @@ private:
 				break;
 			}
 		}
+		m_inputSystem.handleInput(m_entityManager);
 	}
 	void update(float dt)
 	{
@@ -52,5 +54,6 @@ private:
 	GameManager		 m_gameManager;
 	PhysicsSystem	 m_physicsSystem;
 	RenderSystem	 m_renderSystem;
+	InputSystem		 m_inputSystem;
 	
 };

@@ -1,11 +1,13 @@
 #pragma once
 #include "PhysicsComponent.hpp"
 #include "RenderComponent.hpp"
+#include "InputComponent.hpp"
 #include "SlotMap.hpp"
 struct Entity
 {
-	SlotMap<RenderComponent>::Key m_renderKey;
-	SlotMap<PhysicsComponent>::Key m_physicsKey;
+	SlotMap<RenderComponent>::Key   m_renderKey;
+	SlotMap<PhysicsComponent>::Key  m_physicsKey;
+	SlotMap<InputComponent, 1>::Key m_inputKey;
 	int m_componentMask = 0;
 	int m_tagMask = 0;
 	bool operator==(const Entity& e)
@@ -14,6 +16,8 @@ struct Entity
 			m_componentMask == e.m_componentMask &&
 			m_physicsKey.gen == e.m_physicsKey.gen &&
 			m_physicsKey.id == e.m_physicsKey.id &&
+			m_inputKey.gen == e.m_inputKey.gen &&
+			m_inputKey.id == e.m_inputKey.id &&
 			m_renderKey.gen == e.m_renderKey.gen &&
 			m_renderKey.id == e.m_renderKey.id;
 	}
