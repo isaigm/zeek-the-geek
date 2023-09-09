@@ -1,9 +1,9 @@
 #pragma once
-#include "EntityManager.hpp"
-#include "PhysicsSystem.hpp"
-#include "RenderSystem.hpp"
-#include "InputSystem.hpp"
-#include "SlotMap.hpp"
+#include "man/EntityManager.hpp"
+#include "sys/PhysicsSystem.hpp"
+#include "sys/RenderSystem.hpp"
+#include "sys/InputSystem.hpp"
+#include "sys/CollisionSystem.hpp"
 #include "GameManager.hpp"
 struct Game
 {
@@ -34,13 +34,17 @@ private:
 			{
 				m_window.close();
 				break;
+			}else if(ev.type == sf::Event::KeyPressed)
+			{
+				m_inputSystem.handleInput(m_entityManager, ev.key.code);
 			}
 		}
-		m_inputSystem.handleInput(m_entityManager);
 	}
 	void update(float dt)
 	{
+		m_collisionSystem.update(m_entityManager, m_gameManager);
 		m_physicsSystem.update(m_entityManager, dt);
+
 	}
 	void render()
 	{
@@ -55,5 +59,6 @@ private:
 	PhysicsSystem	 m_physicsSystem;
 	RenderSystem	 m_renderSystem;
 	InputSystem		 m_inputSystem;
+	CollisionSystem  m_collisionSystem;
 	
 };

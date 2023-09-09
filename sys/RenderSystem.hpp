@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManager.hpp"
+#include "../man/EntityManager.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 struct RenderSystem
 {

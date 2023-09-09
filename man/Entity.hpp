@@ -1,8 +1,8 @@
 #pragma once
-#include "PhysicsComponent.hpp"
-#include "RenderComponent.hpp"
-#include "InputComponent.hpp"
-#include "SlotMap.hpp"
+#include "../cmp/PhysicsComponent.hpp"
+#include "../cmp/RenderComponent.hpp"
+#include "../cmp/InputComponent.hpp"
+#include "utils/SlotMap.hpp"
 struct Entity
 {
 	SlotMap<RenderComponent>::Key   m_renderKey;
