@@ -24,14 +24,6 @@ struct GameManager
 			entityManager.getComponentStorage().addComponent<RenderComponent>(std::move(renderComponent), entity);
 			entityManager.getComponentStorage().addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
 			int tag = TilesID::getTag(tileID);
-			switch (tag)
-			{
-			case Tags::PLAYER:
-				entityManager.getComponentStorage().addComponent<InputComponent>(InputComponent{}, entity);
-				break;
-			default:
-				break;
-			}
 			entity.addTag(tag);
 		};
 		sf::Vector2i playerPos;

@@ -1,27 +1,27 @@
 #pragma once
 #include "../man/EntityManager.hpp"
+#include <SFML/Window/Keyboard.hpp>
 struct InputSystem
 {
 	void handleInput(EntityManager& em, sf::Keyboard::Key keyPressed)
 	{
 		em.forAllMatching([&](auto& e) {
-			auto &inputCmp = em.getComponentStorage().getComponent<InputComponent>(e);
 			auto &physicsCmp = em.getComponentStorage().getComponent<PhysicsComponent>(e);
 			switch (keyPressed)
 			{
-			case inputCmp.DOWN_KEY:
+			case DOWN_KEY:
 				physicsCmp.vel.x = 0;
 				physicsCmp.vel.y = 1;
 				break;
-			case inputCmp.UP_KEY:
+			case UP_KEY:
 				physicsCmp.vel.x = 0;
 				physicsCmp.vel.y = -1;
 				break;
-			case inputCmp.RIGHT_KEY:
+			case RIGHT_KEY:
 				physicsCmp.vel.y = 0;
 				physicsCmp.vel.x = 1;	
 				break;
-			case inputCmp.LEFT_KEY:
+			case LEFT_KEY:
 				physicsCmp.vel.y = 0;
 				physicsCmp.vel.x = -1;
 				break;
@@ -30,6 +30,11 @@ struct InputSystem
 			}
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
-	int m_cmpMaskToCheck = Entity::ComponentTraits::getMask<RenderComponent>() | Entity::ComponentTraits::getMask<PhysicsComponent>() | Entity::ComponentTraits::getMask<InputComponent>();
+
+	static const auto LEFT_KEY   = sf::Keyboard::Left;
+	static const auto RIGHT_KEY  = sf::Keyboard::Right;
+	static const auto UP_KEY     = sf::Keyboard::Up;
+	static const auto DOWN_KEY   = sf::Keyboard::Down;
+	int m_cmpMaskToCheck =  ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
 	int m_tagMask = Tags::PLAYER;
 };

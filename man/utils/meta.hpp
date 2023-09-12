@@ -70,17 +70,23 @@ namespace meta
     template <typename Ts>
     struct ComponentTraits
     {
-        consteval static size_t getSize() { return Ts::getSize(); }
+        consteval static int getSize() { return Ts::getSize(); }
 
         template <typename T>
-        consteval static size_t getId()
+        consteval static int getId()
         {
             static_assert(Ts::template contains<T>());
             return Ts::template getPos<T>();
         }
 
         template <typename T>
-        consteval static size_t getMask() { return 1 << getId<T>(); }
+        consteval static int getMask() { return 1 << getId<T>(); }
+
+        template <typename ...Ts>
+        consteval static int getCmpMask()
+        {
+            return (1 | ... | getMask<Ts>());
+        }
     };
 
     template <template <typename...> class NewType, typename List>

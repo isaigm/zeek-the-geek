@@ -2,14 +2,15 @@
 #include <vector>
 #include "../cmp/Tags.hpp"
 #include "ComponentStorage.hpp"
+
 struct EntityManager
 {
-
+   
     EntityManager(int numEntities = 1)
     {
         m_entities.reserve(numEntities);
     }
-    ComponentStorage<Entity::ComponentList>& getComponentStorage()
+    ComponentStorage &getComponentStorage()
     {
         return m_componentStorage;
     }
@@ -45,5 +46,5 @@ struct EntityManager
 private:
     std::vector<Entity> m_entities;
     
-    ComponentStorage<Entity::ComponentList> m_componentStorage;
+    ComponentStorage m_componentStorage;
 };

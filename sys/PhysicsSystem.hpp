@@ -4,7 +4,7 @@
 #include <iostream>
 struct PhysicsSystem
 {
-	void update(EntityManager& em, float dt)
+	void update(auto& em, float dt)
 	{		
 		em.forAllMatching([&](auto& e) {
 			if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))
@@ -18,6 +18,6 @@ struct PhysicsSystem
 			
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
-	int m_cmpMaskToCheck = Entity::ComponentTraits::getMask<RenderComponent>() | Entity::ComponentTraits::getMask<PhysicsComponent>();
+	int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
 	int m_tagMask = Tags::OBJECT;
 };

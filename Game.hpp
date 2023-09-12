@@ -54,7 +54,7 @@ private:
 	}
 	
 	sf::RenderWindow m_window;
-	EntityManager	 m_entityManager;
+	EntityManager    m_entityManager;
 	GameManager		 m_gameManager;
 	PhysicsSystem	 m_physicsSystem;
 	RenderSystem	 m_renderSystem;

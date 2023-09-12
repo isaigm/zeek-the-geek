@@ -41,6 +41,6 @@ private:
             }
         }
     }
-    int m_cmpMaskToCheck = Entity::ComponentTraits::getMask<RenderComponent>() | Entity::ComponentTraits::getMask<PhysicsComponent>();
+    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
 	int m_tagMask = Tags::OBJECT;
 };

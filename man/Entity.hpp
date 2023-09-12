@@ -1,44 +1,30 @@
 #pragma once
-#include "../cmp/PhysicsComponent.hpp"
-#include "../cmp/RenderComponent.hpp"
-#include "../cmp/InputComponent.hpp"
-#include "utils/SlotMap.hpp"
-#include "utils/meta.hpp"
-#include <tuple>
-
+#include "types.hpp"
 struct Entity
 {
-	template<typename Component>
-	using Key = SlotMap<Component>::Key;
-	
-	using ComponentList = meta::TypeList<RenderComponent, PhysicsComponent, InputComponent>;
-	;
-
-	using ListKeys = meta::forall_insert_template<Key, ComponentList>::type;
-	using TupleKeys = meta::replace<std::tuple, ListKeys>::type;
-	using ComponentTraits = meta::ComponentTraits<ComponentList>;
-	
 	template<typename T>
-	auto &getKey()
+	auto &getKey() const
 	{
 		return std::get<ComponentTraits::template getId<T>()>(m_keys);
 	}
-	/*
+	template<typename T>
+	void setKey(auto &&key)
+	{
+		std::get<ComponentTraits::template getId<T>()>(m_keys) = key;
+	}
+	template<typename T>
+	bool compareKeys(const Entity &e)
+	{
+		auto key1 = getKey<T>(); 
+		auto key2 = e.getKey<T>();
+		return key1.id == key2.id && key1.gen == key2.gen;
+	}
 	bool operator==(const Entity& e)
 	{
 		return m_tagMask == e.m_tagMask &&
 			m_componentMask == e.m_componentMask &&
-			m_physicsKey.gen == e.m_physicsKey.gen &&
-			m_physicsKey.id == e.m_physicsKey.id &&
-			m_inputKey.gen == e.m_inputKey.gen &&
-			m_inputKey.id == e.m_inputKey.id &&
-			m_renderKey.gen == e.m_renderKey.gen &&
-			m_renderKey.id == e.m_renderKey.id;
-	}
-	*/
-	bool operator==(const Entity &e)
-	{
-		return false;
+			compareKeys<PhysicsComponent>(e) &&
+			compareKeys<RenderComponent>(e);
 	}
 	template<typename T>
 	bool hasComponent()
