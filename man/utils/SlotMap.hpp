@@ -2,9 +2,10 @@
 #include <iostream>
 #include <array>
 #include <cassert>
-template <class Type, size_t Capacity = 256>
+template <class Type>
 struct SlotMap
 {
+    static constexpr size_t Capacity = 204;
     using Key = struct { int id; int gen; };
     SlotMap()
     {

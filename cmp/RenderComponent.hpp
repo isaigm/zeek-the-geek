@@ -4,5 +4,5 @@ struct RenderComponent
 {
 	RenderComponent(){}
 	sf::Sprite sprite;
-	static const int mask = 0b01;
+	static const int mask = 0b1;
 };

@@ -1,81 +1,42 @@
 #pragma once
 #include "Entity.hpp"
+#include "utils/meta.hpp"
+template<typename ComponentList>
 struct ComponentStorage
 {
-	//-------->Render
-	RenderComponent& getRenderComponent(Entity &e)
+	using ListSlots = meta::forall_insert_template<SlotMap, Entity::ComponentList>::type;
+	using TupleSlots = meta::replace<std::tuple, ListSlots>::type; 
+	template<typename T>
+	auto &getComponent(Entity &e)
 	{
-		if (!e.hasComponent(RenderComponent::mask)) throw std::runtime_error("RenderComponent doesnt exist");
-		return m_renderStorage[e.m_renderKey];
+		if(!e.hasComponent<T>()) throw std::runtime_error("Component doesnt exist");
+		constexpr int id = Entity::ComponentTraits::getId<T>();
+		return std::get<id>(m_storage)[e.getKey<T>()];
 	}
-	void addRenderComponent(RenderComponent&& renderCmp, Entity& e)
+	
+	template<typename T>
+	void addComponent(T &&cmp, Entity &e)
 	{
-		if (!e.hasComponent(RenderComponent::mask))
+		if(!e.hasComponent<T>())
 		{
-			e.m_renderKey = m_renderStorage.pushBack(renderCmp);
-			e.m_componentMask |= RenderComponent::mask;
+			constexpr int id = Entity::ComponentTraits::getId<T>();
+			e.getKey<T>() = std::get<id>(m_storage).pushBack(cmp);
+			e.m_componentMask |= Entity::ComponentTraits::getMask<T>();
 		}
 	}
-	bool removeRenderComponent(Entity& e)
+	template<typename T>
+	bool removeComponent(Entity& e)
 	{
-		if (e.hasComponent(RenderComponent::mask))
+		if (e.hasComponent<T>())
 		{
-			m_renderStorage.remove(e.m_renderKey);
-			e.m_componentMask ^= RenderComponent::mask;
-			return true;
-		}
-		return false;
-	}
-	//-------->Input
-	InputComponent& getInputComponent(Entity& e)
-	{
-		if (!e.hasComponent(InputComponent::mask)) throw std::runtime_error("InputComponent doesnt exist");
-		return m_inputStorage[e.m_inputKey];
-	}
-	void addInputComponent(InputComponent&& inputCmp, Entity& e)
-	{
-		if (!e.hasComponent(InputComponent::mask))
-		{
-			e.m_inputKey = m_inputStorage.pushBack(inputCmp);
-			e.m_componentMask |= InputComponent::mask;
-		}
-	}
-	bool removeInputComponent(Entity& e)
-	{
-		if (e.hasComponent(InputComponent::mask))
-		{
-			m_inputStorage.remove(e.m_inputKey);
-			e.m_componentMask ^= InputComponent::mask;
-			return true;
-		}
-		return false;
-	}
-	//-------->Physics
-	PhysicsComponent& getPhysicsComponent(Entity& e)
-	{
-		if (!e.hasComponent(PhysicsComponent::mask)) throw std::runtime_error("PhysicsComponent doesnt exist");
-		return m_physicsStorage[e.m_physicsKey];
-	}
-	void addPhysicsComponent(PhysicsComponent && physicsCmp, Entity& e)
-	{
-		if (!e.hasComponent(PhysicsComponent::mask))
-		{
-			e.m_physicsKey = m_physicsStorage.pushBack(physicsCmp);
-			e.m_componentMask |= PhysicsComponent::mask;
-		}
-	}
-	bool removePhysicsComponent(Entity& e)
-	{
-		if (e.hasComponent(PhysicsComponent::mask))
-		{
-			m_physicsStorage.remove(e.m_physicsKey);
-			e.m_componentMask ^= PhysicsComponent::mask;
+			constexpr int id = Entity::ComponentTraits::getId<T>();
+			std::get<id>(m_storage).remove(e.getKey<T>());
+			e.m_componentMask ^= Entity::ComponentTraits::getMask<T>();
 			return true;
 		}
 		return false;
 	}
 private:
-	SlotMap<PhysicsComponent> m_physicsStorage;
-	SlotMap<RenderComponent>  m_renderStorage;
-	SlotMap<InputComponent, 1> m_inputStorage;
+	TupleSlots m_storage;
+
 };

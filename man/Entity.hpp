@@ -3,13 +3,27 @@
 #include "../cmp/RenderComponent.hpp"
 #include "../cmp/InputComponent.hpp"
 #include "utils/SlotMap.hpp"
+#include "utils/meta.hpp"
+#include <tuple>
+
 struct Entity
 {
-	SlotMap<RenderComponent>::Key   m_renderKey;
-	SlotMap<PhysicsComponent>::Key  m_physicsKey;
-	SlotMap<InputComponent, 1>::Key m_inputKey;
-	int m_componentMask = 0;
-	int m_tagMask = 0;
+	template<typename Component>
+	using Key = SlotMap<Component>::Key;
+	
+	using ComponentList = meta::TypeList<RenderComponent, PhysicsComponent, InputComponent>;
+	;
+
+	using ListKeys = meta::forall_insert_template<Key, ComponentList>::type;
+	using TupleKeys = meta::replace<std::tuple, ListKeys>::type;
+	using ComponentTraits = meta::ComponentTraits<ComponentList>;
+	
+	template<typename T>
+	auto &getKey()
+	{
+		return std::get<ComponentTraits::template getId<T>()>(m_keys);
+	}
+	/*
 	bool operator==(const Entity& e)
 	{
 		return m_tagMask == e.m_tagMask &&
@@ -21,9 +35,16 @@ struct Entity
 			m_renderKey.gen == e.m_renderKey.gen &&
 			m_renderKey.id == e.m_renderKey.id;
 	}
-	bool hasComponent(int m)
+	*/
+	bool operator==(const Entity &e)
 	{
-		return (m_componentMask & m) == m;
+		return false;
+	}
+	template<typename T>
+	bool hasComponent()
+	{
+		int mask = ComponentTraits::getMask<T>();
+		return (m_componentMask & mask) == mask;
 	}
 	bool hasTag(int t)
 	{
@@ -33,4 +54,8 @@ struct Entity
 	{
 		m_tagMask |= t;
 	}
+	int m_componentMask = 0;
+	int m_tagMask = 0;
+	
+	TupleKeys m_keys;
 };

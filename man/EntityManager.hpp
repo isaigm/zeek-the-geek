@@ -4,19 +4,18 @@
 #include "ComponentStorage.hpp"
 struct EntityManager
 {
+
     EntityManager(int numEntities = 1)
     {
         m_entities.reserve(numEntities);
     }
-    ComponentStorage& getComponentStorage()
+    ComponentStorage<Entity::ComponentList>& getComponentStorage()
     {
         return m_componentStorage;
     }
     void removeComponents(Entity& e)
     {
-        m_componentStorage.removePhysicsComponent(e);
-        m_componentStorage.removeRenderComponent(e);
-        m_componentStorage.removeInputComponent(e);
+      
     }
     void removeEntity(Entity& e)
     {
@@ -31,7 +30,7 @@ struct EntityManager
             function(e);
         }
     }
-    void forAllMatching(auto&& function, int cmpMask, int tag)
+    void forAllMatching(auto &&function, int cmpMask, int tag)
     {
         for (auto& e : m_entities)
         {
@@ -45,5 +44,6 @@ struct EntityManager
     std::vector<Entity>& getEntityVector() { return m_entities; }
 private:
     std::vector<Entity> m_entities;
-    ComponentStorage m_componentStorage;
+    
+    ComponentStorage<Entity::ComponentList> m_componentStorage;
 };

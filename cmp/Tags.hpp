@@ -7,4 +7,5 @@ struct Tags
 	static const int COLLISIONABLE = 0b1000;
 	static const int PICKABLE 	   = 0b10000;
 	static const int PLANT		   = 0b100000;
+	static const int MOVABLE 	   = 0b1000000;
 };

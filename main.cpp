@@ -1,5 +1,5 @@
 #include "Game.hpp"
-int main()
+int main(int args, char **argv)
 {
     Game zeekTheGeek;
     zeekTheGeek.run();
