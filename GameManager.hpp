@@ -52,7 +52,7 @@ struct GameManager
 private:
 	std::string getPathLevel(int level)
 	{
-		return "assets\\level" + std::to_string(level) + ".tmx";
+		return "assets/level" + std::to_string(level) + ".tmx";
 	}
 	Level m_currentLevel;
 	TileSet m_tileSet;

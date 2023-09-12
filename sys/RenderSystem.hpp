@@ -6,8 +6,8 @@ struct RenderSystem
 	void render(auto &em, sf::RenderTarget &rt)
 	{
 		em.forAllMatching([&](auto& e) {
-			auto& renderCmp = em.getComponentStorage().getComponent<RenderComponent>(e);
-			auto& phyCmp = em.getComponentStorage().getComponent<PhysicsComponent>(e);
+			auto& renderCmp = em.getComponentStorage().template getComponent<RenderComponent>(e);
+			auto& phyCmp = em.getComponentStorage().template getComponent<PhysicsComponent>(e);
 			renderCmp.sprite.setPosition(phyCmp.pos);
 			rt.draw(renderCmp.sprite);
 		}, m_cmpMaskToCheck, m_tagMask);

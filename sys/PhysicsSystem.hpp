@@ -9,7 +9,7 @@ struct PhysicsSystem
 		em.forAllMatching([&](auto& e) {
 			if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))
 			{
-				auto& physics = em.getComponentStorage().getComponent<PhysicsComponent>(e);
+				auto& physics = em.getComponentStorage().template getComponent<PhysicsComponent>(e);
 				physics.pos.x += physics.vel.x * GameManager::TILE_WIDTH;
 				physics.pos.y += physics.vel.y * GameManager::TILE_HEIGHT;
 				physics.vel.x = 0;

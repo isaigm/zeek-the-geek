@@ -24,8 +24,8 @@ private:
     void playerCollisions(EntityManager &em, Entity &e1, Entity &e2)
     {
         if(!e1.hasTag(Tags::PLAYER)) return;
-        auto &e1Phys = em.getComponentStorage().getComponent<PhysicsComponent>(e1);
-        auto &e2Phys = em.getComponentStorage().getComponent<PhysicsComponent>(e2);
+        auto &e1Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e1);
+        auto &e2Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e2);
         if(hasContiguousCollisions(e1Phys, e2Phys))
         {
             if(e2.hasTag(Tags::WALL) || e2.hasTag(Tags::PLANT))

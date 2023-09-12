@@ -6,7 +6,7 @@ struct InputSystem
 	void handleInput(EntityManager& em, sf::Keyboard::Key keyPressed)
 	{
 		em.forAllMatching([&](auto& e) {
-			auto &physicsCmp = em.getComponentStorage().getComponent<PhysicsComponent>(e);
+			auto &physicsCmp = em.getComponentStorage().template getComponent<PhysicsComponent>(e);
 			switch (keyPressed)
 			{
 			case DOWN_KEY:

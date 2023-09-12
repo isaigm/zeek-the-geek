@@ -67,16 +67,16 @@ namespace meta
         }
     };
 
-    template <typename Ts>
+    template <typename List>
     struct ComponentTraits
     {
-        consteval static int getSize() { return Ts::getSize(); }
+        consteval static int getSize() { return List::getSize(); }
 
         template <typename T>
         consteval static int getId()
         {
-            static_assert(Ts::template contains<T>());
-            return Ts::template getPos<T>();
+            static_assert(List::template contains<T>());
+            return List::template getPos<T>();
         }
 
         template <typename T>
