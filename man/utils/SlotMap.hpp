@@ -2,13 +2,14 @@
 #include <iostream>
 #include <array>
 #include <cassert>
-template <class Type, size_t Capacity = 204>
+template <class Type, size_t Capacity>
 struct SlotMap
 {
     using Key = struct { int id; int gen; };
     SlotMap()
     {
         init();
+        std::cout << Capacity << "\n";
     }
     size_t getSize()
     {

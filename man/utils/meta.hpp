@@ -109,4 +109,11 @@ namespace meta
     {
         using type = TypeList<NewType<Ts>...>;
     };
+    template <typename T, size_t N>
+    struct Pair
+    {
+        using type = T;
+        static constexpr size_t val = N;
+    };
+
 } // namespace meta

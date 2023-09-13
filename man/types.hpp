@@ -5,20 +5,24 @@
 #include "utils/SlotMap.hpp"
 #include <tuple>
 
+
 constexpr int MAX_ENTITIES = 204;
 
-template<typename Component>
-using Key = SlotMap<Component>::Key;
+template<typename T>
+using Key = SlotMap<typename T::type, T::val>::Key;
 
-template<typename Component>
-using NewSlotMap = SlotMap<Component, MAX_ENTITIES>;
+template<typename T>
+using NewSlotMap = SlotMap<typename T::type, T::val>;
 	
-using ComponentList = meta::TypeList<RenderComponent, PhysicsComponent>;
-	
+template<typename T>
+using ExtractType = T::type;
 
-using ListKeys = meta::forall_insert_template<Key, ComponentList>::type;
+using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, meta::Pair<RenderComponent, 204>>;
+using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
+
+using ListKeys = meta::forall_insert_template<Key, SlotMapList>::type;
 using TupleKeys = meta::replace<std::tuple, ListKeys>::type;
 using ComponentTraits = meta::ComponentTraits<ComponentList>;
 
-using ListSlots = meta::forall_insert_template<NewSlotMap, ComponentList>::type;
+using ListSlots = meta::forall_insert_template<NewSlotMap, SlotMapList>::type;
 using TupleSlots = meta::replace<std::tuple, ListSlots>::type;
