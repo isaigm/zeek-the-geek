@@ -16,7 +16,8 @@ struct EntityManager
     }
     void removeComponents(Entity& e)
     {
-      
+        m_componentStorage.removeComponent<PhysicsComponent>(e);
+        m_componentStorage.removeComponent<RenderComponent> (e);
     }
     void removeEntity(Entity& e)
     {

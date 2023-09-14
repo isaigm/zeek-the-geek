@@ -10,9 +10,9 @@ struct Level
 		loadFromFile(path);
 	}
 	Level(){}
-	uint16_t getTileAt(int x, int y)
+	uint16_t getTileAt(size_t x, size_t y)
 	{
-		int idx = x + y * m_width;
+		size_t idx = x + y * m_width;
 		assert(idx < m_tiles.size());
 		return m_tiles[idx];
 	}
@@ -27,7 +27,7 @@ struct Level
 		m_width = dim.x;
 		m_height = dim.y;
 		if (m_tiles.size() > 0) m_tiles.clear();
-		for (int i = 0; i < tiles.size(); i++)
+		for (size_t i = 0; i < tiles.size(); i++)
 		{
 			m_tiles.push_back(tiles[i].ID);
 		}

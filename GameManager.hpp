@@ -24,7 +24,16 @@ struct GameManager
 			entityManager.getComponentStorage().addComponent<RenderComponent>(std::move(renderComponent), entity);
 			entityManager.getComponentStorage().addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
 			int tag = TilesID::getTag(tileID);
+			switch (tag)
+			{
+			case Tags::MOVABLE:
+				entityManager.getComponentStorage().addComponent<FreeMovementComponent>(FreeMovementComponent{}, entity);
+				break;
+			default:
+				break;
+			}
 			entity.addTag(tag);
+
 		};
 		sf::Vector2i playerPos;
 		for (int y = 0; y < m_currentLevel.m_height; y++)

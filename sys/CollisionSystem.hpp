@@ -3,7 +3,7 @@
 #include "../GameManager.hpp"
 struct CollisionSystem
 {
-    void update(EntityManager &em, GameManager &gm)
+    void update(EntityManager &em)
     {
         em.forAllMatching([&](auto &e1){
             em.forAllMatching([&](auto &e2){
@@ -40,6 +40,11 @@ private:
                 em.getComponentStorage().removeComponent<PhysicsComponent>(e2);
             }
         }
+    }
+    void movableCollisions(EntityManager &em, Entity &e1, Entity &e2)
+    {
+        if(!e1.hasTag(Tags::MOVABLE)) return;
+        
     }
     int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
 	int m_tagMask = Tags::OBJECT;

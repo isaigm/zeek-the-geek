@@ -42,7 +42,7 @@ private:
 	}
 	void update(float dt)
 	{
-		m_collisionSystem.update(m_entityManager, m_gameManager);
+		m_collisionSystem.update(m_entityManager);
 		m_physicsSystem.update(m_entityManager, dt);
 
 	}

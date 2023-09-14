@@ -2,11 +2,10 @@
 #include "utils/meta.hpp"
 #include "../cmp/RenderComponent.hpp"
 #include "../cmp/PhysicsComponent.hpp"
+#include "../cmp/FreeMovementComponent.hpp"
 #include "utils/SlotMap.hpp"
 #include <tuple>
 
-
-constexpr int MAX_ENTITIES = 204;
 
 template<typename T>
 using Key = SlotMap<typename T::type, T::val>::Key;
@@ -17,7 +16,8 @@ using NewSlotMap = SlotMap<typename T::type, T::val>;
 template<typename T>
 using ExtractType = T::type;
 
-using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, meta::Pair<RenderComponent, 204>>;
+using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
+meta::Pair<RenderComponent, 204>, meta::Pair<FreeMovementComponent, 32>>;
 using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
 
 using ListKeys = meta::forall_insert_template<Key, SlotMapList>::type;
