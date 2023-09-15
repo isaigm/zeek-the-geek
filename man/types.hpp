@@ -8,13 +8,13 @@
 
 
 template<typename T>
-using Key = SlotMap<typename T::type, T::val>::Key;
+using Key = typename SlotMap<typename T::type, T::val>::Key;
 
 template<typename T>
 using NewSlotMap = SlotMap<typename T::type, T::val>;
 	
 template<typename T>
-using ExtractType = T::type;
+using ExtractType = typename T::type;
 
 using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
 meta::Pair<RenderComponent, 204>, meta::Pair<FreeMovementComponent, 32>>;

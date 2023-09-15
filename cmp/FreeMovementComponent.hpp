@@ -2,12 +2,5 @@
 #include <array>
 struct FreeMovementComponent
 {
-    enum Direction
-    {
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN
-    };
-    std::array<bool, 4> m_freeDirs {};
+    std::array<bool, 4> freeDirs {true, true, true, true};
 };

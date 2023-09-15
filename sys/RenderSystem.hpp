@@ -12,6 +12,7 @@ struct RenderSystem
 			rt.draw(renderCmp.sprite);
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
-	int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
-	int m_tagMask = Tags::OBJECT;
+	private:	
+		int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
+		int m_tagMask = Tags::OBJECT;
 };

@@ -24,7 +24,7 @@ namespace meta
     template <size_t i, typename T, typename... Ts>
     struct nth_type<i, T, Ts...>
     {
-        using type = nth_type<i - 1, Ts...>::type;
+        using type = typename nth_type<i - 1, Ts...>::type;
     };
     template <typename T, typename... Ts>
     struct nth_type<0, T, Ts...> : type_id<T>
