@@ -5,36 +5,52 @@
 
 struct EntityManager
 {
-   
+
     EntityManager(int numEntities = 1)
     {
         m_entities.reserve(numEntities);
     }
-    ComponentStorage &getComponentStorage()
+
+    template <typename T>
+    auto &getComponent(Entity &e)
     {
-        return m_componentStorage;
+        return m_componentStorage.getComponent<T>(e);
     }
-    void removeComponents(Entity& e)
+
+    template <typename T>
+    void addComponent(T &&cmp, Entity &e)
     {
-        m_componentStorage.removeComponent<PhysicsComponent>(e);
-        m_componentStorage.removeComponent<RenderComponent> (e);
+        m_componentStorage.addComponent<T>(std::move(cmp), e);
     }
-    void removeEntity(Entity& e)
+    template <typename T>
+    bool removeComponent(Entity &e)
+    {
+        return m_componentStorage.removeComponent<T>(e);
+    }
+
+    void removeComponents(Entity &e)
+    {
+        removeComponent<PhysicsComponent>(e);
+        removeComponent<RenderComponent>(e);
+        removeComponent<FreeMovementComponent>(e);
+    }
+    void removeEntity(Entity &e)
     {
         removeComponents(e);
-        auto it = std::remove_if(m_entities.begin(), m_entities.end(), [e](Entity &ent) {
-            return e == ent;
-        });
+        auto it = std::remove_if(m_entities.begin(), m_entities.end(), [e](Entity &ent)
+                                 { return e == ent; });
         m_entities.erase(it, m_entities.end());
     }
-    void forAll(auto &&function) {
-        for (auto& e : m_entities) {
+    void forAll(auto &&function)
+    {
+        for (auto &e : m_entities)
+        {
             function(e);
         }
     }
     void forAllMatching(auto &&function, int cmpMask, int tag)
     {
-        for (auto& e : m_entities)
+        for (auto &e : m_entities)
         {
             if ((e.m_tagMask & tag) == tag && (e.m_componentMask & cmpMask) == cmpMask)
             {
@@ -42,10 +58,11 @@ struct EntityManager
             }
         }
     }
-    auto& createEntity() { return m_entities.emplace_back(); }
-    std::vector<Entity>& getEntityVector() { return m_entities; }
+    auto &createEntity() { return m_entities.emplace_back(); }
+    std::vector<Entity> &getEntityVector() { return m_entities; }
+
 private:
     std::vector<Entity> m_entities;
-    
+
     ComponentStorage m_componentStorage;
 };

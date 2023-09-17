@@ -41,8 +41,8 @@ private:
     {
         if (!e1.hasTag(Tags::PLAYER))
             return;
-        auto &e1Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e1);
-        auto &e2Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e2);
+        auto &e1Phys = em.template getComponent<PhysicsComponent>(e1);
+        auto &e2Phys = em.template getComponent<PhysicsComponent>(e2);
         if (hasContiguousCollisions(e1Phys, e2Phys))
         {
             resolvePlayerCollisions(em, e1, e2);
@@ -50,15 +50,15 @@ private:
     }
     void resolvePlayerCollisions(EntityManager &em, Entity &e1, Entity &e2)
     {
-        auto &e1Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e1);
-        auto &e2Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e2);
+        auto &e1Phys = em.getComponent<PhysicsComponent>(e1);
+        auto &e2Phys = em.getComponent<PhysicsComponent>(e2);
         if (e2.hasTag(Tags::WALL) || e2.hasTag(Tags::PLANT))
         {
             e1Phys.dir = Direction::None;
         }
         else if (e2.hasTag(Tags::MOVABLE))
         {
-            auto &free = em.getComponentStorage().template getComponent<FreeMovementComponent>(e2);
+            auto &free = em.template getComponent<FreeMovementComponent>(e2);
             if (!free.freeDirs[int(e1Phys.dir)])
             {
                 e1Phys.dir = Direction::None;
@@ -67,17 +67,17 @@ private:
         }
         else if (e2.hasTag(Tags::PICKABLE))
         {
-            em.getComponentStorage().removeComponent<RenderComponent>(e2);
-            em.getComponentStorage().removeComponent<PhysicsComponent>(e2);
+            em.template removeComponent<RenderComponent>(e2);
+            em.template removeComponent<PhysicsComponent>(e2);
         }
     }
     void movableCollisions(EntityManager &em, Entity &e1, Entity &e2)
     {
         if (!e1.hasTag(Tags::MOVABLE))
             return;
-        auto &e1Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e1);
-        auto &e2Phys = em.getComponentStorage().template getComponent<PhysicsComponent>(e2);
-        auto &e1Free = em.getComponentStorage().template getComponent<FreeMovementComponent>(e1);
+        auto &e1Phys = em.template getComponent<PhysicsComponent>(e1);
+        auto &e2Phys = em.template getComponent<PhysicsComponent>(e2);
+        auto &e1Free = em.template getComponent<FreeMovementComponent>(e1);
         std::array<Direction, 4> possibleDirections { Direction::Up, Direction::Down, Direction::Left, Direction::Right};
         for (auto &dir : possibleDirections)
         {
@@ -87,6 +87,6 @@ private:
             }
         }
     }
-    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
+    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent>();
     int m_tagMask = Tags::OBJECT;
 };

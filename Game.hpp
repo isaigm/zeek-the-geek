@@ -4,15 +4,18 @@
 #include "sys/RenderSystem.hpp"
 #include "sys/InputSystem.hpp"
 #include "sys/CollisionSystem.hpp"
+#include "sys/ResetSystem.hpp"
 #include "GameManager.hpp"
+#include "Hud.hpp"
 struct Game
 {
-	Game() : m_entityManager(GameManager::LEVEL_WIDTH * GameManager::LEVEL_HEIGHT),
-		m_window(sf::VideoMode(GameManager::LEVEL_WIDTH * GameManager::TILE_WIDTH, 
-		GameManager::LEVEL_HEIGHT * GameManager::TILE_HEIGHT), "Zeek the Geek")
+	Game() : m_window(sf::VideoMode(GameManager::LEVEL_WIDTH * GameManager::TILE_WIDTH,
+									GameManager::LEVEL_HEIGHT * GameManager::TILE_HEIGHT),
+					  "Zeek the Geek"),
+			 m_entityManager(GameManager::LEVEL_WIDTH * GameManager::LEVEL_HEIGHT)
 	{
 		m_window.setVerticalSyncEnabled(true);
-		m_gameManager.loadLevel(m_entityManager, 1);
+		m_gameManager.loadLevel(m_entityManager, 2);
 	}
 	void run()
 	{
@@ -25,8 +28,10 @@ struct Game
 			render();
 		}
 	}
+
 private:
-	void events() {
+	void events()
+	{
 		sf::Event ev;
 		while (m_window.pollEvent(ev))
 		{
@@ -34,7 +39,8 @@ private:
 			{
 				m_window.close();
 				break;
-			}else if(ev.type == sf::Event::KeyPressed)
+			}
+			else if (ev.type == sf::Event::KeyPressed)
 			{
 				m_inputSystem.handleInput(m_entityManager, ev.key.code);
 			}
@@ -44,21 +50,23 @@ private:
 	{
 		m_collisionSystem.update(m_entityManager);
 		m_physicsSystem.update(m_entityManager, dt);
-
+		m_resetSystem.update(m_entityManager);
 	}
 	void render()
 	{
 		m_window.clear(sf::Color::White);
 		m_renderSystem.render(m_entityManager, m_window);
+		m_hud.render(m_window);
 		m_window.display();
 	}
-	
+
 	sf::RenderWindow m_window;
-	EntityManager    m_entityManager;
-	GameManager		 m_gameManager;
-	PhysicsSystem	 m_physicsSystem;
-	RenderSystem	 m_renderSystem;
-	InputSystem		 m_inputSystem;
-	CollisionSystem  m_collisionSystem;
-	
+	Hud m_hud;
+	EntityManager m_entityManager;
+	GameManager m_gameManager;
+	ResetSystem m_resetSystem;
+	PhysicsSystem m_physicsSystem;
+	RenderSystem m_renderSystem;
+	InputSystem m_inputSystem;
+	CollisionSystem m_collisionSystem;
 };

@@ -6,7 +6,7 @@ struct InputSystem
 	void handleInput(EntityManager& em, sf::Keyboard::Key keyPressed)
 	{
 		em.forAllMatching([&](auto& e) {
-			auto &physicsCmp = em.getComponentStorage().template getComponent<PhysicsComponent>(e);
+			auto &physicsCmp = em.template getComponent<PhysicsComponent>(e);
 			switch (keyPressed)
 			{
 			case DOWN_KEY:
@@ -32,6 +32,6 @@ struct InputSystem
 		static const auto RIGHT_KEY  = sf::Keyboard::Right;
 		static const auto UP_KEY     = sf::Keyboard::Up;
 		static const auto DOWN_KEY   = sf::Keyboard::Down;
-		int m_cmpMaskToCheck		 =  ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
+		int m_cmpMaskToCheck		 = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
 		int m_tagMask 				 = Tags::PLAYER;
 };

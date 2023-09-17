@@ -3,11 +3,11 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 struct RenderSystem
 {
-	void render(auto &em, sf::RenderTarget &rt)
+	void render(EntityManager &em, sf::RenderTarget &rt)
 	{
 		em.forAllMatching([&](auto& e) {
-			auto& renderCmp = em.getComponentStorage().template getComponent<RenderComponent>(e);
-			auto& phyCmp = em.getComponentStorage().template getComponent<PhysicsComponent>(e);
+			auto& renderCmp = em.template getComponent<RenderComponent>(e);
+			auto& phyCmp = em.template getComponent<PhysicsComponent>(e);
 			renderCmp.sprite.setPosition(phyCmp.pos);
 			rt.draw(renderCmp.sprite);
 		}, m_cmpMaskToCheck, m_tagMask);

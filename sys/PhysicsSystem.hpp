@@ -9,7 +9,7 @@ struct PhysicsSystem
 		em.forAllMatching([&](auto& e) {
 			if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))
 			{
-				auto& physics = em.getComponentStorage().template getComponent<PhysicsComponent>(e);
+				auto& physics = em.template getComponent<PhysicsComponent>(e);
 				switch (physics.dir)
 				{
 				case Direction::Down:
@@ -29,12 +29,6 @@ struct PhysicsSystem
 				default:
 					break;
 				}
-				physics.dir = Direction::None;			
-			}
-			if(e.hasTag(Tags::MOVABLE))
-			{
-				auto& free = em.getComponentStorage().template getComponent<FreeMovementComponent>(e);
-				for(auto &f: free.freeDirs) f = true;
 			}
 		}, m_cmpMaskToCheck, m_tagMask);
 	}

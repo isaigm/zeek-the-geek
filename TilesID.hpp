@@ -24,6 +24,8 @@ struct TilesID
 	static const int FLOWER	  = 47;
 	static const int MUSHROOM = 68;
 	static const int APPLE    = 5;
+	static const int BALL 	  = 12;
+	static const int CHEST	  = 74;
 
 	static bool isEmpty(int id)
 	{
@@ -53,15 +55,23 @@ struct TilesID
 	{
 		return id == APPLE;
 	}
+	static bool isBall(int id)
+	{
+		return id == BALL;
+	}
 	static int getTag(int id)
 	{
 		if(isPlayer(id)) return Tags::PLAYER;
 		if(isPlant (id)) return Tags::PLANT;
 		if(isWall  (id)) return Tags::WALL;
-		if(isFlower(id) || isMushroom(id)) return Tags::PICKABLE;
-		if(isApple(id))	return Tags::MOVABLE;
+		if(isFlower(id) || isMushroom(id) || isChest(id)) return Tags::PICKABLE;
+		if(isApple(id)  || isBall(id))	return Tags::MOVABLE;
 		return 0;
 	}	
+	static int isChest(int id)
+	{
+		return id == CHEST;
+	}
 	private:
 	constexpr static std::array<int, 9> WALLS  {WALL_1, WALL_2, WALL_3, WALL_4, WALL_5, WALL_6, WALL_7, WALL_8, WALL_9};
 	constexpr static std::array<int, 4> PLANTS {PLANT_1, PLANT_2, PLANT_3, PLANT_4};
