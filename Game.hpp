@@ -5,14 +5,15 @@
 #include "sys/InputSystem.hpp"
 #include "sys/CollisionSystem.hpp"
 #include "sys/ResetSystem.hpp"
+#include "sys/AnimationSystem.hpp"
 #include "GameManager.hpp"
 #include "Hud.hpp"
 struct Game
 {
-	Game() : m_window(sf::VideoMode(GameManager::LEVEL_WIDTH * GameManager::TILE_WIDTH,
-									GameManager::LEVEL_HEIGHT * GameManager::TILE_HEIGHT),
+	Game() : m_window(sf::VideoMode(LEVEL_WIDTH * TILE_WIDTH,
+									LEVEL_HEIGHT * TILE_HEIGHT),
 					  "Zeek the Geek"),
-			 m_entityManager(GameManager::LEVEL_WIDTH * GameManager::LEVEL_HEIGHT)
+			 m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
 	{
 		m_window.setVerticalSyncEnabled(true);
 		m_gameManager.loadLevel(m_entityManager, 2);
@@ -50,6 +51,7 @@ private:
 	{
 		m_collisionSystem.update(m_entityManager);
 		m_physicsSystem.update(m_entityManager, dt);
+		m_animationSystem.update(m_entityManager, dt);
 		m_resetSystem.update(m_entityManager);
 	}
 	void render()
@@ -68,5 +70,6 @@ private:
 	PhysicsSystem m_physicsSystem;
 	RenderSystem m_renderSystem;
 	InputSystem m_inputSystem;
+	AnimationSystem m_animationSystem;
 	CollisionSystem m_collisionSystem;
 };

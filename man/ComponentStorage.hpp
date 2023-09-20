@@ -15,11 +15,14 @@ struct ComponentStorage
 	template<typename T>
 	void addComponent(T &&cmp, Entity &e)
 	{
+		constexpr int id = ComponentTraits::getId<T>();
+
 		if(!e.hasComponent<T>())
 		{
-			constexpr int id = ComponentTraits::getId<T>();
 			e.setKey<T>(std::get<id>(m_storage).pushBack(cmp));
 			e.m_componentMask |= ComponentTraits::getMask<T>();
+		}else{
+			std::get<id>(m_storage)[e.getKey<T>()] = cmp;
 		}
 	}
 	template<typename T>

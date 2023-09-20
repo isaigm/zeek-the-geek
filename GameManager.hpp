@@ -16,9 +16,9 @@ struct GameManager
 		{
 			auto &entity = em.createEntity();
 			entity.addTag(Tags::OBJECT);
-            entity.addTag(Tags::COLLISIONABLE);
+			entity.addTag(Tags::COLLISIONABLE);
 			RenderComponent renderComponent;
-			m_tileSet.setTile(renderComponent.sprite, m_currentLevel.getTileAt(x, y) - 1); //tiled specific
+			m_tileSet.setTile(renderComponent.sprite, m_currentLevel.getTileAt(x, y) - 1); // tiled specific
 			PhysicsComponent physicsComponent;
 			physicsComponent.pos = {float(x * TILE_WIDTH), float(y * TILE_HEIGHT)};
 			em.addComponent<RenderComponent>(std::move(renderComponent), entity);
@@ -28,12 +28,11 @@ struct GameManager
 			{
 			case Tags::MOVABLE:
 				em.addComponent<FreeMovementComponent>(FreeMovementComponent{}, entity);
-				break;
+				break;			
 			default:
 				break;
 			}
 			entity.addTag(tag);
-
 		};
 		bool playerFound = false;
 		sf::Vector2i playerPos;
@@ -50,17 +49,13 @@ struct GameManager
 					playerPos = {x, y};
 					continue;
 				}
-				addEntitiy(tileID, x, y);	
+				addEntitiy(tileID, x, y);
 			}
 		}
-		if(!playerFound) throw std::runtime_error("cannot find the player");
-		addEntitiy(TilesID::PLAYER, playerPos.x, playerPos.y); //need player at the end because we need to detect collisions for movable objects first, so if they are blocked in the same direction of player, player cant push them 
+		if (!playerFound)
+			throw std::runtime_error("cannot find the player");
+		addEntitiy(TilesID::PLAYER, playerPos.x, playerPos.y); // need player at the end because we need to detect collisions for movable objects first, so if they are blocked in the same direction of player, player cant push them
 	}
-	static const int TILE_WIDTH   = 36;
-	static const int TILE_HEIGHT  = 36;
-	static const int LEVEL_WIDTH  = 17;
-	static const int LEVEL_HEIGHT = 12;
-
 private:
 	std::string getPathLevel(int level)
 	{

@@ -11,6 +11,7 @@ enum class Direction
 struct PhysicsComponent
 {
 	sf::Vector2f pos{};
-	PhysicsComponent(){}
+	sf::Vector2f targetPos {};
 	Direction dir = Direction::None;
+	float speed = 36.0f;
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include "../man/EntityManager.hpp"
-#include "../GameManager.hpp"
+#include "../Constants.hpp"
 struct CollisionSystem
 {
     void update(EntityManager &em)
@@ -20,18 +20,16 @@ private:
     }
     bool isSomethingAt(sf::Vector2f pos, sf::Vector2f nextPos, Direction dir)
     {
-        int tileWidth = GameManager::TILE_WIDTH;
-        int tileHeight = GameManager::TILE_HEIGHT;
         switch (dir)
         {
         case Direction::Up:
-            return (pos.y - tileHeight) == nextPos.y && pos.x == nextPos.x;
+            return (pos.y - TILE_HEIGHT) == nextPos.y && pos.x == nextPos.x;
         case Direction::Down:
-            return (pos.y + tileHeight) == nextPos.y && pos.x == nextPos.x;
+            return (pos.y + TILE_HEIGHT) == nextPos.y && pos.x == nextPos.x;
         case Direction::Left:
-            return (pos.x - tileWidth) == nextPos.x && pos.y == nextPos.y;
+            return (pos.x - TILE_WIDTH) == nextPos.x && pos.y == nextPos.y;
         case Direction::Right:
-            return (pos.x + tileWidth) == nextPos.x && pos.y == nextPos.y;
+            return (pos.x + TILE_WIDTH) == nextPos.x && pos.y == nextPos.y;
         case Direction::None:
             return pos == nextPos;
         }
@@ -62,6 +60,26 @@ private:
             if (!free.freeDirs[int(e1Phys.dir)])
             {
                 e1Phys.dir = Direction::None;
+            }else if(e2Phys.dir == Direction::None)
+            {
+                e2Phys.targetPos = e2Phys.pos;
+                switch (e1Phys.dir)
+				{
+					case Direction::Down:
+                        e2Phys.targetPos.y += TILE_HEIGHT;
+						break;
+					case Direction::Up:
+                        e2Phys.targetPos.y -= TILE_HEIGHT;
+						break;
+					case Direction::Right:
+                        e2Phys.targetPos.x += TILE_WIDTH;
+						break;	
+					case Direction::Left:
+                        e2Phys.targetPos.x -= TILE_WIDTH;
+						break;			
+					default:
+						break;
+				}
             }
             e2Phys.dir = e1Phys.dir;
         }

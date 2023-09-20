@@ -5,7 +5,7 @@ struct RenderSystem
 {
 	void render(EntityManager &em, sf::RenderTarget &rt)
 	{
-		em.forAllMatching([&](auto& e) {
+		em.forAllMatching([&](Entity &e) {
 			auto& renderCmp = em.template getComponent<RenderComponent>(e);
 			auto& phyCmp = em.template getComponent<PhysicsComponent>(e);
 			renderCmp.sprite.setPosition(phyCmp.pos);

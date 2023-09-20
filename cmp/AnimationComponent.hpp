@@ -5,4 +5,6 @@ struct AnimationComponent
 {
     std::vector<sf::Vector2i> frames;
     float timePerFrame {};
+    int currFrame {};
+    float currTime {};
 };

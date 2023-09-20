@@ -5,33 +5,58 @@ struct InputSystem
 {
 	void handleInput(EntityManager& em, sf::Keyboard::Key keyPressed)
 	{
-		em.forAllMatching([&](auto& e) {
-			auto &physicsCmp = em.template getComponent<PhysicsComponent>(e);
+		em.forAllMatching([&](Entity &e) {
+			auto &physics = em.template getComponent<PhysicsComponent>(e);
+			if(physics.dir != Direction::None) return;
 			switch (keyPressed)
 			{
 			case DOWN_KEY:
-				physicsCmp.dir = Direction::Down;
+			{
+				std::vector<sf::Vector2i> frames{{5, 0}, {5, 8}, {5, 9}};
+				em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, e);
+				physics.targetPos = physics.pos;
+				physics.targetPos.y += TILE_HEIGHT;
+				physics.dir = Direction::Down;
+			}
 				break;
 			case UP_KEY:
-				physicsCmp.dir = Direction::Up;
+			{
+				std::vector<sf::Vector2i> frames{{5, 10}, {5, 11}, {5, 12}};
+				em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, e);
+				physics.targetPos = physics.pos;
+				physics.targetPos.y -= TILE_HEIGHT;
+				physics.dir = Direction::Up;
+			}
 				break;
 			case RIGHT_KEY:
-				physicsCmp.dir = Direction::Right;	
+			{
+				std::vector<sf::Vector2i> frames{{5, 5}, {5, 6}, {5, 7}};
+				em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, e);
+				physics.targetPos = physics.pos;
+				physics.targetPos.x += TILE_WIDTH;
+				physics.dir = Direction::Right;	
+			}
 				break;
 			case LEFT_KEY:
-				physicsCmp.dir = Direction::Left;
+			{
+				std::vector<sf::Vector2i> frames{{6, 12}, {6, 13}, {6, 14}};
+				em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, e);
+				physics.targetPos = physics.pos;
+				physics.targetPos.x -= TILE_WIDTH;
+				physics.dir = Direction::Left;
+			}
 				break;
 			default:
-				physicsCmp.dir = Direction::None;
 				break;
 			}
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
 	private:
-		static const auto LEFT_KEY   = sf::Keyboard::Left;
-		static const auto RIGHT_KEY  = sf::Keyboard::Right;
 		static const auto UP_KEY     = sf::Keyboard::Up;
+		static const auto LEFT_KEY   = sf::Keyboard::Left;
 		static const auto DOWN_KEY   = sf::Keyboard::Down;
+		static const auto RIGHT_KEY  = sf::Keyboard::Right;
+
 		int m_cmpMaskToCheck		 = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
 		int m_tagMask 				 = Tags::PLAYER;
 };

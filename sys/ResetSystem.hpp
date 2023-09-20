@@ -4,15 +4,13 @@ struct ResetSystem
 {
 	void update(EntityManager &em)
 	{
-		em.forAllMatching([&](auto& e) {
+		em.forAllMatching([&](Entity &e) {
             auto& physics = em.template getComponent<PhysicsComponent>(e);
             if(e.hasTag(Tags::MOVABLE))
             {
                 auto& free = em.template getComponent<FreeMovementComponent>(e);
 			    for(auto &dir: free.freeDirs) dir = true;
             }
-            physics.dir = Direction::None;			
-
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
 	private:	
