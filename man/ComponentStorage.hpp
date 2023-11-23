@@ -11,7 +11,11 @@ struct ComponentStorage
 		constexpr int id = ComponentTraits::getId<T>();
 		return std::get<id>(m_storage)[e.getKey<T>()];
 	}
-	
+	template<typename T>
+	auto &getSingletonComponent()
+	{
+		return std::get<T>(m_singletonComponent);
+	}
 	template<typename T>
 	void addComponent(T &&cmp, Entity &e)
 	{
@@ -39,5 +43,6 @@ struct ComponentStorage
 	}
 private:
 	TupleSlots m_storage;
+	TupleSingleton m_singletonComponent;
 
 };

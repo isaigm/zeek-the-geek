@@ -28,7 +28,7 @@ struct GameManager
 			{
 			case Tags::MOVABLE:
 				em.addComponent<FreeMovementComponent>(FreeMovementComponent{}, entity);
-				break;			
+				break;
 			default:
 				break;
 			}
@@ -36,26 +36,34 @@ struct GameManager
 		};
 		bool playerFound = false;
 		sf::Vector2i playerPos;
+		em.getSingletonComponent<LevelComponent>().width = m_currentLevel.m_width;
+		em.getSingletonComponent<LevelComponent>().height = m_currentLevel.m_height;
+
 		for (int y = 0; y < m_currentLevel.m_height; y++)
 		{
 			for (int x = 0; x < m_currentLevel.m_width; x++)
 			{
 				auto tileID = m_currentLevel.getTileAt(x, y);
 				if (TilesID::isEmpty(tileID))
+				{
+					em.getSingletonComponent<LevelComponent>().addId(EMPTY);
 					continue;
-				if (TilesID::isPlayer(tileID))
+				}
+				else if (TilesID::isPlayer(tileID))
 				{
 					playerFound = true;
 					playerPos = {x, y};
-					continue;
+					em.getSingletonComponent<LevelComponent>().playerPos = playerPos;
+					em.getSingletonComponent<LevelComponent>().playerId  = em.getSize();
 				}
+				em.getSingletonComponent<LevelComponent>().addId(em.getSize());
 				addEntitiy(tileID, x, y);
 			}
 		}
 		if (!playerFound)
 			throw std::runtime_error("cannot find the player");
-		addEntitiy(TilesID::PLAYER, playerPos.x, playerPos.y); // need player at the end because we need to detect collisions for movable objects first, so if they are blocked in the same direction of player, player cant push them
 	}
+
 private:
 	std::string getPathLevel(int level)
 	{

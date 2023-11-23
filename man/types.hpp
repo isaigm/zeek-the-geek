@@ -4,6 +4,7 @@
 #include "../cmp/PhysicsComponent.hpp"
 #include "../cmp/FreeMovementComponent.hpp"
 #include "../cmp/AnimationComponent.hpp"
+#include "../cmp/LevelComponent.hpp"
 #include "utils/SlotMap.hpp"
 #include <tuple>
 
@@ -27,3 +28,6 @@ using ComponentTraits = meta::ComponentTraits<ComponentList>;
 
 using ListSlots = meta::forall_insert_template<NewSlotMap, SlotMapList>::type;
 using TupleSlots = meta::replace<std::tuple, ListSlots>::type;
+
+using SingletonComponentList = meta::TypeList<LevelComponent>;
+using TupleSingleton = meta::replace<std::tuple, SingletonComponentList>::type;

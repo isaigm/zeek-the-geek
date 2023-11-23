@@ -10,10 +10,8 @@
 #include "Hud.hpp"
 struct Game
 {
-	Game() : m_window(sf::VideoMode(LEVEL_WIDTH * TILE_WIDTH,
-									LEVEL_HEIGHT * TILE_HEIGHT),
-					  "Zeek the Geek"),
-			 m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
+	Game() : m_window(sf::VideoMode(LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT), "Zeek the Geek"),
+			m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
 	{
 		m_window.setVerticalSyncEnabled(true);
 		m_gameManager.loadLevel(m_entityManager, 2);
@@ -52,7 +50,7 @@ private:
 		m_collisionSystem.update(m_entityManager);
 		m_physicsSystem.update(m_entityManager, dt);
 		m_animationSystem.update(m_entityManager, dt);
-		m_resetSystem.update(m_entityManager);
+		//m_resetSystem.update(m_entityManager);
 	}
 	void render()
 	{
@@ -62,14 +60,14 @@ private:
 		m_window.display();
 	}
 
-	sf::RenderWindow m_window;
-	Hud m_hud;
-	EntityManager m_entityManager;
-	GameManager m_gameManager;
-	ResetSystem m_resetSystem;
-	PhysicsSystem m_physicsSystem;
-	RenderSystem m_renderSystem;
-	InputSystem m_inputSystem;
-	AnimationSystem m_animationSystem;
-	CollisionSystem m_collisionSystem;
+	sf::RenderWindow 	m_window;
+	Hud 				m_hud;
+	EntityManager		m_entityManager;
+	GameManager 		m_gameManager;
+	ResetSystem 		m_resetSystem;
+	PhysicsSystem  	 	m_physicsSystem;
+	RenderSystem 		m_renderSystem;
+	InputSystem 		m_inputSystem;
+	AnimationSystem 	m_animationSystem;
+	CollisionSystem 	m_collisionSystem;
 };

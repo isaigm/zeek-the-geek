@@ -17,6 +17,13 @@ struct EntityManager
         return m_componentStorage.getComponent<T>(e);
     }
 
+
+    template <typename T>
+    auto &getSingletonComponent()
+    {
+        return m_componentStorage.getSingletonComponent<T>();
+    }
+
     template <typename T>
     void addComponent(T &&cmp, Entity &e)
     {
@@ -58,8 +65,16 @@ struct EntityManager
             }
         }
     }
+    auto &getEntityById(int id)
+    {
+        return m_entities[id];
+    }
     auto &createEntity() { return m_entities.emplace_back(); }
-    std::vector<Entity> &getEntityVector() { return m_entities; }
+
+    int getSize()
+    {
+        return m_entities.size();
+    }
 
 private:
     std::vector<Entity> m_entities;

@@ -39,7 +39,6 @@ struct PhysicsSystem
 		}, m_cmpMaskToCheck, m_tagMask);
 	}
 	private:
-
 		float getDist(sf::Vector2f p, sf::Vector2f q)
 		{
 			float dx = p.x - q.x;
