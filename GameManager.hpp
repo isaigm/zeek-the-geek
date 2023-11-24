@@ -24,14 +24,6 @@ struct GameManager
 			em.addComponent<RenderComponent>(std::move(renderComponent), entity);
 			em.addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
 			int tag = TilesID::getTag(tileID);
-			switch (tag)
-			{
-			case Tags::MOVABLE:
-				em.addComponent<FreeMovementComponent>(FreeMovementComponent{}, entity);
-				break;
-			default:
-				break;
-			}
 			entity.addTag(tag);
 		};
 		bool playerFound = false;

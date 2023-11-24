@@ -2,7 +2,6 @@
 #include "utils/meta.hpp"
 #include "../cmp/RenderComponent.hpp"
 #include "../cmp/PhysicsComponent.hpp"
-#include "../cmp/FreeMovementComponent.hpp"
 #include "../cmp/AnimationComponent.hpp"
 #include "../cmp/LevelComponent.hpp"
 #include "utils/SlotMap.hpp"
@@ -19,7 +18,7 @@ template<typename T>
 using ExtractType = typename T::type;
 
 using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
-meta::Pair<RenderComponent, 204>, meta::Pair<FreeMovementComponent, 32>, meta::Pair<AnimationComponent, 16>>;
+meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 16>>;
 using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
 
 using ListKeys = meta::forall_insert_template<Key, SlotMapList>::type;

@@ -4,7 +4,6 @@
 #include "sys/RenderSystem.hpp"
 #include "sys/InputSystem.hpp"
 #include "sys/CollisionSystem.hpp"
-#include "sys/ResetSystem.hpp"
 #include "sys/AnimationSystem.hpp"
 #include "GameManager.hpp"
 #include "Hud.hpp"
@@ -14,7 +13,7 @@ struct Game
 			m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
 	{
 		m_window.setVerticalSyncEnabled(true);
-		m_gameManager.loadLevel(m_entityManager, 2);
+		m_gameManager.loadLevel(m_entityManager, 1);
 	}
 	void run()
 	{
@@ -50,7 +49,6 @@ private:
 		m_collisionSystem.update(m_entityManager);
 		m_physicsSystem.update(m_entityManager, dt);
 		m_animationSystem.update(m_entityManager, dt);
-		//m_resetSystem.update(m_entityManager);
 	}
 	void render()
 	{
@@ -64,7 +62,6 @@ private:
 	Hud 				m_hud;
 	EntityManager		m_entityManager;
 	GameManager 		m_gameManager;
-	ResetSystem 		m_resetSystem;
 	PhysicsSystem  	 	m_physicsSystem;
 	RenderSystem 		m_renderSystem;
 	InputSystem 		m_inputSystem;

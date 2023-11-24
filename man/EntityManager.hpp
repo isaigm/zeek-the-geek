@@ -39,7 +39,6 @@ struct EntityManager
     {
         removeComponent<PhysicsComponent>(e);
         removeComponent<RenderComponent>(e);
-        removeComponent<FreeMovementComponent>(e);
     }
     void removeEntity(Entity &e)
     {
