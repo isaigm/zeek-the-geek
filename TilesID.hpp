@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include "states/PlantState.hpp"
 #include "cmp/Tags.hpp"
 struct TilesID
 {
@@ -38,6 +39,13 @@ struct TilesID
 	static bool isPlant(int id)
 	{
 		return std::find(PLANTS.begin(), PLANTS.end(), id) != PLANTS.end();
+	}
+
+	static PlantState getPlantState(int id)
+	{
+		if(id == PLANT_1) return PlantState::Closed;
+		else if(id == PLANT_4) return PlantState::Opened;
+		throw std::runtime_error("Invalid plant state");
 	}
 	static bool isWall(int id)
 	{

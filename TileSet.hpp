@@ -23,10 +23,8 @@ private:
 		tileRect.height = m_tileHeight;
 		tileRect.left   = x * m_tileWidth;
 		tileRect.top    = y * m_tileHeight;
-		
 		assert(tileRect.left < m_width);
 		assert(tileRect.top < m_height);
-
 		return tileRect;
 	}
 	sf::Texture m_texture;

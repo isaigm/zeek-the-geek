@@ -5,6 +5,7 @@
 #include "sys/InputSystem.hpp"
 #include "sys/CollisionSystem.hpp"
 #include "sys/AnimationSystem.hpp"
+#include "sys/AISystem.hpp"
 #include "GameManager.hpp"
 #include "Hud.hpp"
 struct Game
@@ -46,6 +47,7 @@ private:
 	}
 	void update(float dt)
 	{
+		m_AISystem.update(m_entityManager, dt);
 		m_collisionSystem.update(m_entityManager);
 		m_physicsSystem.update(m_entityManager, dt);
 		m_animationSystem.update(m_entityManager, dt);
@@ -62,6 +64,7 @@ private:
 	Hud 				m_hud;
 	EntityManager		m_entityManager;
 	GameManager 		m_gameManager;
+	AISystem 			m_AISystem;
 	PhysicsSystem  	 	m_physicsSystem;
 	RenderSystem 		m_renderSystem;
 	InputSystem 		m_inputSystem;

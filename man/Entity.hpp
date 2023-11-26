@@ -19,13 +19,6 @@ struct Entity
 		auto key2 = e.getKey<T>();
 		return key1.id == key2.id && key1.gen == key2.gen;
 	}
-	bool operator==(const Entity& e)
-	{
-		return m_tagMask == e.m_tagMask &&
-			m_componentMask == e.m_componentMask &&
-			compareKeys<PhysicsComponent>(e) &&
-			compareKeys<RenderComponent>(e);
-	}
 	template<typename T>
 	bool hasComponent()
 	{

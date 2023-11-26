@@ -5,7 +5,7 @@
 #include <cmath>
 struct PhysicsSystem
 {
-	void update(auto& em, float dt)
+	void update(EntityManager &em, float dt)
 	{		
 		em.forAllMatching([&](Entity &e) {
 			if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))

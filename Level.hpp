@@ -32,8 +32,16 @@ struct Level
 			m_tiles.push_back(tiles[i].ID);
 		}
 	}
-	int m_width = 0, m_height = 0;
+	int getWidth()
+	{
+		return m_width;
+	}
+	int getHeight()
+	{
+		return m_height;
+	}
 private:
+	int m_width = 0, m_height = 0;
 	std::vector<uint16_t> m_tiles;
 	
 };

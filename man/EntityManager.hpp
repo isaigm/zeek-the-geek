@@ -35,18 +35,6 @@ struct EntityManager
         return m_componentStorage.removeComponent<T>(e);
     }
 
-    void removeComponents(Entity &e)
-    {
-        removeComponent<PhysicsComponent>(e);
-        removeComponent<RenderComponent>(e);
-    }
-    void removeEntity(Entity &e)
-    {
-        removeComponents(e);
-        auto it = std::remove_if(m_entities.begin(), m_entities.end(), [e](Entity &ent)
-                                 { return e == ent; });
-        m_entities.erase(it, m_entities.end());
-    }
     void forAll(auto &&function)
     {
         for (auto &e : m_entities)

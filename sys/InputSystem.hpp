@@ -8,9 +8,10 @@ struct InputSystem
 		auto &level = em.getSingletonComponent<LevelComponent>();
 		auto &playerEntity = em.getEntityById(level.playerId);
 		auto &physics = em.template getComponent<PhysicsComponent>(playerEntity);
+	
 		if (physics.dir != Direction::None)
 			return;
-		level.updateCollisions = true;
+		level.updatePlayerCollisions = true;
 		switch (keyPressed)
 		{
 		case DOWN_KEY:
@@ -50,7 +51,7 @@ struct InputSystem
 		}
 		break;
 		default:
-			level.updateCollisions = false;
+			level.updatePlayerCollisions = false;
 			break;
 		}
 	}

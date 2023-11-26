@@ -24,21 +24,33 @@ struct GameManager
 			em.addComponent<RenderComponent>(std::move(renderComponent), entity);
 			em.addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
 			int tag = TilesID::getTag(tileID);
+			switch (tag)
+			{
+			case Tags::PLANT:
+			{
+				PlantStateComponent state;
+				state.currState = TilesID::getPlantState(tileID);
+				em.addComponent<PlantStateComponent>(std::move(state), entity);
+			}
+			break;
+			default:
+				break;
+			}
 			entity.addTag(tag);
 		};
 		bool playerFound = false;
 		sf::Vector2i playerPos;
-		em.getSingletonComponent<LevelComponent>().width = m_currentLevel.m_width;
-		em.getSingletonComponent<LevelComponent>().height = m_currentLevel.m_height;
+		em.getSingletonComponent<LevelComponent>().width = m_currentLevel.getWidth();
+		em.getSingletonComponent<LevelComponent>().height = m_currentLevel.getHeight();
 
-		for (int y = 0; y < m_currentLevel.m_height; y++)
+		for (int y = 0; y < m_currentLevel.getHeight(); y++)
 		{
-			for (int x = 0; x < m_currentLevel.m_width; x++)
+			for (int x = 0; x < m_currentLevel.getWidth(); x++)
 			{
 				auto tileID = m_currentLevel.getTileAt(x, y);
 				if (TilesID::isEmpty(tileID))
 				{
-					em.getSingletonComponent<LevelComponent>().addId(EMPTY);
+					em.getSingletonComponent<LevelComponent>().addId(LevelComponent::EMPTY);
 					continue;
 				}
 				else if (TilesID::isPlayer(tileID))
@@ -46,7 +58,7 @@ struct GameManager
 					playerFound = true;
 					playerPos = {x, y};
 					em.getSingletonComponent<LevelComponent>().playerPos = playerPos;
-					em.getSingletonComponent<LevelComponent>().playerId  = em.getSize();
+					em.getSingletonComponent<LevelComponent>().playerId = em.getSize();
 				}
 				em.getSingletonComponent<LevelComponent>().addId(em.getSize());
 				addEntitiy(tileID, x, y);

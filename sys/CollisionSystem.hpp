@@ -6,23 +6,12 @@ struct CollisionSystem
     void update(EntityManager &em)
     {
         auto &level = em.getSingletonComponent<LevelComponent>();
-        em.forAllMatching([&](Entity &entity)
-        {
-            auto &physics = em.getComponent<PhysicsComponent>(entity);
-            auto &render = em.getComponent<RenderComponent>(entity);
-
-            auto &level = em.getSingletonComponent<LevelComponent>();
-            render.sprite.setColor(sf::Color::Red);
-            int x = physics.pos.x / TILE_WIDTH;
-            int y = physics.pos.y / TILE_HEIGHT;
-        }, m_cmpMaskToCheck, m_tagMask);
-        
-        if (!level.updateCollisions)
+        if (!level.updatePlayerCollisions)
             return;
         auto &playerEntity = em.getEntityById(level.playerId);
         auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
         auto nextPos = getNextPos(level.playerPos, physics.dir);
-        if (level.getId(nextPos) == EMPTY)
+        if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
             movePlayer(level, nextPos);
         }
@@ -44,7 +33,7 @@ struct CollisionSystem
                 physics.dir = Direction::None;
             }
         }
-        level.updateCollisions = false;
+        level.updatePlayerCollisions = false;
     }
 
 private:
@@ -56,7 +45,7 @@ private:
         int x = physics.pos.x / TILE_WIDTH;
         int y = physics.pos.y / TILE_HEIGHT;
         auto nextPos = getNextPos({x, y}, playerPhysics.dir);
-        if (level.getId(nextPos) == EMPTY)
+        if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
             physics.targetPos = physics.pos;
             switch (playerPhysics.dir)
@@ -87,9 +76,9 @@ private:
     }
     void movePlayer(LevelComponent &level, sf::Vector2i nextPos)
     {
-        level.setId(level.playerPos.x, level.playerPos.y, EMPTY);
+        level.setId(level.playerPos, LevelComponent::EMPTY);
         level.playerPos = nextPos;
-        level.setId(level.playerPos.x, level.playerPos.y, level.playerId);
+        level.setId(level.playerPos, level.playerId);
     }
     sf::Vector2i getNextPos(sf::Vector2i currPos, Direction dir)
     {
