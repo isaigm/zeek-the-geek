@@ -9,11 +9,16 @@ struct LevelComponent
     std::vector<int> mapIds;
     int              width;
     int              height;
+    sf::IntRect      playableArea;
     int              playerId;
     bool             updatePlayerCollisions = false;
     void addId(int id)
     {
         mapIds.push_back(id);
+    }
+    bool isInPlayableArea(sf::Vector2i pos)
+    {
+        return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height && playableArea.contains(pos);
     }
     int getId(int x, int y)
 	{

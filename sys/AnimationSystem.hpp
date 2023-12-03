@@ -75,8 +75,8 @@ private:
     }
     void setFrame(AnimationComponent &animCmp, RenderComponent &renderCmp)
     {
-        auto tileCoords = animCmp.frames[animCmp.currFrame];
-        sf::IntRect rect{tileCoords.x * TILE_WIDTH, tileCoords.y * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT};
+        auto frame = animCmp.frames[animCmp.currFrame];
+        sf::IntRect rect{frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
         renderCmp.sprite.setTextureRect(rect);
     }
     int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, AnimationComponent>();

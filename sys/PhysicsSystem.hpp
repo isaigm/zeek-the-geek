@@ -5,9 +5,10 @@
 #include <cmath>
 struct PhysicsSystem
 {
-	void update(EntityManager &em, float dt)
-	{		
-		em.forAllMatching([&](Entity &e) {
+    void update(EntityManager &em, float dt)
+    {
+        em.forAllMatching([&](Entity &e)
+        {
 			if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))
 			{
 				auto& physics = em.template getComponent<PhysicsComponent>(e);
@@ -35,16 +36,17 @@ struct PhysicsSystem
 					physics.dir = Direction::None;
 					physics.pos = physics.targetPos;
 				}
-			}
-		}, m_cmpMaskToCheck, m_tagMask);
-	}
-	private:
-		float getDist(sf::Vector2f p, sf::Vector2f q)
-		{
-			float dx = p.x - q.x;
-			float dy = p.y - q.y;
-			return std::sqrt(dx * dx + dy * dy);
-		}
-		int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
-		int m_tagMask = Tags::OBJECT;
+			} 
+        }, m_cmpMaskToCheck, m_tagMask);
+    }
+
+private:
+    float getDist(sf::Vector2f p, sf::Vector2f q)
+    {
+        float dx = p.x - q.x;
+        float dy = p.y - q.y;
+        return std::sqrt(dx * dx + dy * dy);
+    }
+    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
+    int m_tagMask = Tags::OBJECT;
 };

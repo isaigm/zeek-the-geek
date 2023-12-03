@@ -16,37 +16,37 @@ struct InputSystem
 		{
 		case DOWN_KEY:
 		{
-			std::vector<sf::Vector2i> frames{{5, 0}, {5, 8}, {5, 9}};
+			std::vector<AnimationComponent::frame> frames{{5, 0}, {5, 8}, {5, 9}};
 			em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, playerEntity);
 			physics.targetPos = physics.pos;
-			physics.targetPos.y += TILE_HEIGHT;
+			physics.targetPos.y += TILE_SIZE;
 			physics.dir = Direction::Down;
 		}
 		break;
 		case UP_KEY:
 		{
-			std::vector<sf::Vector2i> frames{{5, 10}, {5, 11}, {5, 12}};
+			std::vector<AnimationComponent::frame> frames{{5, 10}, {5, 11}, {5, 12}};
 			em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, playerEntity);
 			physics.targetPos = physics.pos;
-			physics.targetPos.y -= TILE_HEIGHT;
+			physics.targetPos.y -= TILE_SIZE;
 			physics.dir = Direction::Up;
 		}
 		break;
 		case RIGHT_KEY:
 		{
-			std::vector<sf::Vector2i> frames{{5, 5}, {5, 6}, {5, 7}};
+			std::vector<AnimationComponent::frame> frames{{5, 5}, {5, 6}, {5, 7}};
 			em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, playerEntity);
 			physics.targetPos = physics.pos;
-			physics.targetPos.x += TILE_WIDTH;
+			physics.targetPos.x += TILE_SIZE;
 			physics.dir = Direction::Right;
 		}
 		break;
 		case LEFT_KEY:
 		{
-			std::vector<sf::Vector2i> frames{{6, 12}, {6, 13}, {6, 14}};
+			std::vector<AnimationComponent::frame> frames{{6, 12}, {6, 13}, {6, 14}};
 			em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.2f}, playerEntity);
 			physics.targetPos = physics.pos;
-			physics.targetPos.x -= TILE_WIDTH;
+			physics.targetPos.x -= TILE_SIZE;
 			physics.dir = Direction::Left;
 		}
 		break;

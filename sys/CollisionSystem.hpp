@@ -42,8 +42,8 @@ private:
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level = em.getSingletonComponent<LevelComponent>();
         auto &playerPhysics = em.getComponent<PhysicsComponent>(em.getEntityById(level.playerId));
-        int x = physics.pos.x / TILE_WIDTH;
-        int y = physics.pos.y / TILE_HEIGHT;
+        int x = physics.pos.x / TILE_SIZE;
+        int y = physics.pos.y / TILE_SIZE;
         auto nextPos = getNextPos({x, y}, playerPhysics.dir);
         if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
@@ -51,16 +51,16 @@ private:
             switch (playerPhysics.dir)
             {
             case Direction::Down:
-                physics.targetPos.y += TILE_HEIGHT;
+                physics.targetPos.y += TILE_SIZE;
                 break;
             case Direction::Up:
-                physics.targetPos.y -= TILE_HEIGHT;
+                physics.targetPos.y -= TILE_SIZE;
                 break;
             case Direction::Right:
-                physics.targetPos.x += TILE_WIDTH;
+                physics.targetPos.x += TILE_SIZE;
                 break;
             case Direction::Left:
-                physics.targetPos.x -= TILE_WIDTH;
+                physics.targetPos.x -= TILE_SIZE;
                 break;
             default:
                 break;

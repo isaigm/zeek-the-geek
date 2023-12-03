@@ -54,6 +54,7 @@ struct EntityManager
     }
     auto &getEntityById(int id)
     {
+        assert(id < m_entities.size());
         return m_entities[id];
     }
     auto &createEntity() { return m_entities.emplace_back(); }

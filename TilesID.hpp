@@ -8,25 +8,23 @@ struct TilesID
 	static const int PLAYER  = 6;
 
 	static const int PLANT_1 = 3;
-	static const int PLANT_2 = 10;
-	static const int PLANT_3 = 17;
-	static const int PLANT_4 = 24;
+	static const int PLANT_2 = 42;
 
 	static const int WALL_1  = 4;
-	static const int WALL_2  = 11;
-	static const int WALL_3  = 18;
-	static const int WALL_4  = 25;
-	static const int WALL_5  = 32;
-	static const int WALL_6  = 39;
-	static const int WALL_7  = 53;
-	static const int WALL_8  = 60;
-	static const int WALL_9  = 67;
+	static const int WALL_2  = 17;
+	static const int WALL_3  = 30;
+	static const int WALL_4  = 43;
+	static const int WALL_5  = 56;
+	static const int WALL_6  = 69;
+	static const int WALL_7  = 95;
+	static const int WALL_8  = 108;
+	static const int WALL_9  = 121;
 
-	static const int FLOWER	  = 47;
-	static const int MUSHROOM = 68;
+	static const int FLOWER	  = 83;
+	static const int MUSHROOM = 122;
 	static const int APPLE    = 5;
-	static const int BALL 	  = 12;
-	static const int CHEST	  = 74;
+	static const int BALL 	  = 17;
+	static const int CHEST	  = 134;
 
 	static bool isEmpty(int id)
 	{
@@ -44,7 +42,7 @@ struct TilesID
 	static PlantState getPlantState(int id)
 	{
 		if(id == PLANT_1) return PlantState::Closed;
-		else if(id == PLANT_4) return PlantState::Opened;
+		else if(id == PLANT_2) return PlantState::Opened;
 		throw std::runtime_error("Invalid plant state");
 	}
 	static bool isWall(int id)
@@ -73,7 +71,8 @@ struct TilesID
 		if(isPlant (id)) return Tags::PLANT;
 		if(isWall  (id)) return Tags::WALL;
 		if(isFlower(id) || isMushroom(id) || isChest(id)) return Tags::PICKABLE;
-		if(isApple(id)  || isBall(id))	return Tags::MOVABLE;
+		if(isBall  (id)) return Tags::MOVABLE;
+		if(isApple (id)) return Tags::MOVABLE | Tags::APPLE;
 		return 0;
 	}	
 	static int isChest(int id)
@@ -82,5 +81,5 @@ struct TilesID
 	}
 	private:
 	constexpr static std::array<int, 9> WALLS  {WALL_1, WALL_2, WALL_3, WALL_4, WALL_5, WALL_6, WALL_7, WALL_8, WALL_9};
-	constexpr static std::array<int, 4> PLANTS {PLANT_1, PLANT_2, PLANT_3, PLANT_4};
+	constexpr static std::array<int, 4> PLANTS {PLANT_1, PLANT_2};
 };
