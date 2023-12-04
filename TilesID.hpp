@@ -23,9 +23,14 @@ struct TilesID
 	static const int FLOWER	  = 83;
 	static const int MUSHROOM = 122;
 	static const int APPLE    = 5;
-	static const int BALL 	  = 17;
+	static const int BALL 	  = 18;
 	static const int CHEST	  = 134;
-
+	static const int CRYSTAL  = 67;
+	
+	static bool isCrystal(int id)
+	{
+		return id == CRYSTAL;
+	}
 	static bool isEmpty(int id)
 	{
 		return id == EMPTY;
@@ -71,10 +76,11 @@ struct TilesID
 		if(isPlant (id)) return Tags::PLANT;
 		if(isWall  (id)) return Tags::WALL;
 		if(isFlower(id) || isMushroom(id) || isChest(id)) return Tags::PICKABLE;
-		if(isBall  (id)) return Tags::MOVABLE;
-		if(isApple (id)) return Tags::MOVABLE | Tags::APPLE;
+		if(isBall  (id)) return  Tags::MOVABLE;
+		if(isCrystal(id)) return Tags::MOVABLE | Tags::CRYSTAL;
+		if(isApple (id)) return  Tags::MOVABLE | Tags::APPLE;
 		return 0;
-	}	
+	}
 	static int isChest(int id)
 	{
 		return id == CHEST;

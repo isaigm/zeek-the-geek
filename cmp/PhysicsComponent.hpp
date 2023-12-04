@@ -13,5 +13,5 @@ struct PhysicsComponent
 	sf::Vector2f pos{};
 	sf::Vector2f targetPos {};
 	Direction dir = Direction::None;
-	float speed = 36.0f;
+	float speed = 50.0f;
 };

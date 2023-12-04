@@ -43,5 +43,4 @@ struct Level
 private:
 	int m_width = 0, m_height = 0;
 	std::vector<uint16_t> m_tiles;
-	
 };

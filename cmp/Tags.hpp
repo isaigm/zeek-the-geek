@@ -9,4 +9,6 @@ struct Tags
 	static const int PLANT		   = 0b100000;
 	static const int MOVABLE 	   = 0b1000000;
 	static const int APPLE		   = 0b10000000;
+	static const int CRYSTAL	   = 0b100000000;
+
 };

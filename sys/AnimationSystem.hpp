@@ -7,7 +7,7 @@ struct AnimationSystem
     void update(EntityManager &em, float dt)
     {
         em.forAllMatching([&](Entity &e)
-                          {
+        {
             if(e.hasTag(Tags::PLAYER))
             {
                 animatePlayer(em, e, dt);
@@ -21,10 +21,13 @@ struct AnimationSystem
 private:
     void animatePlant(EntityManager &em, Entity &entity, float dt)
     {
-        auto &animCmp = em.template getComponent<AnimationComponent>(entity);
-        auto &renderCmp = em.template getComponent<RenderComponent>(entity);
+        auto &animCmp    = em.template getComponent<AnimationComponent>(entity);
+        auto &renderCmp  = em.template getComponent<RenderComponent>(entity);
         auto &plantState = em.template getComponent<PlantStateComponent>(entity);
-        auto &currState = plantState.currState;
+        auto &physics    = em.template getComponent<PhysicsComponent>(entity);
+        auto &currState  = plantState.currState;
+        auto &level      = em.getSingletonComponent<LevelComponent>();
+        
         if (currState == PlantState::Closed || currState == PlantState::Opened)
         {
             return;
@@ -34,20 +37,15 @@ private:
         {
             animCmp.currTime = 0;
             animCmp.currFrame++;
+            restorePlantPosition(physics, plantState);
+            if (animCmp.currFrame == 1 && currState == PlantState::Eating)
+            {
+                level.setId(plantState.blockedPos, LevelComponent::EMPTY);
+            }
             if (animCmp.currFrame >= animCmp.frames.size())
             {
                 animCmp.currFrame = animCmp.frames.size() - 1;
-                switch (currState)
-                {
-                case PlantState::Unfolding:
-                    currState = PlantState::Opened;
-                    break;
-                case PlantState::Eating:
-                    currState = PlantState::Closed;
-                    break;
-                default:
-                    break;
-                }
+                handlePlantState(em, entity);
             }
         }
         setFrame(animCmp, renderCmp);
@@ -79,6 +77,33 @@ private:
         sf::IntRect rect{frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
         renderCmp.sprite.setTextureRect(rect);
     }
+    void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
+    {
+        if(state.leftAligned)
+        {
+            physics.pos.x += TILE_SIZE;
+            state.leftAligned = false;
+
+        }else if(state.upAligned)
+        {
+            physics.pos.y += TILE_SIZE;
+            state.upAligned = false;
+        }
+    }
+    void handlePlantState(EntityManager &em, Entity &entity)
+    {
+        auto &plantState = em.template getComponent<PlantStateComponent>(entity);
+        auto &currState = plantState.currState;
+
+        if (currState == PlantState::Unfolding)
+        {
+            currState = PlantState::Opened;
+        }
+        else if (currState == PlantState::Eating)
+        {
+            currState = PlantState::Closed;
+        }
+    } 
     int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, AnimationComponent>();
     int m_tagMask = Tags::OBJECT;
 };

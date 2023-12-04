@@ -3,6 +3,7 @@
 #include "Level.hpp"
 #include "TileSet.hpp"
 #include "TilesID.hpp"
+#include "Levels.hpp"
 struct GameManager
 {
     GameManager() : m_tileSet("assets/spritesheet.png", TILE_SIZE, TILE_SIZE)
@@ -42,7 +43,7 @@ struct GameManager
         sf::Vector2i playerPos;
         em.getSingletonComponent<LevelComponent>().width        = m_currentLevel.getWidth();
         em.getSingletonComponent<LevelComponent>().height       = m_currentLevel.getHeight();
-        em.getSingletonComponent<LevelComponent>().playableArea = {0, 3, 17, 9};
+        em.getSingletonComponent<LevelComponent>().playableArea = levels[level];
         
         
         for (int y = 0; y < m_currentLevel.getHeight(); y++)

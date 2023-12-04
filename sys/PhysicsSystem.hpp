@@ -9,34 +9,36 @@ struct PhysicsSystem
     {
         em.forAllMatching([&](Entity &e)
         {
-			if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))
-			{
-				auto& physics = em.template getComponent<PhysicsComponent>(e);
-				if (physics.dir == Direction::None) return;
-				switch (physics.dir)
-				{
-					case Direction::Down:
-						physics.pos.y += dt * physics.speed;
-						break;
-					case Direction::Up:
-						physics.pos.y -= dt * physics.speed;
-						break;
-					case Direction::Right:
-						physics.pos.x += dt * physics.speed;
-						break;	
-					case Direction::Left:
-						physics.pos.x -= dt * physics.speed;
-						break;			
-					default:
-						break;
-				}
-				float dist = getDist(physics.pos, physics.targetPos);
-				if(dist < 0.7f)
-				{
-					physics.dir = Direction::None;
-					physics.pos = physics.targetPos;
-				}
-			} 
+            if(e.hasTag(Tags::PLAYER) || e.hasTag(Tags::MOVABLE))
+            {
+                auto& physics = em.template getComponent<PhysicsComponent>(e);
+                if (physics.dir == Direction::None) return;
+                switch (physics.dir)
+                {
+                    case Direction::Down:
+                        physics.pos.y += dt * physics.speed;
+                        break;
+                    case Direction::Up:
+                        physics.pos.y -= dt * physics.speed;
+                        break;
+                    case Direction::Right:
+                        physics.pos.x += dt * physics.speed;
+                        break;	
+                    case Direction::Left:
+                        physics.pos.x -= dt * physics.speed;
+                        break;			
+                    default:
+                        break;
+                }
+                float dist = getDist(physics.pos, physics.targetPos);
+                if(dist < 0.7f)
+                {
+                    if(e.hasTag(Tags::CRYSTAL)) std::cout << "rec\n";
+                    
+                    physics.dir = Direction::None;
+                    physics.pos = physics.targetPos;
+                }
+            } 
         }, m_cmpMaskToCheck, m_tagMask);
     }
 

@@ -14,7 +14,7 @@ struct Game
              m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
     {
         m_window.setVerticalSyncEnabled(true);
-        m_gameManager.loadLevel(m_entityManager, 1);
+        m_gameManager.loadLevel(m_entityManager, 2);
     }
     void run()
     {
@@ -59,7 +59,6 @@ private:
         m_hud.render(m_window);
         m_window.display();
     }
-
     sf::RenderWindow m_window;
     Hud              m_hud;
     EntityManager    m_entityManager;
