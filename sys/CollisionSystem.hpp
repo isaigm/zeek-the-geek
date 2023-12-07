@@ -76,7 +76,7 @@ private:
     }
     void movePlayer(LevelComponent &level, sf::Vector2i nextPos)
     {
-        level.setId(level.playerPos, LevelComponent::EMPTY);
+        level.markPosAsEmpty(level.playerPos);
         level.playerPos = nextPos;
         level.setId(level.playerPos, level.playerId);
     }
