@@ -10,5 +10,8 @@ struct Tags
 	static const int MOVABLE 	   = 0b1000000;
 	static const int APPLE		   = 0b10000000;
 	static const int CRYSTAL	   = 0b100000000;
-
+	static const int KEY 		   = 0b1000000000;
+	static const int DOOR 		   = 0b10000000000;
+	static const int REMOVABLE	   = 0b100000000000;
+	static const int MUSHROOM	   = 0b1000000000000;
 };

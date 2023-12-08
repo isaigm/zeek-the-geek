@@ -34,6 +34,7 @@ struct SlotMap
 
             return { firstFree, slot.gen };
         }
+        throw std::runtime_error("slot map has no more space");
         return {};
     }
     Key pushBack(Type const& newVal)

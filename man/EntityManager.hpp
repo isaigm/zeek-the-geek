@@ -10,20 +10,16 @@ struct EntityManager
     {
         m_entities.reserve(numEntities);
     }
-
     template <typename T>
     auto &getComponent(Entity &e)
     {
         return m_componentStorage.getComponent<T>(e);
     }
-
-
     template <typename T>
     auto &getSingletonComponent()
     {
         return m_componentStorage.getSingletonComponent<T>();
     }
-
     template <typename T>
     void addComponent(T &&cmp, Entity &e)
     {
@@ -34,7 +30,6 @@ struct EntityManager
     {
         return m_componentStorage.removeComponent<T>(e);
     }
-
     void forAll(auto &&function)
     {
         for (auto &e : m_entities)
@@ -63,9 +58,20 @@ struct EntityManager
     {
         return m_entities.size();
     }
+    void clear()
+    {
+        for (auto &e : m_entities)
+        {
+            removeComponent<RenderComponent>(e);
+            removeComponent<PlayerStateComponent>(e);
+            removeComponent<PhysicsComponent>(e);
+            removeComponent<PlantStateComponent>(e);
+            removeComponent<AnimationComponent>(e);
+        }
+        m_entities.clear();
+    }
 
 private:
     std::vector<Entity> m_entities;
-
     ComponentStorage m_componentStorage;
 };

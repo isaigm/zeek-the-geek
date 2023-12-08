@@ -4,7 +4,7 @@
 #include "cmp/Tags.hpp"
 struct TilesID
 {
-    static const int EMPTY = 0;
+    static const int EMPTY  = 0;
     static const int PLAYER = 6;
 
     static const int PLANT_1 = 3;
@@ -20,14 +20,24 @@ struct TilesID
     static const int WALL_8 = 108;
     static const int WALL_9 = 121;
 
-    static const int FLOWER = 83;
+    static const int FLOWER   = 83;
     static const int MUSHROOM = 122;
-    static const int APPLE = 5;
-    static const int BALL = 18;
-    static const int CHEST = 134;
-    static const int CRYSTAL = 67;
-    static const int BOMB = 28;
+    static const int APPLE    = 5;
+    static const int BALL     = 18;
+    static const int CHEST    = 134;
+    static const int CRYSTAL  = 67;
+    static const int BOMB     = 28;
+    static const int KEY      = 96;
+    static const int DOOR     = 44;
 
+    static bool isDoor(int id)
+    {
+        return id == DOOR;  
+    }
+    static bool isKey(int id)
+    {
+        return id == KEY;
+    }
     static bool isBomb(int id)
     {
         return id == BOMB;
@@ -85,8 +95,14 @@ struct TilesID
             return Tags::PLANT;
         if (isWall(id))
             return Tags::WALL;
-        if (isFlower(id) || isMushroom(id) || isChest(id))
+        if (isFlower(id) || isChest(id))
             return Tags::PICKABLE;
+        if (isMushroom(id))
+            return Tags::PICKABLE | Tags::MUSHROOM;
+        if (isKey(id))
+            return Tags::PICKABLE | Tags::KEY;
+        if (isDoor(id))
+            return Tags::PICKABLE | Tags::DOOR;
         if (isBall(id) || isBomb(id))
             return Tags::MOVABLE;
         if (isCrystal(id))
@@ -102,5 +118,5 @@ struct TilesID
 
 private:
     constexpr static std::array<int, 9> WALLS{WALL_1, WALL_2, WALL_3, WALL_4, WALL_5, WALL_6, WALL_7, WALL_8, WALL_9};
-    constexpr static std::array<int, 4> PLANTS{PLANT_1, PLANT_2};
+    constexpr static std::array<int, 2> PLANTS{PLANT_1, PLANT_2};
 };

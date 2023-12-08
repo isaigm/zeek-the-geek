@@ -12,7 +12,7 @@ struct AnimationComponent
         int height = TILE_SIZE;
     };
     std::vector<frame> frames;
-    float timePerFrame {};
-    int currFrame {};
-    float currTime {};
+    float              timePerFrame {};
+    int                currFrame {};
+    float              currTime {};
 };

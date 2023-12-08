@@ -5,6 +5,8 @@
 #include "../cmp/AnimationComponent.hpp"
 #include "../cmp/LevelComponent.hpp"
 #include "../cmp/PlantStateComponent.hpp"
+#include "../cmp/PlayerStateComponent.hpp"
+#include "../cmp/GameInfoComponent.hpp"
 #include "utils/SlotMap.hpp"
 #include <tuple>
 
@@ -19,7 +21,8 @@ template<typename T>
 using ExtractType = typename T::type;
 
 using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
-meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 32>, meta::Pair<PlantStateComponent, 32>>;
+meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 32>, meta::Pair<PlantStateComponent, 32>,
+meta::Pair<PlayerStateComponent, 1>>;
 using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
 
 using ListKeys = meta::forall_insert_template<Key, SlotMapList>::type;
@@ -29,5 +32,5 @@ using ComponentTraits = meta::ComponentTraits<ComponentList>;
 using ListSlots = meta::forall_insert_template<NewSlotMap, SlotMapList>::type;
 using TupleSlots = meta::replace<std::tuple, ListSlots>::type;
 
-using SingletonComponentList = meta::TypeList<LevelComponent>;
+using SingletonComponentList = meta::TypeList<LevelComponent, GameInfoComponent>;
 using TupleSingleton = meta::replace<std::tuple, SingletonComponentList>::type;

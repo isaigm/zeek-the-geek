@@ -20,9 +20,7 @@ struct CollisionSystem
             auto &entity = em.getEntityById(level.getId(nextPos));
             if (entity.hasTag(Tags::PICKABLE))
             {
-                em.template removeComponent<RenderComponent>(entity);
-                em.template removeComponent<PhysicsComponent>(entity);
-                movePlayer(level, nextPos);
+                handlePickableCollisions(em, playerEntity, entity);
             }
             else if (entity.hasTag(Tags::MOVABLE))
             {
@@ -37,6 +35,40 @@ struct CollisionSystem
     }
 
 private:
+    void handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
+    {
+        auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
+        auto &level = em.getSingletonComponent<LevelComponent>();
+        auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
+        auto nextPos = getNextPos(level.playerPos, physics.dir);
+
+        if (entity.hasTag(Tags::KEY))
+        {            
+            if(playerState.keyPicked)
+            {
+                physics.dir = Direction::None;
+                return;
+            }
+            playerState.keyPicked = true;
+        }
+        else if(entity.hasTag(Tags::DOOR))
+        {
+            if(!playerState.keyPicked)
+            {
+                physics.dir = Direction::None;
+                return;
+            }
+            playerState.keyPicked = false;
+        }
+        else if(entity.hasTag(Tags::MUSHROOM))
+        {
+            auto &gameInfo = em.getSingletonComponent<GameInfoComponent>();
+            gameInfo.advanceLevel = true;
+        }
+        em.template removeComponent<RenderComponent>(entity);
+        em.template removeComponent<PhysicsComponent>(entity);
+        movePlayer(level, nextPos);
+    }
     void handleMovableCollisions(EntityManager &em, Entity &entity)
     {
         auto &physics = em.getComponent<PhysicsComponent>(entity);
@@ -69,7 +101,8 @@ private:
             int id = level.getId(x, y);
             movePlayer(level, {x, y});
             level.setId(nextPos.x, nextPos.y, id);
-        }else
+        }
+        else
         {
             playerPhysics.dir = Direction::None;
         }

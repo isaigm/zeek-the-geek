@@ -25,8 +25,8 @@ private:
         auto &renderCmp  = em.template getComponent<RenderComponent>(entity);
         auto &plantState = em.template getComponent<PlantStateComponent>(entity);
         auto &physics    = em.template getComponent<PhysicsComponent>(entity);
-        auto &currState  = plantState.currState;
         auto &level      = em.getSingletonComponent<LevelComponent>();
+        auto &currState  = plantState.currState;
         
         if (currState == PlantState::Closed || currState == PlantState::Opened)
         {
@@ -40,7 +40,7 @@ private:
             restorePlantPosition(physics, plantState);
             if (animCmp.currFrame == 1 && currState == PlantState::Eating)
             {
-                level.setId(plantState.blockedPos, LevelComponent::EMPTY);
+                level.markPosAsEmpty(plantState.blockedPos);
             }
             if (animCmp.currFrame >= animCmp.frames.size())
             {
@@ -94,7 +94,6 @@ private:
     {
         auto &plantState = em.template getComponent<PlantStateComponent>(entity);
         auto &currState = plantState.currState;
-
         if (currState == PlantState::Unfolding)
         {
             currState = PlantState::Opened;

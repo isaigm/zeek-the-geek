@@ -50,9 +50,12 @@ private:
         {
         case PlantState::Closed:
         {
-            std::vector<AnimationComponent::frame> frames{{2, 0}, {2, 1}, {2, 2}, {2, 3}};
-            plantState.currState = PlantState::Unfolding;
-            em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.65f}, plant);
+            if(isPlayer)
+            {
+                std::vector<AnimationComponent::frame> frames{{2, 0}, {2, 1}, {2, 2}, {2, 3}};
+                plantState.currState = PlantState::Unfolding;
+                em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.0f}, plant);
+            }
         }
         break;
         case PlantState::Unfolding:
@@ -69,7 +72,7 @@ private:
                 else if(isApple) frames = getFramesForApple(pos.dir);
                 plantState.currState = PlantState::Eating;
                 alignPlant(plantPhysics, plantState, pos.dir);
-                em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.0f}, plant);
+                em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.5f}, plant);
                 em.removeComponent<RenderComponent>(nearEntity);
                 em.removeComponent<PhysicsComponent>(nearEntity);
                 plantState.blockedPos = {pos.x, pos.y};

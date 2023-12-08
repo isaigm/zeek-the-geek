@@ -19,6 +19,10 @@ struct Hud
         {
             m_value += offset;
         }
+        void setValue(int value)
+        {
+            m_value = value;
+        }
         void render(sf::RenderTarget &rt)
         {
             m_text.setString(getFullName());
@@ -57,13 +61,20 @@ struct Hud
        m_bonus.setSpaces(5);
        m_level.setSpaces(6);
        m_score.setSpaces(6);
-       m_score.update(100);
     }
     void render(sf::RenderTarget &rt)
     {
         m_score.render(rt);
         m_level.render(rt);
         m_bonus.render(rt);
+    }
+    Label &getLevel()
+    {
+        return m_level;
+    }
+    Label &getBonus()
+    {
+        return m_bonus;
     }
 private:
     sf::Font m_font;

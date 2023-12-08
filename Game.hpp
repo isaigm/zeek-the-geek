@@ -14,7 +14,8 @@ struct Game
              m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
     {
         m_window.setVerticalSyncEnabled(true);
-        m_gameManager.loadLevel(m_entityManager, 2);
+        m_gameManager.loadLevel(m_entityManager, 0);
+        m_hud.getBonus().setValue(8000);
     }
     void run()
     {
@@ -47,6 +48,23 @@ private:
     }
     void update(float dt)
     {
+        auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
+        if(m_bonusTimer.getElapsedTime().asSeconds() > 1.2f)
+        {
+            gameInfo.bonus -= 10;
+            m_hud.getBonus().setValue(gameInfo.bonus);
+            m_bonusTimer.restart();
+        }
+        if(gameInfo.advanceLevel)
+        {
+            gameInfo.advanceLevel = false;
+            gameInfo.currLevel += 1;
+            gameInfo.bonus = 8000;
+            m_entityManager.clear();
+            m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
+            m_hud.getLevel().setValue(gameInfo.currLevel);
+            m_hud.getBonus().setValue(gameInfo.bonus);
+        }
         m_AISystem.update(m_entityManager, dt);
         m_collisionSystem.update(m_entityManager);
         m_physicsSystem.update(m_entityManager, dt);
@@ -60,6 +78,7 @@ private:
         m_window.display();
     }
     sf::RenderWindow m_window;
+    sf::Clock        m_bonusTimer;
     Hud              m_hud;
     EntityManager    m_entityManager;
     GameManager      m_gameManager;

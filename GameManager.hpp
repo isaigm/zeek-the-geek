@@ -32,8 +32,14 @@ struct GameManager
                 PlantStateComponent state;
                 state.currState = TilesID::getPlantState(tileID);
                 em.addComponent<PlantStateComponent>(std::move(state), entity);
+                break;
             }
-            break;
+            case Tags::PLAYER:
+            {
+                PlayerStateComponent state;
+                em.addComponent<PlayerStateComponent>(std::move(state), entity);
+                break;
+            }
             default:
                 break;
             }
@@ -41,10 +47,12 @@ struct GameManager
         };
         bool playerFound = false;
         sf::Vector2i playerPos;
-        em.getSingletonComponent<LevelComponent>().width        = m_currentLevel.getWidth();
-        em.getSingletonComponent<LevelComponent>().height       = m_currentLevel.getHeight();
-        em.getSingletonComponent<LevelComponent>().playableArea = levels[level];
-        
+        auto &levelComponent                  = em.getSingletonComponent<LevelComponent>();
+        levelComponent.width                  = m_currentLevel.getWidth();
+        levelComponent.height                 = m_currentLevel.getHeight();
+        levelComponent.playableArea           = levels[level];
+        levelComponent.mapIds.clear();
+        levelComponent.updatePlayerCollisions = false;
         
         for (int y = 0; y < m_currentLevel.getHeight(); y++)
         {
