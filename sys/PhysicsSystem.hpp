@@ -1,11 +1,10 @@
 #pragma once
 #include "../man/EntityManager.hpp"
-#include "../Constants.hpp"
+#include "../Utility.hpp"
 #include <iostream>
 #include <set>
 #include <format>
 #include <sstream>
-#include <cmath>
 struct PhysicsSystem
 {
     void update(EntityManager &em, float dt)
@@ -33,16 +32,15 @@ struct PhysicsSystem
                     default:
                         break;
                 }
-                float dist = getDist(physics.pos, physics.targetPos);
-                if(dist < 0.7f)
+                float dist = ztg::getDist(physics.pos, physics.targetPos);
+                if (dist < 0.7f)
                 {
                     physics.dir = Direction::None;
                     physics.pos = physics.targetPos;
                     if(e.hasTag(Tags::CRYSTAL))
                     {
-                        int x = physics.pos.x / TILE_SIZE;
-                        int y = physics.pos.y / TILE_SIZE;
-                        removeCrystals(em, {x, y});
+                        auto pos = ztg::toWoorldCoords(physics.pos);
+                        removeCrystals(em, pos);
                     }
                 }
             } 
@@ -50,21 +48,15 @@ struct PhysicsSystem
     }
 
 private:
-    float getDist(sf::Vector2f p, sf::Vector2f q)
-    {
-        float dx = p.x - q.x;
-        float dy = p.y - q.y;
-        return std::sqrt(dx * dx + dy * dy);
-    }
+    
     void removeCrystals(EntityManager &em, sf::Vector2i startPos)
     {
         std::set<std::string> visited;
-        
         markCrystalsToRemove(em, visited, startPos);
-        if(visited.size() < 2) return;
+        if (visited.size() < 2)
+            return;
         auto &level = em.getSingletonComponent<LevelComponent>();
-
-        for(auto key: visited)
+        for (auto key : visited)
         {
             std::stringstream ss(key);
             char delim;
@@ -78,24 +70,24 @@ private:
             em.removeComponent<PhysicsComponent>(crystal);
         }
     }
-    void markCrystalsToRemove(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos){
-        std::vector<sf::Vector2i> contiguousPositions{{pos.x - 1, pos.x}, {pos.x + 1, pos.y}, 
-        {pos.x, pos.y - 1}, {pos.x, pos.y + 1}};
+    void markCrystalsToRemove(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos)
+    {
+        std::vector<sf::Vector2i> contiguousPositions{{pos.x - 1, pos.x}, {pos.x + 1, pos.y}, {pos.x, pos.y - 1}, {pos.x, pos.y + 1}};
         visited.insert(getKey(pos));
         auto &level = em.getSingletonComponent<LevelComponent>();
-        for(auto nextPos: contiguousPositions)
+        for (auto nextPos : contiguousPositions)
         {
-            if(level.isInPlayableArea(nextPos) && level.getId(nextPos) != LevelComponent::EMPTY)
+            if (level.isInPlayableArea(nextPos) && level.getId(nextPos) != LevelComponent::EMPTY)
             {
                 auto key = getKey(nextPos);
                 auto &entity = em.getEntityById(level.getId(nextPos));
-                if(entity.hasTag(Tags::CRYSTAL) && !visited.contains(key))
+                if (entity.hasTag(Tags::CRYSTAL) && !visited.contains(key))
                 {
                     markCrystalsToRemove(em, visited, nextPos);
                 }
             }
         }
-    }    
+    }
     std::string getKey(sf::Vector2i p)
     {
         return std::format("{},{}", p.x, p.y);

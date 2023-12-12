@@ -4,5 +4,6 @@ enum class PlantState
     Closed,
     Unfolding,
     Opened,
-    Eating
+    EatingApple,
+    EatingPlayer
 };

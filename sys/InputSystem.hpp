@@ -3,11 +3,16 @@
 #include <SFML/Window/Keyboard.hpp>
 struct InputSystem
 {
-    void handleInput(EntityManager &em, sf::Keyboard::Key keyPressed)
+    void handleInput(EntityManager &em)
     {
+        auto keyPressed = getKeyPressed();
         auto &level = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
-        auto &physics = em.template getComponent<PhysicsComponent>(playerEntity);
+        auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
+        if (playerState.currState == PlayerState::Dead)
+            return;
+
+        auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
         if (physics.dir != Direction::None)
             return;
         level.updatePlayerCollisions = true;
@@ -54,10 +59,20 @@ struct InputSystem
             break;
         }
     }
+    sf::Keyboard::Key getKeyPressed()
+    {
+        std::vector<sf::Keyboard::Key> keys{LEFT_KEY, RIGHT_KEY, DOWN_KEY, UP_KEY};
+        for (auto key : keys)
+        {
+            if (sf::Keyboard::isKeyPressed(key))
+                return key;
+        }
+        return sf::Keyboard::Unknown;
+    }
 
 private:
-    static const auto UP_KEY    = sf::Keyboard::Up;
-    static const auto LEFT_KEY  = sf::Keyboard::Left;
-    static const auto DOWN_KEY  = sf::Keyboard::Down;
+    static const auto UP_KEY = sf::Keyboard::Up;
+    static const auto LEFT_KEY = sf::Keyboard::Left;
+    static const auto DOWN_KEY = sf::Keyboard::Down;
     static const auto RIGHT_KEY = sf::Keyboard::Right;
 };

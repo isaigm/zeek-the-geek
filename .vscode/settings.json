@@ -74,6 +74,7 @@
         "iomanip": "cpp",
         "span": "cpp",
         "stdfloat": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cfenv": "cpp"
     }
 }

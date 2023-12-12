@@ -1,4 +1,4 @@
-CC = g++
+CC = clang++
 CFLAGS = -std=c++20 -Wall -Wextra #-fsanitize=address
 LDFLAGS = -lsfml-system -lsfml-window -lsfml-graphics -ltmxlite #-fsanitize=address
 
@@ -17,7 +17,7 @@ obj/%.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(EXECUTABLE)
-	valgrind --leak-check=full ./$(EXECUTABLE)
+	./$(EXECUTABLE)
 
 clean:
 	rm -rf obj

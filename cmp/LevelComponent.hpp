@@ -20,6 +20,10 @@ struct LevelComponent
     {
         return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height && playableArea.contains(pos);
     }
+    bool isSafe(sf::Vector2i pos)
+    {
+        return isInPlayableArea(pos) && getId(pos) != EMPTY;
+    }
     int getId(int x, int y)
     {
         size_t idx = x + y * width;

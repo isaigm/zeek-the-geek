@@ -27,38 +27,47 @@ private:
         auto &physics    = em.template getComponent<PhysicsComponent>(entity);
         auto &level      = em.getSingletonComponent<LevelComponent>();
         auto &currState  = plantState.currState;
-        
         if (currState == PlantState::Closed || currState == PlantState::Opened)
         {
             return;
         }
         animCmp.currTime += dt;
-        if (animCmp.currTime >= animCmp.timePerFrame)
+        if (animCmp.currTime >= animCmp.frames[animCmp.currFrame].duration)
         {
             animCmp.currTime = 0;
             animCmp.currFrame++;
             restorePlantPosition(physics, plantState);
-            if (animCmp.currFrame == 1 && currState == PlantState::Eating)
+            if (animCmp.currFrame == 1 && currState == PlantState::EatingApple)
             {
                 level.markPosAsEmpty(plantState.blockedPos);
             }
-            if (animCmp.currFrame >= animCmp.frames.size())
+            if (currState == PlantState::EatingPlayer)
             {
-                animCmp.currFrame = animCmp.frames.size() - 1;
-                handlePlantState(em, entity);
+                if (animCmp.currFrame >= animCmp.frames.size())
+                {
+                    animCmp.currFrame = 1;
+                }
+            }
+            else
+            {
+                if (animCmp.currFrame >= animCmp.frames.size())
+                {
+                    animCmp.currFrame = animCmp.frames.size() - 1;
+                    handlePlantState(em, entity);
+                }
             }
         }
         setFrame(animCmp, renderCmp);
     }
     void animatePlayer(EntityManager &em, Entity &entity, float dt)
     {
-        auto &animCmp = em.template getComponent<AnimationComponent>(entity);
+        auto &animCmp   = em.template getComponent<AnimationComponent>(entity);
         auto &renderCmp = em.template getComponent<RenderComponent>(entity);
         auto &physisCmp = em.template getComponent<PhysicsComponent>(entity);
         if (physisCmp.dir != Direction::None)
         {
             animCmp.currTime += dt;
-            if (animCmp.currTime >= animCmp.timePerFrame)
+            if (animCmp.currTime >= animCmp.frames[animCmp.currFrame].duration)
             {
                 animCmp.currTime = 0;
                 animCmp.currFrame++;
@@ -79,12 +88,12 @@ private:
     }
     void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
     {
-        if(state.leftAligned)
+        if (state.leftAligned)
         {
             physics.pos.x += TILE_SIZE;
             state.leftAligned = false;
-
-        }else if(state.upAligned)
+        }
+        else if (state.upAligned)
         {
             physics.pos.y += TILE_SIZE;
             state.upAligned = false;
@@ -98,11 +107,11 @@ private:
         {
             currState = PlantState::Opened;
         }
-        else if (currState == PlantState::Eating)
+        else if (currState == PlantState::EatingApple)
         {
             currState = PlantState::Closed;
         }
-    } 
+    }
     int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, AnimationComponent>();
     int m_tagMask = Tags::OBJECT;
 };

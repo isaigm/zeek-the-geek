@@ -8,11 +8,24 @@ struct AnimationComponent
     {
         int x;
         int y;
-        int width  = TILE_SIZE;
+        int width = TILE_SIZE;
         int height = TILE_SIZE;
+        float duration{};
     };
+    AnimationComponent(std::vector<frame> _frames, float timePerFrame)
+    {
+        for (auto &f : _frames)
+        {
+            f.duration = timePerFrame;
+        }
+        frames = _frames;
+    }
+    AnimationComponent(std::vector<frame> _frames)
+    {
+        frames = _frames;
+    }
+    AnimationComponent() {}
     std::vector<frame> frames;
-    float              timePerFrame {};
-    int                currFrame {};
-    float              currTime {};
+    int currFrame{};
+    float currTime{};
 };

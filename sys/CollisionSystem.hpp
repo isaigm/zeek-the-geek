@@ -1,16 +1,17 @@
 #pragma once
 #include "../man/EntityManager.hpp"
-#include "../Constants.hpp"
+#include "../Utility.hpp"
 struct CollisionSystem
 {
     void update(EntityManager &em)
     {
         auto &level = em.getSingletonComponent<LevelComponent>();
-        if (!level.updatePlayerCollisions)
-            return;
         auto &playerEntity = em.getEntityById(level.playerId);
+        auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
+        if (!level.updatePlayerCollisions || playerState.currState == PlayerState::Dead)
+            return;
         auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
-        auto nextPos = getNextPos(level.playerPos, physics.dir);
+        auto nextPos = ztg::toWoorldCoords(physics.targetPos);
         if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
             movePlayer(level, nextPos);
@@ -18,15 +19,16 @@ struct CollisionSystem
         else
         {
             auto &entity = em.getEntityById(level.getId(nextPos));
+            bool canMove = false;
             if (entity.hasTag(Tags::PICKABLE))
             {
-                handlePickableCollisions(em, playerEntity, entity);
+                canMove |= handlePickableCollisions(em, playerEntity, entity);
             }
             else if (entity.hasTag(Tags::MOVABLE))
             {
-                handleMovableCollisions(em, entity);
+                canMove |= handleMovableCollisions(em, entity);
             }
-            else
+            if (!canMove)
             {
                 physics.dir = Direction::None;
             }
@@ -35,77 +37,81 @@ struct CollisionSystem
     }
 
 private:
-    void handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
+    bool handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
     {
         auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
         auto &level = em.getSingletonComponent<LevelComponent>();
         auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
-        auto nextPos = getNextPos(level.playerPos, physics.dir);
+        auto &gameInfo = em.getSingletonComponent<GameInfoComponent>();
+        auto nextPos = ztg::toWoorldCoords(physics.targetPos);
 
         if (entity.hasTag(Tags::KEY))
-        {            
-            if(playerState.keyPicked)
+        {
+            if (playerState.keyPicked)
             {
-                physics.dir = Direction::None;
-                return;
+                return false;
             }
             playerState.keyPicked = true;
         }
-        else if(entity.hasTag(Tags::DOOR))
+        else if (entity.hasTag(Tags::DOOR))
         {
-            if(!playerState.keyPicked)
+            if (!playerState.keyPicked)
             {
-                physics.dir = Direction::None;
-                return;
+                return false;
             }
             playerState.keyPicked = false;
         }
-        else if(entity.hasTag(Tags::MUSHROOM))
+        else if (entity.hasTag(Tags::MUSHROOM))
         {
-            auto &gameInfo = em.getSingletonComponent<GameInfoComponent>();
             gameInfo.advanceLevel = true;
+        }
+        else if (entity.hasTag(Tags::FLOWER))
+        {
+            gameInfo.score += 50;
+        }
+        else if (entity.hasTag(Tags::CHEST))
+        {
+            gameInfo.score += 100;
         }
         em.template removeComponent<RenderComponent>(entity);
         em.template removeComponent<PhysicsComponent>(entity);
         movePlayer(level, nextPos);
+        return true;
     }
-    void handleMovableCollisions(EntityManager &em, Entity &entity)
+    bool handleMovableCollisions(EntityManager &em, Entity &entity)
     {
-        auto &physics = em.getComponent<PhysicsComponent>(entity);
+        auto &movablePhysics = em.getComponent<PhysicsComponent>(entity);
         auto &level = em.getSingletonComponent<LevelComponent>();
         auto &playerPhysics = em.getComponent<PhysicsComponent>(em.getEntityById(level.playerId));
-        int x = physics.pos.x / TILE_SIZE;
-        int y = physics.pos.y / TILE_SIZE;
-        auto nextPos = getNextPos({x, y}, playerPhysics.dir);
-        if (level.getId(nextPos) == LevelComponent::EMPTY)
+        auto pos = ztg::toWoorldCoords(movablePhysics.pos);
+        auto nextPos = getNextPos(pos, playerPhysics.dir);
+        if (level.getId(nextPos) != LevelComponent::EMPTY)
         {
-            physics.targetPos = physics.pos;
-            switch (playerPhysics.dir)
-            {
-            case Direction::Down:
-                physics.targetPos.y += TILE_SIZE;
-                break;
-            case Direction::Up:
-                physics.targetPos.y -= TILE_SIZE;
-                break;
-            case Direction::Right:
-                physics.targetPos.x += TILE_SIZE;
-                break;
-            case Direction::Left:
-                physics.targetPos.x -= TILE_SIZE;
-                break;
-            default:
-                break;
-            }
-            physics.dir = playerPhysics.dir;
-            int id = level.getId(x, y);
-            movePlayer(level, {x, y});
-            level.setId(nextPos.x, nextPos.y, id);
+            return false;
         }
-        else
+        movablePhysics.targetPos = movablePhysics.pos;
+        switch (playerPhysics.dir)
         {
-            playerPhysics.dir = Direction::None;
+        case Direction::Down:
+            movablePhysics.targetPos.y += TILE_SIZE;
+            break;
+        case Direction::Up:
+            movablePhysics.targetPos.y -= TILE_SIZE;
+            break;
+        case Direction::Right:
+            movablePhysics.targetPos.x += TILE_SIZE;
+            break;
+        case Direction::Left:
+            movablePhysics.targetPos.x -= TILE_SIZE;
+            break;
+        default:
+            break;
         }
+        movablePhysics.dir = playerPhysics.dir;
+        int id = level.getId(pos);
+        movePlayer(level, pos);
+        level.setId(nextPos.x, nextPos.y, id);
+        return true;
     }
     void movePlayer(LevelComponent &level, sf::Vector2i nextPos)
     {

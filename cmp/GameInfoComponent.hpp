@@ -5,4 +5,5 @@ struct GameInfoComponent
     bool gameOver     = false;
     int  currLevel    = 0;
     int  bonus        = 8000;
+    int  score        = 0;
 };

@@ -16,6 +16,7 @@ struct Game
         m_window.setVerticalSyncEnabled(true);
         m_gameManager.loadLevel(m_entityManager, 0);
         m_hud.getBonus().setValue(8000);
+        m_hud.getLevel().setValue(1);
     }
     void run()
     {
@@ -40,32 +41,32 @@ private:
                 m_window.close();
                 break;
             }
-            else if (ev.type == sf::Event::KeyPressed)
-            {
-                m_inputSystem.handleInput(m_entityManager, ev.key.code);
-            }
         }
     }
     void update(float dt)
     {
+        m_inputSystem.handleInput(m_entityManager);
         auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
-        if(m_bonusTimer.getElapsedTime().asSeconds() > 1.2f)
+        if (m_bonusTimer.getElapsedTime().asSeconds() > 1.2f)
         {
             gameInfo.bonus -= 10;
+            gameInfo.bonus = std::max(0, gameInfo.bonus);
             m_hud.getBonus().setValue(gameInfo.bonus);
             m_bonusTimer.restart();
         }
-        if(gameInfo.advanceLevel)
+        m_hud.getScore().setValue(gameInfo.score);
+        if (gameInfo.advanceLevel)
         {
             gameInfo.advanceLevel = false;
             gameInfo.currLevel += 1;
+            gameInfo.score += gameInfo.bonus;
             gameInfo.bonus = 8000;
             m_entityManager.clear();
             m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
-            m_hud.getLevel().setValue(gameInfo.currLevel);
+            m_hud.getLevel().setValue(gameInfo.currLevel + 1);
             m_hud.getBonus().setValue(gameInfo.bonus);
         }
-        m_AISystem.update(m_entityManager, dt);
+        m_AISystem.update(m_entityManager);
         m_collisionSystem.update(m_entityManager);
         m_physicsSystem.update(m_entityManager, dt);
         m_animationSystem.update(m_entityManager, dt);
@@ -78,14 +79,14 @@ private:
         m_window.display();
     }
     sf::RenderWindow m_window;
-    sf::Clock        m_bonusTimer;
-    Hud              m_hud;
-    EntityManager    m_entityManager;
-    GameManager      m_gameManager;
-    AISystem         m_AISystem;
-    PhysicsSystem    m_physicsSystem;
-    RenderSystem     m_renderSystem;
-    InputSystem      m_inputSystem;
-    AnimationSystem  m_animationSystem;
-    CollisionSystem  m_collisionSystem;
+    sf::Clock m_bonusTimer;
+    Hud m_hud;
+    EntityManager m_entityManager;
+    GameManager m_gameManager;
+    AISystem m_AISystem;
+    PhysicsSystem m_physicsSystem;
+    RenderSystem m_renderSystem;
+    InputSystem m_inputSystem;
+    AnimationSystem m_animationSystem;
+    CollisionSystem m_collisionSystem;
 };

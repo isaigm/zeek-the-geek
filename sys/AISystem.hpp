@@ -1,22 +1,21 @@
 #pragma once
 #include "../man/EntityManager.hpp"
-#include "../Constants.hpp"
-#include <cmath>
+#include "../Utility.hpp"
 struct AISystem
 {
-    void update(EntityManager &em, float dt)
+    void update(EntityManager &em)
     {
         em.forAllMatching([&](Entity &entity)
         {
             auto &physics = em.getComponent<PhysicsComponent>(entity);
-            auto &level = em.getSingletonComponent<LevelComponent>();
-            int x = physics.pos.x / TILE_SIZE;
-            int y = physics.pos.y / TILE_SIZE;
+            auto &level   = em.getSingletonComponent<LevelComponent>();
+            auto [x, y]   = ztg::toWoorldCoords(physics.pos);
+            
             std::vector<NearPosition> lookAtPositions{{x - 1, y, Direction::Left}, {x + 1, y, Direction::Right}, 
             {x, y - 1, Direction::Up}, {x, y + 1, Direction::Down}};
             for (auto &pos : lookAtPositions)
             {
-                if (!level.isInPlayableArea({pos.x, pos.y}) || level.getId({pos.x, pos.y}) == LevelComponent::EMPTY) continue;
+                if (!level.isSafe({pos.x, pos.y})) continue;
                 auto &nearEntity = em.getEntityById(level.getId({pos.x, pos.y}));
                 if (nearEntity.hasTag(Tags::PLAYER) || nearEntity.hasTag(Tags::APPLE))
                 {
@@ -40,17 +39,17 @@ private:
         auto &plantPhysics = em.getComponent<PhysicsComponent>(plant);
         bool isPlayer      = nearEntity.hasTag(Tags::PLAYER);
         bool isApple       = nearEntity.hasTag(Tags::APPLE);
-        sf::Vector2f plantPos  = em.getComponent<PhysicsComponent>(plant).pos;
+        sf::Vector2f plantPos  = plantPhysics.pos;
         sf::Vector2f entityPos = em.getComponent<PhysicsComponent>(nearEntity).pos;
         plantPos  += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
         entityPos += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
-        int x = plantPhysics.pos.x / TILE_SIZE;
-        int y = plantPhysics.pos.y / TILE_SIZE;
+        auto [x, y] = ztg::toWoorldCoords(plantPhysics.pos);
+
         switch (plantState.currState)
         {
         case PlantState::Closed:
         {
-            if(isPlayer)
+            if (isPlayer)
             {
                 std::vector<AnimationComponent::frame> frames{{2, 0}, {2, 1}, {2, 2}, {2, 3}};
                 plantState.currState = PlantState::Unfolding;
@@ -62,17 +61,25 @@ private:
             break;
         case PlantState::Opened:
         {
-            float dx = plantPos.x - entityPos.x;
-            float dy = plantPos.y - entityPos.y;
-            float dist = std::abs(std::sqrt(dx * dx + dy * dy) - TILE_SIZE);
+            float dist = std::abs(ztg::getDist(plantPos, entityPos) - TILE_SIZE);
             if (dist < 0.5f)
             {
                 std::vector<AnimationComponent::frame> frames;
-                if(isPlayer)     frames = getFramesForPlayer(pos.dir);
-                else if(isApple) frames = getFramesForApple(pos.dir);
-                plantState.currState = PlantState::Eating;
+                if (isPlayer)
+                {
+                    auto &playerState = em.getComponent<PlayerStateComponent>(nearEntity);
+                    playerState.currState = PlayerState::Dead;
+                    frames = getFramesForPlayer(pos.dir);
+                    plantState.currState = PlantState::EatingPlayer;
+                    em.addComponent<AnimationComponent>(AnimationComponent{frames}, plant);
+                }
+                else if (isApple)
+                {
+                    frames = getFramesForApple(pos.dir);
+                    plantState.currState = PlantState::EatingApple;
+                    em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.5f}, plant);
+                }
                 alignPlant(plantPhysics, plantState, pos.dir);
-                em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.5f}, plant);
                 em.removeComponent<RenderComponent>(nearEntity);
                 em.removeComponent<PhysicsComponent>(nearEntity);
                 plantState.blockedPos = {pos.x, pos.y};
@@ -80,7 +87,8 @@ private:
             }
         }
         break;
-        case PlantState::Eating:
+        case PlantState::EatingPlayer:
+        case PlantState::EatingApple:
             break;
         default:
             break;
@@ -101,6 +109,7 @@ private:
     }
     std::vector<AnimationComponent::frame> getFramesForApple(Direction dir)
     {
+        assert(dir != Direction::None);
         std::vector<AnimationComponent::frame> frames{{}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 0}};
         switch (dir)
         {
@@ -122,26 +131,32 @@ private:
     }
     std::vector<AnimationComponent::frame> getFramesForPlayer(Direction dir)
     {
-        std::vector<AnimationComponent::frame> frames{{}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 0}};
+        assert(dir != Direction::None);
+        std::vector<AnimationComponent::frame> frames{{}, {.x = 1, .y = 8, .duration = 3.0f}};
+        int repeatedFrames = 3;
+        for (int i = 0; i < repeatedFrames; i++)
+        {
+            frames.push_back({.x = 1, .y = 9,  .duration = 0.25f});
+            frames.push_back({.x = 1, .y = 10, .duration = 0.25f});
+        }
         switch (dir)
         {
         case Direction::Left:
-            frames[0] = {11, 2, 2 * TILE_SIZE, TILE_SIZE};
+            frames[0] = {11, 2, 2 * TILE_SIZE, TILE_SIZE, 1.5f};
             return frames;
         case Direction::Right:
-            frames[0] = {11, 3, 2 * TILE_SIZE, TILE_SIZE};
+            frames[0] = {11, 3, 2 * TILE_SIZE, TILE_SIZE, 1.5f};
             return frames;
         case Direction::Up:
-            frames[0] = {11, 0, TILE_SIZE, 2 * TILE_SIZE};
+            frames[0] = {11, 0, TILE_SIZE, 2 * TILE_SIZE, 1.5f};
             return frames;
         case Direction::Down:
-            frames[0] = {12, 0, TILE_SIZE, 2 * TILE_SIZE};
+            frames[0] = {12, 0, TILE_SIZE, 2 * TILE_SIZE, 1.5f};
             return frames;
         default:
             break;
         }
     }
-
     int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent>();
     int m_tagMask = Tags::PLANT;
 };

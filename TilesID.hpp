@@ -4,7 +4,7 @@
 #include "cmp/Tags.hpp"
 struct TilesID
 {
-    static const int EMPTY  = 0;
+    static const int EMPTY = 0;
     static const int PLAYER = 6;
 
     static const int PLANT_1 = 3;
@@ -20,19 +20,19 @@ struct TilesID
     static const int WALL_8 = 108;
     static const int WALL_9 = 121;
 
-    static const int FLOWER   = 83;
+    static const int FLOWER = 83;
     static const int MUSHROOM = 122;
-    static const int APPLE    = 5;
-    static const int BALL     = 18;
-    static const int CHEST    = 134;
-    static const int CRYSTAL  = 67;
-    static const int BOMB     = 28;
-    static const int KEY      = 96;
-    static const int DOOR     = 44;
+    static const int APPLE = 5;
+    static const int BALL = 18;
+    static const int CHEST = 134;
+    static const int CRYSTAL = 67;
+    static const int BOMB = 28;
+    static const int KEY = 96;
+    static const int DOOR = 44;
 
     static bool isDoor(int id)
     {
-        return id == DOOR;  
+        return id == DOOR;
     }
     static bool isKey(int id)
     {
@@ -95,8 +95,10 @@ struct TilesID
             return Tags::PLANT;
         if (isWall(id))
             return Tags::WALL;
-        if (isFlower(id) || isChest(id))
-            return Tags::PICKABLE;
+        if (isFlower(id))
+            return Tags::PICKABLE | Tags::FLOWER;
+        if (isChest(id))
+            return Tags::PICKABLE | Tags::CHEST;
         if (isMushroom(id))
             return Tags::PICKABLE | Tags::MUSHROOM;
         if (isKey(id))
