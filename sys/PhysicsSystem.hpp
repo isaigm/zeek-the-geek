@@ -35,13 +35,15 @@ struct PhysicsSystem
                 float dist = ztg::getDist(physics.pos, physics.targetPos);
                 if (dist < 0.7f)
                 {
-                    physics.dir = Direction::None;
                     physics.pos = physics.targetPos;
-                    if(e.hasTag(Tags::CRYSTAL))
+                    if (e.hasTag(Tags::CRYSTAL))
                     {
                         auto pos = ztg::toWoorldCoords(physics.pos);
                         removeCrystals(em, pos);
                     }
+
+                    physics.dir = Direction::None;
+
                 }
             } 
         }, m_cmpMaskToCheck, m_tagMask);
@@ -65,9 +67,13 @@ private:
             ss >> delim;
             ss >> pos.y;
             auto &crystal = em.getEntityById(level.getId(pos));
-            level.markPosAsEmpty(pos);
-            em.removeComponent<RenderComponent>(crystal);
-            em.removeComponent<PhysicsComponent>(crystal);
+            //crystal.addTag(Tags::EXPLODABLE);
+            //ExplodableStateComponent state;
+            //std::vector<AnimationComponent::frame> frames {{1, 5}, {2, 6}, {3, 7}};
+            //state.timeToExplode = 4.1f;
+            //state.currState = ExplodableState::Actived;
+            //em.addComponent<ExplodableStateComponent>(std::move(state), crystal);
+            //em.addComponent<AnimationComponent>(AnimationComponent{frames, 0.5f}, crystal);
         }
     }
     void markCrystalsToRemove(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos)

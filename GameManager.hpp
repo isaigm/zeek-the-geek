@@ -17,7 +17,6 @@ struct GameManager
         {
             auto &entity = em.createEntity();
             entity.addTag(Tags::OBJECT);
-            entity.addTag(Tags::COLLISIONABLE);
             RenderComponent renderComponent;
             m_tileSet.setTile(renderComponent.sprite, m_currentLevel.getTileAt(x, y) - 1); // tiled specific
             PhysicsComponent physicsComponent;

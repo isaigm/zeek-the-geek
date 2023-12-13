@@ -36,9 +36,22 @@ private:
         sf::Event ev;
         while (m_window.pollEvent(ev))
         {
-            if (ev.type == sf::Event::Closed)
+            switch (ev.type)
             {
+            case sf::Event::Closed:
                 m_window.close();
+                break;
+            case sf::Event::KeyPressed:
+                if (ev.key.code == sf::Keyboard::R)
+                {
+                    auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
+                    restart();
+                }else if (ev.key.code == sf::Keyboard::Q)
+                {
+                    m_window.close();
+                }
+                break;
+            default:
                 break;
             }
         }
@@ -57,19 +70,24 @@ private:
         m_hud.getScore().setValue(gameInfo.score);
         if (gameInfo.advanceLevel)
         {
-            gameInfo.advanceLevel = false;
             gameInfo.currLevel += 1;
             gameInfo.score += gameInfo.bonus;
             gameInfo.bonus = 8000;
-            m_entityManager.clear();
-            m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
-            m_hud.getLevel().setValue(gameInfo.currLevel + 1);
-            m_hud.getBonus().setValue(gameInfo.bonus);
+            restart();
         }
         m_AISystem.update(m_entityManager);
         m_collisionSystem.update(m_entityManager);
         m_physicsSystem.update(m_entityManager, dt);
         m_animationSystem.update(m_entityManager, dt);
+    }
+    void restart()
+    {
+        auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
+        gameInfo.advanceLevel = false;
+        m_entityManager.clear();
+        m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
+        m_hud.getLevel().setValue(gameInfo.currLevel + 1);
+        m_hud.getBonus().setValue(gameInfo.bonus);
     }
     void render()
     {

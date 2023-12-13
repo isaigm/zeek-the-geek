@@ -21,97 +21,57 @@ struct AnimationSystem
 private:
     void animatePlant(EntityManager &em, Entity &entity, float dt)
     {
-        auto &animCmp    = em.template getComponent<AnimationComponent>(entity);
-        auto &renderCmp  = em.template getComponent<RenderComponent>(entity);
-        auto &plantState = em.template getComponent<PlantStateComponent>(entity);
-        auto &physics    = em.template getComponent<PhysicsComponent>(entity);
-        auto &level      = em.getSingletonComponent<LevelComponent>();
+        auto &plantState = em.getComponent<PlantStateComponent>(entity);   
         auto &currState  = plantState.currState;
         if (currState == PlantState::Closed || currState == PlantState::Opened)
         {
             return;
         }
-        animCmp.currTime += dt;
-        if (animCmp.currTime >= animCmp.frames[animCmp.currFrame].duration)
-        {
-            animCmp.currTime = 0;
-            animCmp.currFrame++;
-            restorePlantPosition(physics, plantState);
-            if (animCmp.currFrame == 1 && currState == PlantState::EatingApple)
-            {
-                level.markPosAsEmpty(plantState.blockedPos);
-            }
-            if (currState == PlantState::EatingPlayer)
-            {
-                if (animCmp.currFrame >= animCmp.frames.size())
-                {
-                    animCmp.currFrame = 1;
-                }
-            }
-            else
-            {
-                if (animCmp.currFrame >= animCmp.frames.size())
-                {
-                    animCmp.currFrame = animCmp.frames.size() - 1;
-                    handlePlantState(em, entity);
-                }
-            }
-        }
-        setFrame(animCmp, renderCmp);
+        animateEntity(em, entity, dt);
     }
     void animatePlayer(EntityManager &em, Entity &entity, float dt)
     {
-        auto &animCmp   = em.template getComponent<AnimationComponent>(entity);
-        auto &renderCmp = em.template getComponent<RenderComponent>(entity);
-        auto &physisCmp = em.template getComponent<PhysicsComponent>(entity);
-        if (physisCmp.dir != Direction::None)
+        auto &physics = em.getComponent<PhysicsComponent>(entity);
+        auto &animCmp = em.getComponent<AnimationComponent>(entity);
+        if (physics.dir == Direction::None)
         {
-            animCmp.currTime += dt;
-            if (animCmp.currTime >= animCmp.frames[animCmp.currFrame].duration)
+            animCmp.loop      = false;
+            animCmp.currFrame = 0;
+            animCmp.currTime  = 0;
+        }
+        animateEntity(em, entity, dt);
+    }
+    void animateEntity(EntityManager &em, Entity &entity, float dt)
+    {
+        auto &animCmp   = em.getComponent<AnimationComponent>(entity);
+        if (animCmp.animationFinished) return;
+        auto &renderCmp = em.getComponent<RenderComponent>(entity);
+        animCmp.currTime += dt;
+        float currFrameDuration = animCmp.frames[animCmp.currFrame].duration;
+        if (animCmp.currTime  >= currFrameDuration)
+        {
+            animCmp.currTime = 0;
+            animCmp.currFrame++;
+            if (animCmp.currFrame >= animCmp.frames.size())
             {
-                animCmp.currTime = 0;
-                animCmp.currFrame++;
-                if (animCmp.currFrame >= animCmp.frames.size())
+                if (animCmp.loop)
                 {
                     animCmp.currFrame = 0;
+                }else 
+                {
+                    animCmp.currFrame = animCmp.frames.size() - 1;
+                    animCmp.animationFinished = true;
                 }
             }
         }
-        else animCmp.currFrame = 0;
         setFrame(animCmp, renderCmp);
     }
     void setFrame(AnimationComponent &animCmp, RenderComponent &renderCmp)
     {
         auto frame = animCmp.frames[animCmp.currFrame];
-        sf::IntRect rect{frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
+        sf::IntRect rect {frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
         renderCmp.sprite.setTextureRect(rect);
     }
-    void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
-    {
-        if (state.leftAligned)
-        {
-            physics.pos.x += TILE_SIZE;
-            state.leftAligned = false;
-        }
-        else if (state.upAligned)
-        {
-            physics.pos.y += TILE_SIZE;
-            state.upAligned = false;
-        }
-    }
-    void handlePlantState(EntityManager &em, Entity &entity)
-    {
-        auto &plantState = em.template getComponent<PlantStateComponent>(entity);
-        auto &currState = plantState.currState;
-        if (currState == PlantState::Unfolding)
-        {
-            currState = PlantState::Opened;
-        }
-        else if (currState == PlantState::EatingApple)
-        {
-            currState = PlantState::Closed;
-        }
-    }
-    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, AnimationComponent>();
+    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent, RenderComponent, AnimationComponent>();
     int m_tagMask = Tags::OBJECT;
 };

@@ -10,9 +10,9 @@ struct AISystem
             auto &physics = em.getComponent<PhysicsComponent>(entity);
             auto &level   = em.getSingletonComponent<LevelComponent>();
             auto [x, y]   = ztg::toWoorldCoords(physics.pos);
-            
-            std::vector<NearPosition> lookAtPositions{{x - 1, y, Direction::Left}, {x + 1, y, Direction::Right}, 
-            {x, y - 1, Direction::Up}, {x, y + 1, Direction::Down}};
+            std::vector<NearPosition> lookAtPositions{{x - 1, y, Direction::Left}, {x + 1, y, Direction::Right}, {x, y - 1, Direction::Up}, {x, y + 1, Direction::Down}};
+
+            handlePlantTransitions(em, entity);
             for (auto &pos : lookAtPositions)
             {
                 if (!level.isSafe({pos.x, pos.y})) continue;
@@ -41,8 +41,8 @@ private:
         bool isApple       = nearEntity.hasTag(Tags::APPLE);
         sf::Vector2f plantPos  = plantPhysics.pos;
         sf::Vector2f entityPos = em.getComponent<PhysicsComponent>(nearEntity).pos;
-        plantPos  += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
-        entityPos += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
+        plantPos   += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
+        entityPos  += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
         auto [x, y] = ztg::toWoorldCoords(plantPhysics.pos);
 
         switch (plantState.currState)
@@ -51,33 +51,27 @@ private:
         {
             if (isPlayer)
             {
-                std::vector<AnimationComponent::frame> frames{{2, 0}, {2, 1}, {2, 2}, {2, 3}};
                 plantState.currState = PlantState::Unfolding;
-                em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.0f}, plant);
+                em.addComponent<AnimationComponent>(ztg::animations[ztg::PLANT_UNFOLDING], plant);
             }
         }
         break;
-        case PlantState::Unfolding:
-            break;
         case PlantState::Opened:
         {
             float dist = std::abs(ztg::getDist(plantPos, entityPos) - TILE_SIZE);
             if (dist < 0.5f)
             {
-                std::vector<AnimationComponent::frame> frames;
                 if (isPlayer)
                 {
-                    auto &playerState = em.getComponent<PlayerStateComponent>(nearEntity);
+                    auto &playerState     = em.getComponent<PlayerStateComponent>(nearEntity);
                     playerState.currState = PlayerState::Dead;
-                    frames = getFramesForPlayer(pos.dir);
-                    plantState.currState = PlantState::EatingPlayer;
-                    em.addComponent<AnimationComponent>(AnimationComponent{frames}, plant);
+                    plantState.currState  = PlantState::AttackingPlayer;
+                    em.addComponent<AnimationComponent>(getAnimationForPlayer(pos.dir), plant);
                 }
                 else if (isApple)
                 {
-                    frames = getFramesForApple(pos.dir);
-                    plantState.currState = PlantState::EatingApple;
-                    em.addComponent<AnimationComponent>(AnimationComponent{frames, 1.5f}, plant);
+                    plantState.currState = PlantState::AttackingApple;
+                    em.addComponent<AnimationComponent>(getAnimationForApple(pos.dir), plant);
                 }
                 alignPlant(plantPhysics, plantState, pos.dir);
                 em.removeComponent<RenderComponent>(nearEntity);
@@ -87,6 +81,9 @@ private:
             }
         }
         break;
+        case PlantState::Unfolding:
+        case PlantState::AttackingApple:
+        case PlantState::AttackingPlayer:
         case PlantState::EatingPlayer:
         case PlantState::EatingApple:
             break;
@@ -94,65 +91,104 @@ private:
             break;
         }
     }
+    void handlePlantTransitions(EntityManager &em, Entity &plant)
+    {
+        if (!plant.hasComponent<AnimationComponent>())
+            return;
+        auto &animCmp = em.getComponent<AnimationComponent>(plant);
+        if (!animCmp.animationFinished)
+            return;
+        em.removeComponent<AnimationComponent>(plant);
+        auto &plantState = em.getComponent<PlantStateComponent>(plant);
+        auto &physics    = em.getComponent<PhysicsComponent>(plant);
+        auto &currState  = plantState.currState;
+        auto &level      = em.getSingletonComponent<LevelComponent>();
+        bool mustEat     = false;
+        ztg::KindOfAnimation whatAnimation;
+        switch (currState)
+        {
+        case PlantState::Unfolding:
+            currState = PlantState::Opened;
+            break;
+        case PlantState::EatingApple:
+            currState = PlantState::Closed;
+            break;
+        case PlantState::AttackingApple:
+            currState     = PlantState::EatingApple;
+            mustEat       = true;
+            whatAnimation = ztg::PLANT_EATING_APPLE;
+            break;
+        case PlantState::AttackingPlayer:
+            currState     = PlantState::EatingPlayer;
+            mustEat       = true;
+            whatAnimation = ztg::PLANT_EATING_PLAYER;
+            break;
+        default:
+            break;
+        }
+        if (mustEat)
+        {
+            em.addComponent<AnimationComponent>(ztg::animations[whatAnimation], plant);
+            restorePlantPosition(physics, plantState);
+            level.markPosAsEmpty(plantState.blockedPos);
+        }
+    }
+    void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
+    {
+        if (state.leftAligned)
+        {
+            physics.pos.x    += TILE_SIZE;
+            state.leftAligned = false;
+        }
+        else if (state.upAligned)
+        {
+            physics.pos.y  += TILE_SIZE;
+            state.upAligned = false;
+        }
+    }
     void alignPlant(PhysicsComponent &physics, PlantStateComponent &state, Direction dir)
     {
         if (dir == Direction::Up)
         {
-            physics.pos.y -= TILE_SIZE;
+            physics.pos.y  -= TILE_SIZE;
             state.upAligned = true;
         }
         else if (dir == Direction::Left)
         {
-            physics.pos.x -= TILE_SIZE;
+            physics.pos.x    -= TILE_SIZE;
             state.leftAligned = true;
         }
     }
-    std::vector<AnimationComponent::frame> getFramesForApple(Direction dir)
+    AnimationComponent getAnimationForApple(Direction dir)
     {
         assert(dir != Direction::None);
-        std::vector<AnimationComponent::frame> frames{{}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 0}};
         switch (dir)
         {
         case Direction::Left:
-            frames[0] = {9, 2, 2 * TILE_SIZE, TILE_SIZE};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_LEFT_APPLE];
         case Direction::Right:
-            frames[0] = {9, 3, 2 * TILE_SIZE, TILE_SIZE};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_RIGHT_APPLE];
         case Direction::Up:
-            frames[0] = {9, 0, TILE_SIZE, 2 * TILE_SIZE};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_UP_APPLE];
         case Direction::Down:
-            frames[0] = {10, 0, TILE_SIZE, 2 * TILE_SIZE};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_DOWN_APPLE];
         default:
             break;
         }
     }
-    std::vector<AnimationComponent::frame> getFramesForPlayer(Direction dir)
+    AnimationComponent getAnimationForPlayer(Direction dir)
     {
         assert(dir != Direction::None);
-        std::vector<AnimationComponent::frame> frames{{}, {.x = 1, .y = 8, .duration = 3.0f}};
-        int repeatedFrames = 3;
-        for (int i = 0; i < repeatedFrames; i++)
-        {
-            frames.push_back({.x = 1, .y = 9,  .duration = 0.25f});
-            frames.push_back({.x = 1, .y = 10, .duration = 0.25f});
-        }
         switch (dir)
         {
         case Direction::Left:
-            frames[0] = {11, 2, 2 * TILE_SIZE, TILE_SIZE, 1.5f};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_LEFT_PLAYER];
         case Direction::Right:
-            frames[0] = {11, 3, 2 * TILE_SIZE, TILE_SIZE, 1.5f};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_RIGHT_PLAYER];
         case Direction::Up:
-            frames[0] = {11, 0, TILE_SIZE, 2 * TILE_SIZE, 1.5f};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_UP_PLAYER];
         case Direction::Down:
-            frames[0] = {12, 0, TILE_SIZE, 2 * TILE_SIZE, 1.5f};
-            return frames;
+            return ztg::animations[ztg::PLANT_ATTACKING_DOWN_PLAYER];
         default:
             break;
         }

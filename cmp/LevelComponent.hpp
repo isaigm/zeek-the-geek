@@ -4,12 +4,12 @@
 #include <cassert>
 struct LevelComponent
 {
-    static const int EMPTY = -1;
     sf::Vector2i playerPos;
     std::vector<int> mapIds;
+    sf::IntRect playableArea;
+
     int width;
     int height;
-    sf::IntRect playableArea;
     int playerId;
     bool updatePlayerCollisions = false;
     void addId(int id)
@@ -46,6 +46,8 @@ struct LevelComponent
     }
     void markPosAsEmpty(sf::Vector2i pos)
     {
-        setId(pos, LevelComponent::EMPTY);
+        setId(pos, EMPTY);
     }
+
+    static const int EMPTY = -1;
 };

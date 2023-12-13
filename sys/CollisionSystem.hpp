@@ -5,13 +5,13 @@ struct CollisionSystem
 {
     void update(EntityManager &em)
     {
-        auto &level = em.getSingletonComponent<LevelComponent>();
+        auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
-        auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
+        auto &playerState  = em.getComponent<PlayerStateComponent>(playerEntity);
         if (!level.updatePlayerCollisions || playerState.currState == PlayerState::Dead)
             return;
         auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
-        auto nextPos = ztg::toWoorldCoords(physics.targetPos);
+        auto nextPos  = ztg::toWoorldCoords(physics.targetPos);
         if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
             movePlayer(level, nextPos);
@@ -40,10 +40,10 @@ private:
     bool handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
     {
         auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
-        auto &level = em.getSingletonComponent<LevelComponent>();
-        auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
-        auto &gameInfo = em.getSingletonComponent<GameInfoComponent>();
-        auto nextPos = ztg::toWoorldCoords(physics.targetPos);
+        auto &level       = em.getSingletonComponent<LevelComponent>();
+        auto &physics     = em.getComponent<PhysicsComponent>(playerEntity);
+        auto &gameInfo    = em.getSingletonComponent<GameInfoComponent>();
+        auto nextPos      = ztg::toWoorldCoords(physics.targetPos);
 
         if (entity.hasTag(Tags::KEY))
         {
@@ -81,10 +81,10 @@ private:
     bool handleMovableCollisions(EntityManager &em, Entity &entity)
     {
         auto &movablePhysics = em.getComponent<PhysicsComponent>(entity);
-        auto &level = em.getSingletonComponent<LevelComponent>();
-        auto &playerPhysics = em.getComponent<PhysicsComponent>(em.getEntityById(level.playerId));
-        auto pos = ztg::toWoorldCoords(movablePhysics.pos);
-        auto nextPos = getNextPos(pos, playerPhysics.dir);
+        auto &level          = em.getSingletonComponent<LevelComponent>();
+        auto &playerPhysics  = em.getComponent<PhysicsComponent>(em.getEntityById(level.playerId));
+        auto pos             = ztg::toWoorldCoords(movablePhysics.pos);
+        auto nextPos         = getNextPos(pos, playerPhysics.dir);
         if (level.getId(nextPos) != LevelComponent::EMPTY)
         {
             return false;
@@ -108,7 +108,7 @@ private:
             break;
         }
         movablePhysics.dir = playerPhysics.dir;
-        int id = level.getId(pos);
+        int id             = level.getId(pos);
         movePlayer(level, pos);
         level.setId(nextPos.x, nextPos.y, id);
         return true;
