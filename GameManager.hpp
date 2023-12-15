@@ -39,10 +39,16 @@ struct GameManager
                 em.addComponent<PlayerStateComponent>(std::move(state), entity);
                 break;
             }
+            break;
             default:
                 break;
             }
             entity.addTag(tag);
+            if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
+            {
+                ExplodableStateComponent state;
+                em.addComponent<ExplodableStateComponent>(std::move(state), entity);
+            }
         };
         bool playerFound = false;
         sf::Vector2i playerPos;

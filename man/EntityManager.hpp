@@ -60,6 +60,7 @@ struct EntityManager
     }
     void clear()
     {
+        
         for (auto &e : m_entities)
         {
             removeComponent<RenderComponent>(e);
@@ -67,6 +68,7 @@ struct EntityManager
             removeComponent<PhysicsComponent>(e);
             removeComponent<PlantStateComponent>(e);
             removeComponent<AnimationComponent>(e);
+            removeComponent<ExplodableStateComponent>(e);
         }
         m_entities.clear();
     }

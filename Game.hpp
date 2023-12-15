@@ -14,7 +14,7 @@ struct Game
              m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
     {
         m_window.setVerticalSyncEnabled(true);
-        m_gameManager.loadLevel(m_entityManager, 0);
+        m_gameManager.loadLevel(m_entityManager, 2);
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);
     }
@@ -44,7 +44,6 @@ private:
             case sf::Event::KeyPressed:
                 if (ev.key.code == sf::Keyboard::R)
                 {
-                    auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
                     restart();
                 }else if (ev.key.code == sf::Keyboard::Q)
                 {
@@ -75,7 +74,7 @@ private:
             gameInfo.bonus = 8000;
             restart();
         }
-        m_AISystem.update(m_entityManager);
+        m_AISystem.update(m_entityManager, dt);
         m_collisionSystem.update(m_entityManager);
         m_physicsSystem.update(m_entityManager, dt);
         m_animationSystem.update(m_entityManager, dt);

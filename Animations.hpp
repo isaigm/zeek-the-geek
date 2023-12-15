@@ -30,6 +30,9 @@ namespace ztg
         PLANT_ATTACKING_DOWN_PLAYER,
         PLANT_ATTACKING_UP_PLAYER,
         
+        CRYSTAL_ACTIVED,
+        BOMB_ACTIVED,
+        
         PLANT_UNFOLDING,
         
         SIZE_ANIMATIONS
@@ -156,6 +159,16 @@ namespace ztg
             {
                 std::vector<AnimationComponent::frame> frames{{2, 0}, {2, 1}, {2, 2}, {2, 3}};
                 return AnimationComponent{frames, 1.0f};
+            }
+            case CRYSTAL_ACTIVED:
+            {
+                std::vector<AnimationComponent::frame> frames {{1, 6}, {1, 7}};
+                return AnimationComponent{frames, 0.5f, true};
+            }
+            case BOMB_ACTIVED:
+            {
+                std::vector<AnimationComponent::frame> frames {{1, 3}, {1, 4}};
+                return AnimationComponent{frames, 0.25f, true};
             }
             }
         }

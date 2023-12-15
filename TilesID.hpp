@@ -105,8 +105,10 @@ struct TilesID
             return Tags::PICKABLE | Tags::KEY;
         if (isDoor(id))
             return Tags::PICKABLE | Tags::DOOR;
-        if (isBall(id) || isBomb(id))
+        if (isBall(id))
             return Tags::MOVABLE;
+        if (isBomb(id))
+            return Tags::MOVABLE | Tags::BOMB;
         if (isCrystal(id))
             return Tags::MOVABLE | Tags::CRYSTAL;
         if (isApple(id))
