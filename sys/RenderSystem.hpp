@@ -1,20 +1,14 @@
 #pragma once
 #include "../man/EntityManager.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
-struct RenderSystem
+namespace ztg
 {
-    void render(EntityManager &em, sf::RenderTarget &rt)
+    struct RenderSystem
     {
-        em.forAllMatching([&](Entity &e)
-        {
-			auto& renderCmp = em.template getComponent<RenderComponent>(e);
-			auto& phyCmp = em.template getComponent<PhysicsComponent>(e);
-			renderCmp.sprite.setPosition(phyCmp.pos);
-			rt.draw(renderCmp.sprite); 
-        }, m_cmpMaskToCheck, m_tagMask);
-    }
+        void render(EntityManager &em, sf::RenderTarget &rt);
 
-private:
-    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
-    int m_tagMask = Tags::OBJECT;
-};
+    private:
+        int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
+        int m_tagMask = Tags::OBJECT;
+    };
+}

@@ -1,10 +1,7 @@
-#pragma once
-#include <SFML/Window/Keyboard.hpp>
-#include "../man/EntityManager.hpp"
-#include "../Constants.hpp"
-struct AnimationSystem
+#include "AnimationSystem.hpp"
+namespace ztg
 {
-    void update(EntityManager &em, float dt)
+    void AnimationSystem::update(EntityManager &em, float dt)
     {
         em.forAllMatching([&](Entity &e)
         {
@@ -15,31 +12,30 @@ struct AnimationSystem
             else
             {
                 animateEntity(em, e, dt);
-            }
+            } 
         }, m_cmpMaskToCheck, m_tagMask);
     }
-
-private:
-    void animatePlayer(EntityManager &em, Entity &entity, float dt)
+    void AnimationSystem::animatePlayer(EntityManager &em, Entity &entity, float dt)
     {
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &animCmp = em.getComponent<AnimationComponent>(entity);
         if (physics.dir == Direction::None)
         {
-            animCmp.loop      = false;
+            animCmp.loop = false;
             animCmp.currFrame = 0;
-            animCmp.currTime  = 0;
+            animCmp.currTime = 0;
         }
         animateEntity(em, entity, dt);
     }
-    void animateEntity(EntityManager &em, Entity &entity, float dt)
+    void AnimationSystem::animateEntity(EntityManager &em, Entity &entity, float dt)
     {
-        auto &animCmp   = em.getComponent<AnimationComponent>(entity);
-        if (animCmp.animationFinished) return;
-        auto &renderCmp = em.getComponent<RenderComponent>(entity);
+        auto &animCmp = em.getComponent<AnimationComponent>(entity);
+        if (animCmp.animationFinished)
+            return;
+        auto &renderCmp  = em.getComponent<RenderComponent>(entity);
         animCmp.currTime += dt;
         float currFrameDuration = animCmp.frames[animCmp.currFrame].duration;
-        if (animCmp.currTime  >= currFrameDuration)
+        if (animCmp.currTime >= currFrameDuration)
         {
             animCmp.currTime = 0;
             animCmp.currFrame++;
@@ -48,7 +44,8 @@ private:
                 if (animCmp.loop)
                 {
                     animCmp.currFrame = 0;
-                }else 
+                }
+                else
                 {
                     animCmp.currFrame = animCmp.frames.size() - 1;
                     animCmp.animationFinished = true;
@@ -57,12 +54,10 @@ private:
         }
         setFrame(animCmp, renderCmp);
     }
-    void setFrame(AnimationComponent &animCmp, RenderComponent &renderCmp)
+    void AnimationSystem::setFrame(AnimationComponent &animCmp, RenderComponent &renderCmp)
     {
         auto frame = animCmp.frames[animCmp.currFrame];
-        sf::IntRect rect {frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
+        sf::IntRect rect{frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
         renderCmp.sprite.setTextureRect(rect);
     }
-    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent, RenderComponent, AnimationComponent>();
-    int m_tagMask = Tags::OBJECT;
-};
+}

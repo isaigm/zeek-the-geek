@@ -1,9 +1,8 @@
-#pragma once
-#include "../man/EntityManager.hpp"
-#include "../Utility.hpp"
-struct AISystem
+#include "AISystem.hpp"
+#include "../Animations.hpp"
+namespace ztg
 {
-    void update(EntityManager &em, float dt)
+    void AISystem::update(EntityManager &em, float dt)
     {
         em.forAllMatching([&](Entity &entity)
         {
@@ -17,14 +16,8 @@ struct AISystem
         }, m_cmpMaskToCheck, m_tagMask);
     }
 
-private:
-    struct NearPosition
-    {
-        int x;
-        int y;
-        Direction dir;
-    };
-    void processCrystal(EntityManager &em, Entity &entity, float dt)
+
+    void AISystem::processCrystal(EntityManager &em, Entity &entity, float dt)
     {
         auto &state  = em.getComponent<ExplodableStateComponent>(entity);
         if (state.currState == ExplodableState::Disabled) return;
@@ -42,7 +35,7 @@ private:
         }
       
     }
-    void processPlant(EntityManager &em, Entity &entity)
+    void AISystem::processPlant(EntityManager &em, Entity &entity)
     {
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level   = em.getSingletonComponent<LevelComponent>();
@@ -60,7 +53,7 @@ private:
             }
         } 
     }
-    void updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos)
+    void AISystem::updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos)
     {
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &plantState   = em.getComponent<PlantStateComponent>(plant);
@@ -119,7 +112,21 @@ private:
             break;
         }
     }
-    void handlePlantTransitions(EntityManager &em, Entity &plant)
+
+    void AISystem::restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
+    {
+        if (state.leftAligned)
+        {
+            physics.pos.x    += TILE_SIZE;
+            state.leftAligned = false;
+        }
+        else if (state.upAligned)
+        {
+            physics.pos.y  += TILE_SIZE;
+            state.upAligned = false;
+        }
+    }
+    void AISystem::handlePlantTransitions(EntityManager &em, Entity &plant)
     {
         if (!plant.hasComponent<AnimationComponent>())
             return;
@@ -161,20 +168,7 @@ private:
             level.markPosAsEmpty(plantState.blockedPos);
         }
     }
-    void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
-    {
-        if (state.leftAligned)
-        {
-            physics.pos.x    += TILE_SIZE;
-            state.leftAligned = false;
-        }
-        else if (state.upAligned)
-        {
-            physics.pos.y  += TILE_SIZE;
-            state.upAligned = false;
-        }
-    }
-    void alignPlant(PhysicsComponent &physics, PlantStateComponent &state, Direction dir)
+    void AISystem::alignPlant(PhysicsComponent &physics, PlantStateComponent &state, Direction dir)
     {
         if (dir == Direction::Up)
         {
@@ -187,7 +181,7 @@ private:
             state.leftAligned = true;
         }
     }
-    AnimationComponent getAnimationForApple(Direction dir)
+    AnimationComponent AISystem::getAnimationForApple(Direction dir)
     {
         assert(dir != Direction::None);
         switch (dir)
@@ -204,7 +198,7 @@ private:
             break;
         }
     }
-    AnimationComponent getAnimationForPlayer(Direction dir)
+    AnimationComponent AISystem::getAnimationForPlayer(Direction dir)
     {
         assert(dir != Direction::None);
         switch (dir)
@@ -221,6 +215,5 @@ private:
             break;
         }
     }
-    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
-    int m_tagMask        = Tags::OBJECT;
-};
+    
+}

@@ -1,9 +1,8 @@
-#pragma once
-#include "../man/EntityManager.hpp"
-#include "../Utility.hpp"
-struct CollisionSystem
+#include "CollisionSystem.hpp"
+#include "../Animations.hpp"
+namespace ztg
 {
-    void update(EntityManager &em)
+    void CollisionSystem::update(EntityManager &em)
     {
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
@@ -35,9 +34,7 @@ struct CollisionSystem
         }
         level.updatePlayerCollisions = false;
     }
-
-private:
-    bool handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
+    bool CollisionSystem::handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
     {
         auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
         auto &level       = em.getSingletonComponent<LevelComponent>();
@@ -78,7 +75,7 @@ private:
         movePlayer(level, nextPos);
         return true;
     }
-    bool handleMovableCollisions(EntityManager &em, Entity &entity)
+    bool CollisionSystem::handleMovableCollisions(EntityManager &em, Entity &entity)
     {
         auto &movablePhysics = em.getComponent<PhysicsComponent>(entity);
         auto &level          = em.getSingletonComponent<LevelComponent>();
@@ -91,7 +88,7 @@ private:
         }
         if (entity.hasTag(Tags::BOMB) && !entity.hasComponent<AnimationComponent>())
         {
-            auto &state     = em.getComponent<ExplodableStateComponent>(entity);
+            auto &state = em.getComponent<ExplodableStateComponent>(entity);
             state.currState = ExplodableState::Actived;
             em.addComponent<AnimationComponent>(ztg::animations[ztg::BOMB_ACTIVED], entity);
         }
@@ -114,18 +111,18 @@ private:
             break;
         }
         movablePhysics.dir = playerPhysics.dir;
-        int id             = level.getId(pos);
+        int id = level.getId(pos);
         movePlayer(level, pos);
         level.setId(nextPos.x, nextPos.y, id);
         return true;
     }
-    void movePlayer(LevelComponent &level, sf::Vector2i nextPos)
+    void CollisionSystem::movePlayer(LevelComponent &level, sf::Vector2i nextPos)
     {
         level.markPosAsEmpty(level.playerPos);
         level.playerPos = nextPos;
         level.setId(level.playerPos, level.playerId);
     }
-    sf::Vector2i getNextPos(sf::Vector2i currPos, Direction dir)
+    sf::Vector2i CollisionSystem::getNextPos(sf::Vector2i currPos, Direction dir)
     {
         sf::Vector2i nextPos{currPos};
         switch (dir)
@@ -147,6 +144,4 @@ private:
         }
         return nextPos;
     }
-    int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent>();
-    int m_tagMask = Tags::PLANT;
-};
+}

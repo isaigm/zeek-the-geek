@@ -1,10 +1,7 @@
-#pragma once
-#include "../man/EntityManager.hpp"
-#include <SFML/Window/Keyboard.hpp>
-#include "../Animations.hpp"
-struct InputSystem
+#include "InputSystem.hpp"
+namespace ztg
 {
-    void handleInput(EntityManager &em)
+    void InputSystem::handleInput(EntityManager &em)
     {
         auto keyPressed    = getKeyPressed();
         auto &level        = em.getSingletonComponent<LevelComponent>();
@@ -56,7 +53,7 @@ struct InputSystem
             break;
         }
     }
-    sf::Keyboard::Key getKeyPressed()
+    sf::Keyboard::Key InputSystem::getKeyPressed()
     {
         std::vector<sf::Keyboard::Key> keys{LEFT_KEY, RIGHT_KEY, DOWN_KEY, UP_KEY};
         for (auto key : keys)
@@ -66,10 +63,4 @@ struct InputSystem
         }
         return sf::Keyboard::Unknown;
     }
-
-private:
-    static const auto UP_KEY    = sf::Keyboard::Up;
-    static const auto LEFT_KEY  = sf::Keyboard::Left;
-    static const auto DOWN_KEY  = sf::Keyboard::Down;
-    static const auto RIGHT_KEY = sf::Keyboard::Right;
-};
+}
