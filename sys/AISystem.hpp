@@ -14,7 +14,8 @@ namespace ztg
             int y;
             Direction dir;
         };
-        void processCrystal(EntityManager &em, Entity &entity, float dt);
+        void processExplodable(EntityManager &em, Entity &entity, float dt);
+        void processBomb(EntityManager &em, Entity &entity);
         void processPlant(EntityManager &em, Entity &entity);
         void updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos);
         void handlePlantTransitions(EntityManager &em, Entity &plant);

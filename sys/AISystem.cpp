@@ -9,17 +9,17 @@ namespace ztg
             if (entity.hasTag(Tags::PLANT))
             {
                 processPlant(em, entity);
-            }else if (entity.hasTag(Tags::CRYSTAL))
+            }else if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
             {
-                processCrystal(em, entity, dt);
+                processExplodable(em, entity, dt);
             }
         }, m_cmpMaskToCheck, m_tagMask);
     }
 
 
-    void AISystem::processCrystal(EntityManager &em, Entity &entity, float dt)
+    void AISystem::processExplodable(EntityManager &em, Entity &entity, float dt)
     {
-        auto &state  = em.getComponent<ExplodableStateComponent>(entity);
+        auto &state   = em.getComponent<ExplodableStateComponent>(entity);
         if (state.currState == ExplodableState::Disabled) return;
         state.currTimeInState += dt;
         auto &physics = em.getComponent<PhysicsComponent>(entity);
@@ -27,21 +27,43 @@ namespace ztg
         if (state.currTimeInState >= state.timeToExplode)
         {
             state.currState = ExplodableState::Disabled;
-            auto pos        = ztg::toWoorldCoords(physics.pos);
+            auto pos        = utils::toWoorldCoords(physics.pos);
+            if (entity.hasTag(Tags::BOMB))
+            {
+                processBomb(em, entity);
+            }
             level.markPosAsEmpty(pos);
-            em.removeComponent<RenderComponent>(entity);
-            em.removeComponent<PhysicsComponent>(entity);
-            em.removeComponent<AnimationComponent>(entity);
-        }
-      
+            em.removeAllComponents(entity);
+        }      
+    }
+    void AISystem::processBomb(EntityManager &em, Entity &entity)
+    {           
+        
+        auto &physics = em.getComponent<PhysicsComponent>(entity);
+        auto &level   = em.getSingletonComponent<LevelComponent>();
+        auto [x, y]   = utils::toWoorldCoords(physics.pos);
+        std::vector<sf::Vector2i> lookAtPositions{{x - 1, y}, {x + 1, y}, {x, y - 1}, {x, y + 1}};
+        for (auto &pos : lookAtPositions)
+        {
+            if (!level.isSafe(pos)) continue;
+            auto &nearEntity = em.getEntityById(level.getId(pos));
+            if (nearEntity.hasTag(Tags::REMOVABLE))
+            {
+                level.markPosAsEmpty(pos);
+                em.removeAllComponents(nearEntity);
+            }
+            else if (nearEntity.hasTag(Tags::BOMB))
+            {
+                utils::activateBomb(em, nearEntity);
+            }
+        } 
     }
     void AISystem::processPlant(EntityManager &em, Entity &entity)
     {
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level   = em.getSingletonComponent<LevelComponent>();
-        auto [x, y]   = ztg::toWoorldCoords(physics.pos);
+        auto [x, y]   = utils::toWoorldCoords(physics.pos);
         std::vector<NearPosition> lookAtPositions{{x - 1, y, Direction::Left}, {x + 1, y, Direction::Right}, {x, y - 1, Direction::Up}, {x, y + 1, Direction::Down}};
-
         handlePlantTransitions(em, entity);
         for (auto &pos : lookAtPositions)
         {
@@ -64,7 +86,7 @@ namespace ztg
         sf::Vector2f entityPos = em.getComponent<PhysicsComponent>(nearEntity).pos;
         plantPos   += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
         entityPos  += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
-        auto [x, y] = ztg::toWoorldCoords(plantPhysics.pos);
+        auto [x, y] = utils::toWoorldCoords(plantPhysics.pos);
 
         switch (plantState.currState)
         {
@@ -79,7 +101,7 @@ namespace ztg
         break;
         case PlantState::Opened:
         {
-            float dist = std::abs(ztg::getDist(plantPos, entityPos) - TILE_SIZE);
+            float dist = std::abs(utils::getDist(plantPos, entityPos) - TILE_SIZE);
             if (dist < 0.5f)
             {
                 if (isPlayer)
@@ -143,10 +165,10 @@ namespace ztg
         switch (currState)
         {
         case PlantState::Unfolding:
-            currState = PlantState::Opened;
+            currState     = PlantState::Opened;
             break;
         case PlantState::EatingApple:
-            currState = PlantState::Closed;
+            currState     = PlantState::Closed;
             break;
         case PlantState::AttackingApple:
             currState     = PlantState::EatingApple;

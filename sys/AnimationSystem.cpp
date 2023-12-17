@@ -21,9 +21,9 @@ namespace ztg
         auto &animCmp = em.getComponent<AnimationComponent>(entity);
         if (physics.dir == Direction::None)
         {
-            animCmp.loop = false;
+            animCmp.loop      = false;
             animCmp.currFrame = 0;
-            animCmp.currTime = 0;
+            animCmp.currTime  = 0;
         }
         animateEntity(em, entity, dt);
     }

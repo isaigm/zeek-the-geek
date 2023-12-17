@@ -58,17 +58,20 @@ struct EntityManager
     {
         return m_entities.size();
     }
+    void removeAllComponents(Entity &e)
+    {
+        removeComponent<RenderComponent>(e);
+        removeComponent<PlayerStateComponent>(e);
+        removeComponent<PhysicsComponent>(e);
+        removeComponent<PlantStateComponent>(e);
+        removeComponent<AnimationComponent>(e);
+        removeComponent<ExplodableStateComponent>(e);
+    }
     void clear()
     {
-        
         for (auto &e : m_entities)
         {
-            removeComponent<RenderComponent>(e);
-            removeComponent<PlayerStateComponent>(e);
-            removeComponent<PhysicsComponent>(e);
-            removeComponent<PlantStateComponent>(e);
-            removeComponent<AnimationComponent>(e);
-            removeComponent<ExplodableStateComponent>(e);
+            removeAllComponents(e);
         }
         m_entities.clear();
     }

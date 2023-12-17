@@ -12,6 +12,6 @@ namespace ztg
         void animateEntity(EntityManager &em, Entity &entity, float dt);
         void setFrame(AnimationComponent &animCmp, RenderComponent &renderCmp);
         int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent, RenderComponent, AnimationComponent>();
-        int m_tagMask = Tags::OBJECT;
+        int m_tagMask        = Tags::OBJECT;
     };
 }

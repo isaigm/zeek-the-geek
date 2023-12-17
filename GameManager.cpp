@@ -19,27 +19,20 @@ namespace ztg
             em.addComponent<RenderComponent>(std::move(renderComponent), entity);
             em.addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
             int tag = TilesID::getTag(tileID);
-            switch (tag)
-            {
-            case Tags::PLANT:
+            entity.addTag(tag);
+            if (entity.hasTag(Tags::PLANT))
             {
                 PlantStateComponent state;
                 state.currState = TilesID::getPlantState(tileID);
                 em.addComponent<PlantStateComponent>(std::move(state), entity);
-                break;
+                entity.addTag(Tags::REMOVABLE);
             }
-            case Tags::PLAYER:
+            else if (entity.hasTag(Tags::PLAYER))
             {
                 PlayerStateComponent state;
                 em.addComponent<PlayerStateComponent>(std::move(state), entity);
-                break;
             }
-            break;
-            default:
-                break;
-            }
-            entity.addTag(tag);
-            if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
+            else if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
             {
                 ExplodableStateComponent state;
                 em.addComponent<ExplodableStateComponent>(std::move(state), entity);
@@ -47,10 +40,10 @@ namespace ztg
         };
         bool playerFound = false;
         sf::Vector2i playerPos;
-        auto &levelComponent = em.getSingletonComponent<LevelComponent>();
-        levelComponent.width = m_currentLevel.getWidth();
-        levelComponent.height = m_currentLevel.getHeight();
-        levelComponent.playableArea = levels[level];
+        auto &levelComponent                  = em.getSingletonComponent<LevelComponent>();
+        levelComponent.width                  = m_currentLevel.getWidth();
+        levelComponent.height                 = m_currentLevel.getHeight();
+        levelComponent.playableArea           = levels[level];
         levelComponent.mapIds.clear();
         levelComponent.updatePlayerCollisions = false;
 

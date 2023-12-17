@@ -9,30 +9,33 @@ namespace ztg
         auto &playerState  = em.getComponent<PlayerStateComponent>(playerEntity);
         if (!level.updatePlayerCollisions || playerState.currState == PlayerState::Dead)
             return;
-        auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
-        auto nextPos  = ztg::toWoorldCoords(physics.targetPos);
+        level.updatePlayerCollisions = false;
+        auto &physics                = em.getComponent<PhysicsComponent>(playerEntity);
+        auto nextPos                 = utils::toWoorldCoords(physics.targetPos);
         if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
             movePlayer(level, nextPos);
+            return;
         }
-        else
+        auto &entity = em.getEntityById(level.getId(nextPos));
+        bool canMove = false;
+        if (entity.hasTag(Tags::BOMB))
         {
-            auto &entity = em.getEntityById(level.getId(nextPos));
-            bool canMove = false;
-            if (entity.hasTag(Tags::PICKABLE))
-            {
-                canMove |= handlePickableCollisions(em, playerEntity, entity);
-            }
-            else if (entity.hasTag(Tags::MOVABLE))
-            {
-                canMove |= handleMovableCollisions(em, entity);
-            }
-            if (!canMove)
-            {
-                physics.dir = Direction::None;
-            }
+            utils::activateBomb(em, entity);
         }
-        level.updatePlayerCollisions = false;
+               
+        if (entity.hasTag(Tags::PICKABLE))
+        {
+            canMove |= handlePickableCollisions(em, playerEntity, entity);
+        }
+        else if (entity.hasTag(Tags::MOVABLE))
+        {
+            canMove |= handleMovableCollisions(em, entity);
+        } 
+        if (!canMove)
+        {
+            physics.dir = Direction::None;
+        }        
     }
     bool CollisionSystem::handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
     {
@@ -40,7 +43,7 @@ namespace ztg
         auto &level       = em.getSingletonComponent<LevelComponent>();
         auto &physics     = em.getComponent<PhysicsComponent>(playerEntity);
         auto &gameInfo    = em.getSingletonComponent<GameInfoComponent>();
-        auto nextPos      = ztg::toWoorldCoords(physics.targetPos);
+        auto nextPos      = utils::toWoorldCoords(physics.targetPos);
 
         if (entity.hasTag(Tags::KEY))
         {
@@ -80,38 +83,16 @@ namespace ztg
         auto &movablePhysics = em.getComponent<PhysicsComponent>(entity);
         auto &level          = em.getSingletonComponent<LevelComponent>();
         auto &playerPhysics  = em.getComponent<PhysicsComponent>(em.getEntityById(level.playerId));
-        auto pos             = ztg::toWoorldCoords(movablePhysics.pos);
+        auto pos             = utils::toWoorldCoords(movablePhysics.pos);
         auto nextPos         = getNextPos(pos, playerPhysics.dir);
         if (level.getId(nextPos) != LevelComponent::EMPTY)
         {
             return false;
         }
-        if (entity.hasTag(Tags::BOMB) && !entity.hasComponent<AnimationComponent>())
-        {
-            auto &state = em.getComponent<ExplodableStateComponent>(entity);
-            state.currState = ExplodableState::Actived;
-            em.addComponent<AnimationComponent>(ztg::animations[ztg::BOMB_ACTIVED], entity);
-        }
         movablePhysics.targetPos = movablePhysics.pos;
-        switch (playerPhysics.dir)
-        {
-        case Direction::Down:
-            movablePhysics.targetPos.y += TILE_SIZE;
-            break;
-        case Direction::Up:
-            movablePhysics.targetPos.y -= TILE_SIZE;
-            break;
-        case Direction::Right:
-            movablePhysics.targetPos.x += TILE_SIZE;
-            break;
-        case Direction::Left:
-            movablePhysics.targetPos.x -= TILE_SIZE;
-            break;
-        default:
-            break;
-        }
-        movablePhysics.dir = playerPhysics.dir;
-        int id = level.getId(pos);
+        movablePhysics.dir       = playerPhysics.dir;
+        int id                   = level.getId(pos);
+        utils::moveGivenDirection(playerPhysics.dir, movablePhysics.targetPos, float(TILE_SIZE));
         movePlayer(level, pos);
         level.setId(nextPos.x, nextPos.y, id);
         return true;
@@ -124,24 +105,7 @@ namespace ztg
     }
     sf::Vector2i CollisionSystem::getNextPos(sf::Vector2i currPos, Direction dir)
     {
-        sf::Vector2i nextPos{currPos};
-        switch (dir)
-        {
-        case Direction::Up:
-            nextPos.y--;
-            break;
-        case Direction::Down:
-            nextPos.y++;
-            break;
-        case Direction::Left:
-            nextPos.x--;
-            break;
-        case Direction::Right:
-            nextPos.x++;
-            break;
-        case Direction::None:
-            break;
-        }
-        return nextPos;
+        utils::moveGivenDirection(dir, currPos, 1);
+        return currPos;
     }
 }

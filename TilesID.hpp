@@ -90,17 +90,17 @@ struct TilesID
     static int getTag(int id)
     {
         if (isPlayer(id))
-            return Tags::PLAYER;
+            return Tags::PLAYER | Tags::MOVABLE;
         if (isPlant(id))
             return Tags::PLANT;
         if (isWall(id))
             return Tags::WALL;
         if (isFlower(id))
-            return Tags::PICKABLE | Tags::FLOWER;
+            return Tags::PICKABLE | Tags::FLOWER | Tags::REMOVABLE;
         if (isChest(id))
             return Tags::PICKABLE | Tags::CHEST;
         if (isMushroom(id))
-            return Tags::PICKABLE | Tags::MUSHROOM;
+            return Tags::PICKABLE | Tags::MUSHROOM | Tags::REMOVABLE;
         if (isKey(id))
             return Tags::PICKABLE | Tags::KEY;
         if (isDoor(id))
@@ -112,7 +112,7 @@ struct TilesID
         if (isCrystal(id))
             return Tags::MOVABLE | Tags::CRYSTAL;
         if (isApple(id))
-            return Tags::MOVABLE | Tags::APPLE;
+            return Tags::MOVABLE | Tags::APPLE | Tags::REMOVABLE;
         return 0;
     }
     static int isChest(int id)

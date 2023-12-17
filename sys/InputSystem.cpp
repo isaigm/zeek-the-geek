@@ -19,33 +19,33 @@ namespace ztg
         case DOWN_KEY:
         {
             em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_DOWN], playerEntity);
-            physics.targetPos = physics.pos;
+            physics.targetPos   = physics.pos;
             physics.targetPos.y += TILE_SIZE;
-            physics.dir = Direction::Down;
+            physics.dir         = Direction::Down;
         }
         break;
         case UP_KEY:
         {
             em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_UP], playerEntity);
-            physics.targetPos = physics.pos;
+            physics.targetPos   = physics.pos;
             physics.targetPos.y -= TILE_SIZE;
-            physics.dir = Direction::Up;
+            physics.dir         = Direction::Up;
         }
         break;
         case RIGHT_KEY:
         {
             em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_RIGHT], playerEntity);
-            physics.targetPos = physics.pos;
+            physics.targetPos   = physics.pos;
             physics.targetPos.x += TILE_SIZE;
-            physics.dir = Direction::Right;
+            physics.dir         = Direction::Right;
         }
         break;
         case LEFT_KEY:
         {
             em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_LEFT], playerEntity);
-            physics.targetPos = physics.pos;
+            physics.targetPos   = physics.pos;
             physics.targetPos.x -= TILE_SIZE;
-            physics.dir = Direction::Left;
+            physics.dir         = Direction::Left;
         }
         break;
         default:

@@ -21,15 +21,15 @@ namespace ztg
         void restart();
         void render();
         sf::RenderWindow m_window;
-        sf::Clock m_bonusTimer;
-        Hud m_hud;
-        EntityManager m_entityManager;
-        GameManager m_gameManager;
-        AISystem m_AISystem;
-        PhysicsSystem m_physicsSystem;
-        RenderSystem m_renderSystem;
-        InputSystem m_inputSystem;
-        AnimationSystem m_animationSystem;
-        CollisionSystem m_collisionSystem;
+        sf::Clock        m_bonusTimer;
+        Hud              m_hud;
+        EntityManager    m_entityManager;
+        GameManager      m_gameManager;
+        AISystem         m_AISystem;
+        PhysicsSystem    m_physicsSystem;
+        RenderSystem     m_renderSystem;
+        InputSystem      m_inputSystem;
+        AnimationSystem  m_animationSystem;
+        CollisionSystem  m_collisionSystem;
     };
 }

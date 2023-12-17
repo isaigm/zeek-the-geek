@@ -6,7 +6,7 @@ namespace ztg
                    m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
     {
         m_window.setVerticalSyncEnabled(true);
-        m_gameManager.loadLevel(m_entityManager, 2);
+        m_gameManager.loadLevel(m_entityManager, 0);
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);
     }
