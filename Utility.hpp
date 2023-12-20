@@ -54,7 +54,7 @@ namespace ztg
             auto &bombState         = em.getComponent<ExplodableStateComponent>(e);
             if (bombState.currState == ExplodableState::Actived) return;
             bombState.currState     = ExplodableState::Actived;
-            bombState.timeToExplode = 10.0f;
+            bombState.timeToExplode = 14.0f;
             em.addComponent<AnimationComponent>(ztg::animations[ztg::BOMB_ACTIVED], e);
         }
     }

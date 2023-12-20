@@ -19,10 +19,6 @@ namespace ztg
         }
         auto &entity = em.getEntityById(level.getId(nextPos));
         bool canMove = false;
-        if (entity.hasTag(Tags::BOMB))
-        {
-            utils::activateBomb(em, entity);
-        }
                
         if (entity.hasTag(Tags::PICKABLE))
         {
@@ -65,6 +61,13 @@ namespace ztg
         {
             gameInfo.advanceLevel = true;
         }
+        else if (entity.hasTag(Tags::POISONED_MUSHROOM))
+        {
+            auto &playerState     = em.getComponent<PlayerStateComponent>(entity);
+            playerState.currState = PlayerState::Poisoned;
+            
+            return false;
+        }
         else if (entity.hasTag(Tags::FLOWER))
         {
             gameInfo.score += 50;
@@ -88,6 +91,10 @@ namespace ztg
         if (level.getId(nextPos) != LevelComponent::EMPTY)
         {
             return false;
+        }
+        if (entity.hasTag(Tags::BOMB))
+        {
+            utils::activateBomb(em, entity);
         }
         movablePhysics.targetPos = movablePhysics.pos;
         movablePhysics.dir       = playerPhysics.dir;

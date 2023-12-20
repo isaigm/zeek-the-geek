@@ -17,7 +17,15 @@ namespace ztg
         {
             float dt = clock.restart().asSeconds();
             events();
-            update(dt);
+            if (m_shouldDelay)
+            {
+                m_currTimeDelay += dt;
+                if (m_currTimeDelay >= 0.7f) m_shouldDelay  = false;
+            }
+            else 
+            {
+                update(dt);
+            }
             render();
         }
     }
@@ -62,8 +70,9 @@ namespace ztg
         if (gameInfo.advanceLevel)
         {
             gameInfo.currLevel += 1;
-            gameInfo.score += gameInfo.bonus;
-            gameInfo.bonus = 8000;
+            gameInfo.score     += gameInfo.bonus;
+            gameInfo.bonus      = 8000;
+            m_shouldDelay       = true;
             restart();
         }
         m_AISystem.update(m_entityManager, dt);
@@ -73,8 +82,9 @@ namespace ztg
     }
     void Game::restart()
     {
-        auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
+        auto &gameInfo        = m_entityManager.getSingletonComponent<GameInfoComponent>();
         gameInfo.advanceLevel = false;
+        m_currTimeDelay       = 0.0f;
         m_entityManager.clear();
         m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
         m_hud.getLevel().setValue(gameInfo.currLevel + 1);

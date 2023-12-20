@@ -43,9 +43,9 @@ namespace ztg
         auto &levelComponent                  = em.getSingletonComponent<LevelComponent>();
         levelComponent.width                  = m_currentLevel.getWidth();
         levelComponent.height                 = m_currentLevel.getHeight();
-        levelComponent.playableArea           = levels[level];
-        levelComponent.mapIds.clear();
+        levelComponent.playableArea           = {0, 0, 17, 12};
         levelComponent.updatePlayerCollisions = false;
+        levelComponent.mapIds.clear();
 
         for (int y = 0; y < m_currentLevel.getHeight(); y++)
         {
@@ -60,9 +60,9 @@ namespace ztg
                 else if (TilesID::isPlayer(tileID))
                 {
                     playerFound = true;
-                    playerPos = {x, y};
+                    playerPos   = {x, y};
                     em.getSingletonComponent<LevelComponent>().playerPos = playerPos;
-                    em.getSingletonComponent<LevelComponent>().playerId = em.getSize();
+                    em.getSingletonComponent<LevelComponent>().playerId  = em.getSize();
                 }
                 em.getSingletonComponent<LevelComponent>().addId(em.getSize());
                 addEntitiy(tileID, x, y);

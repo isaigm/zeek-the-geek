@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "../cmp/Tags.hpp"
+#include "../Tags.hpp"
 #include "ComponentStorage.hpp"
 
 struct EntityManager

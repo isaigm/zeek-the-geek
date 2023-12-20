@@ -29,7 +29,7 @@ namespace ztg
         m_animations[PLAYER_STANDING] = AnimationComponent{frames, 0.0f};
 
         frames = {{2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 0}};
-        m_animations[PLANT_EATING_APPLE] = AnimationComponent{frames, 1.5f};
+        m_animations[PLANT_EATING_APPLE] = AnimationComponent{frames, 2.0f};
 
         frames = {{.x = 1, .y = 8, .duration = 3.0f}};
         int repeatedFrames = 3;

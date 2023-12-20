@@ -20,6 +20,8 @@ namespace ztg
         void update(float dt);
         void restart();
         void render();
+        bool             m_shouldDelay = false;
+        float            m_currTimeDelay = 0.0f;
         sf::RenderWindow m_window;
         sf::Clock        m_bonusTimer;
         Hud              m_hud;

@@ -47,7 +47,13 @@ namespace ztg
         {
             if (!level.isSafe(pos)) continue;
             auto &nearEntity = em.getEntityById(level.getId(pos));
-            if (nearEntity.hasTag(Tags::REMOVABLE))
+            if (nearEntity.hasTag(Tags::PLAYER))
+            {
+                auto &playerState     = em.getComponent<PlayerStateComponent>(nearEntity);
+                playerState.currState = PlayerState::Dead;
+                em.removeComponent<RenderComponent>(nearEntity);
+            }
+            else if (nearEntity.hasTag(Tags::REMOVABLE))
             {
                 level.markPosAsEmpty(pos);
                 em.removeAllComponents(nearEntity);

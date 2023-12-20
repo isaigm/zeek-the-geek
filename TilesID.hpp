@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 #include "states/PlantState.hpp"
-#include "cmp/Tags.hpp"
+#include "Tags.hpp"
 struct TilesID
 {
     static const int EMPTY = 0;
@@ -20,16 +20,21 @@ struct TilesID
     static const int WALL_8 = 108;
     static const int WALL_9 = 121;
 
-    static const int FLOWER = 83;
-    static const int MUSHROOM = 122;
-    static const int APPLE = 5;
-    static const int BALL = 18;
-    static const int CHEST = 134;
-    static const int CRYSTAL = 67;
-    static const int BOMB = 28;
-    static const int KEY = 96;
-    static const int DOOR = 44;
+    static const int FLOWER            = 83;
+    static const int MUSHROOM          = 122;
+    static const int POISONED_MUSHROOM = 135;
+    static const int APPLE             = 5;
+    static const int BALL              = 18;
+    static const int CHEST             = 134;
+    static const int CRYSTAL           = 67;
+    static const int BOMB              = 28;
+    static const int KEY               = 96;
+    static const int DOOR              = 44;
 
+    static bool isPoisonedMushroom(int id)
+    {
+        return id == POISONED_MUSHROOM;
+    }
     static bool isDoor(int id)
     {
         return id == DOOR;
@@ -89,6 +94,8 @@ struct TilesID
     }
     static int getTag(int id)
     {
+        if (isPoisonedMushroom(id))
+            return Tags::PICKABLE | Tags::REMOVABLE  | Tags::POISONED_MUSHROOM;
         if (isPlayer(id))
             return Tags::PLAYER | Tags::MOVABLE;
         if (isPlant(id))
