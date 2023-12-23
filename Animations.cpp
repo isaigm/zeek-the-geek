@@ -25,7 +25,7 @@ namespace ztg
         frames = {{5, 0}, {5, 8}, {5, 9}};
         m_animations[PLAYER_WALK_DOWN] = AnimationComponent{frames, 0.1f, true};
 
-        frames = {{5, 11}};
+        frames = {{5, 0}};
         m_animations[PLAYER_STANDING] = AnimationComponent{frames, 0.0f};
 
         frames = {{2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 0}};
@@ -72,5 +72,16 @@ namespace ztg
 
         frames = {{1, 3}, {1, 4}};
         m_animations[BOMB_ACTIVED] = AnimationComponent{frames, 0.25f, true};
+
+        frames = {{5, 0}, {6, 0}, {5, 0}, {6, 0}, {6, 5}, {6, 0}, {6, 5}, {6, 6}, {6, 3}, {6, 6}, {6, 9}, {6, 6}, {6, 9}};        
+        
+        for (int i = 0; i < frames.size() - 1; i++)
+        {
+            auto &frame = frames[i];
+            frame.duration = 0.15f;
+        }
+        frames.back().duration = 1.0f;
+        
+        m_animations[PLAYER_POISONED] = AnimationComponent{frames};
     }
 }

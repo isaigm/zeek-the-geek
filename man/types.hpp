@@ -22,7 +22,7 @@ template<typename T>
 using ExtractType = typename T::type;
 
 using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
-meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 32>, meta::Pair<PlantStateComponent, 32>,
+meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 204>, meta::Pair<PlantStateComponent, 204>,
 meta::Pair<PlayerStateComponent, 1>, meta::Pair<ExplodableStateComponent, 32>>;
 using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
 

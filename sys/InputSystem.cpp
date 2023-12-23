@@ -7,7 +7,7 @@ namespace ztg
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
         auto &playerState  = em.getComponent<PlayerStateComponent>(playerEntity);
-        if (playerState.currState == PlayerState::Dead)
+        if (playerState.currState == PlayerState::Dead || playerState.currState == PlayerState::Poisoned)
             return;
 
         auto &physics = em.getComponent<PhysicsComponent>(playerEntity);

@@ -13,6 +13,7 @@ namespace ztg
     private:
         void removeCrystals(EntityManager &em, sf::Vector2i startPos);
         void markCrystalsToRemove(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos);
+        void processPlayer(EntityManager &em, Entity &entity);
         int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();
         int m_tagMask = Tags::MOVABLE;
     };

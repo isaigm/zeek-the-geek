@@ -12,6 +12,11 @@ namespace ztg
         level.updatePlayerCollisions = false;
         auto &physics                = em.getComponent<PhysicsComponent>(playerEntity);
         auto nextPos                 = utils::toWoorldCoords(physics.targetPos);
+        if (!level.isInPlayableArea(nextPos))
+        {
+            physics.dir = Direction::None;
+            return;
+        }
         if (level.getId(nextPos) == LevelComponent::EMPTY)
         {
             movePlayer(level, nextPos);
@@ -63,10 +68,8 @@ namespace ztg
         }
         else if (entity.hasTag(Tags::POISONED_MUSHROOM))
         {
-            auto &playerState     = em.getComponent<PlayerStateComponent>(entity);
+            auto &playerState     = em.getComponent<PlayerStateComponent>(playerEntity);
             playerState.currState = PlayerState::Poisoned;
-            
-            return false;
         }
         else if (entity.hasTag(Tags::FLOWER))
         {
@@ -76,8 +79,8 @@ namespace ztg
         {
             gameInfo.score += 100;
         }
-        em.template removeComponent<RenderComponent>(entity);
-        em.template removeComponent<PhysicsComponent>(entity);
+        em.removeComponent<RenderComponent>(entity);
+        em.removeComponent<PhysicsComponent>(entity);
         movePlayer(level, nextPos);
         return true;
     }
@@ -88,6 +91,10 @@ namespace ztg
         auto &playerPhysics  = em.getComponent<PhysicsComponent>(em.getEntityById(level.playerId));
         auto pos             = utils::toWoorldCoords(movablePhysics.pos);
         auto nextPos         = getNextPos(pos, playerPhysics.dir);
+        if (!level.isInPlayableArea(nextPos))
+        {
+            return false;
+        }
         if (level.getId(nextPos) != LevelComponent::EMPTY)
         {
             return false;

@@ -49,6 +49,13 @@ namespace ztg
                 {
                     m_window.close();
                 }
+                else if (ev.key.code == sf::Keyboard::N)
+                {
+                    auto &gameInfo        = m_entityManager.getSingletonComponent<GameInfoComponent>();
+                    gameInfo.currLevel   += 1;
+                    gameInfo.bonus        = 8000;
+                    restart();
+                }
                 break;
             default:
                 break;

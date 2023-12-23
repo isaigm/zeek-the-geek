@@ -19,7 +19,8 @@ namespace ztg
     {
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &animCmp = em.getComponent<AnimationComponent>(entity);
-        if (physics.dir == Direction::None)
+        auto &state   = em.getComponent<PlayerStateComponent>(entity);
+        if (physics.dir == Direction::None && state.currState == PlayerState::Alive) 
         {
             animCmp.loop      = false;
             animCmp.currFrame = 0;

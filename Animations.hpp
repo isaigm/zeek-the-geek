@@ -13,7 +13,7 @@ namespace ztg
         PLAYER_WALK_DOWN,
 
         PLAYER_STANDING,
-
+        PLAYER_POISONED,
         PLANT_EATING_APPLE,
         PLANT_EATING_PLAYER,
 

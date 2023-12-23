@@ -19,6 +19,7 @@ namespace ztg
         void processPlant(EntityManager &em, Entity &entity);
         void updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos);
         void handlePlantTransitions(EntityManager &em, Entity &plant);
+        void handlePlayerTransitions(EntityManager &em, Entity &player);
         void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state);
         void alignPlant(PhysicsComponent &physics, PlantStateComponent &state, Direction dir);
         AnimationComponent getAnimationForApple(Direction dir);

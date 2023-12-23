@@ -9,14 +9,29 @@ namespace ztg
             if (entity.hasTag(Tags::PLANT))
             {
                 processPlant(em, entity);
-            }else if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
+            }
+            else if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
             {
                 processExplodable(em, entity, dt);
+            }
+            else if (entity.hasTag(Tags::PLAYER))
+            {
+                handlePlayerTransitions(em, entity);
             }
         }, m_cmpMaskToCheck, m_tagMask);
     }
 
-
+    void AISystem::handlePlayerTransitions(EntityManager &em, Entity &entity)
+    {
+        if (!entity.hasComponent<AnimationComponent>()) return;
+        auto &animCmp     = em.getComponent<AnimationComponent>(entity);
+        auto &playerState = em.getComponent<PlayerStateComponent>(entity);
+        if (playerState.currState != PlayerState::Poisoned || !animCmp.animationFinished) return;
+        em.removeComponent<PhysicsComponent>(entity);
+        em.removeComponent<RenderComponent>(entity);
+        em.removeComponent<AnimationComponent>(entity);
+        playerState.currState = PlayerState::Dead;
+    }
     void AISystem::processExplodable(EntityManager &em, Entity &entity, float dt)
     {
         auto &state   = em.getComponent<ExplodableStateComponent>(entity);

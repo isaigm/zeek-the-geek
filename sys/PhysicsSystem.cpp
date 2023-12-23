@@ -3,23 +3,31 @@ namespace ztg
 {
     void PhysicsSystem::update(EntityManager &em, float dt)
     {
-        em.forAllMatching([&](Entity &e)
+        em.forAllMatching([&](Entity &entity)
         {
-            auto& physics = em.template getComponent<PhysicsComponent>(e);
+            auto& physics = em.getComponent<PhysicsComponent>(entity);
             if (physics.dir == Direction::None) return;
             utils::moveGivenDirection(physics.dir, physics.pos, dt * physics.speed);
             float dist = utils::getDist(physics.pos, physics.targetPos);
-            if (dist < 0.7f)
+            if (dist > 0.7f) return;
+            physics.pos = physics.targetPos;
+            physics.dir = Direction::None; 
+            if (entity.hasTag(Tags::CRYSTAL)) //specific logic ocurrs when the movable entity reachs its target position 
             {
-                physics.pos = physics.targetPos;
-                if (e.hasTag(Tags::CRYSTAL))
-                {
-                    auto pos = utils::toWoorldCoords(physics.pos);
-                    removeCrystals(em, pos);
-                }
-                physics.dir = Direction::None;
-            } 
+                auto pos = utils::toWoorldCoords(physics.pos);
+                removeCrystals(em, pos);
+            }
+            else if (entity.hasTag(Tags::PLAYER))
+            {
+                processPlayer(em, entity);
+            }
         }, m_cmpMaskToCheck, m_tagMask);
+    }
+    void PhysicsSystem::processPlayer(EntityManager &em, Entity &entity)
+    {
+        auto &playerState = em.getComponent<PlayerStateComponent>(entity);
+        if (playerState.currState != PlayerState::Poisoned) return;
+        em.addComponent<AnimationComponent>(animations[PLAYER_POISONED], entity);
     }
 
     void PhysicsSystem::removeCrystals(EntityManager &em, sf::Vector2i startPos)
