@@ -51,7 +51,7 @@ namespace ztg
         }
         static void activateBomb(EntityManager &em, Entity &e)
         {
-            auto &bombState         = em.getComponent<ExplodableStateComponent>(e);
+            auto &bombState         = em.getComponent<ExplodableDataComponent>(e);
             if (bombState.currState == ExplodableState::Actived) return;
             bombState.currState     = ExplodableState::Actived;
             bombState.timeToExplode = 14.0f;

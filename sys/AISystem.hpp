@@ -20,8 +20,8 @@ namespace ztg
         void updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos);
         void handlePlantTransitions(EntityManager &em, Entity &plant);
         void handlePlayerTransitions(EntityManager &em, Entity &player);
-        void restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state);
-        void alignPlant(PhysicsComponent &physics, PlantStateComponent &state, Direction dir);
+        void restorePlantPosition(PhysicsComponent &physics, PlantDataComponent &data);
+        void alignPlant(PhysicsComponent &physics, PlantDataComponent &data, Direction dir);
         AnimationComponent getAnimationForApple(Direction dir);
         AnimationComponent getAnimationForPlayer(Direction dir);
         int m_cmpMaskToCheck = ComponentTraits::getCmpMask<RenderComponent, PhysicsComponent>();

@@ -6,8 +6,8 @@ namespace ztg
     {
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
-        auto &playerState  = em.getComponent<PlayerStateComponent>(playerEntity);
-        if (!level.updatePlayerCollisions || playerState.currState == PlayerState::Dead)
+        auto &playerData   = em.getComponent<PlayerDataComponent>(playerEntity);
+        if (!level.updatePlayerCollisions || playerData.currState == PlayerState::Dead)
             return;
         level.updatePlayerCollisions = false;
         auto &physics                = em.getComponent<PhysicsComponent>(playerEntity);
@@ -36,11 +36,11 @@ namespace ztg
         if (!canMove)
         {
             physics.dir = Direction::None;
-        }        
+        }  
     }
     bool CollisionSystem::handlePickableCollisions(EntityManager &em, Entity &playerEntity, Entity &entity)
     {
-        auto &playerState = em.getComponent<PlayerStateComponent>(playerEntity);
+        auto &playerData  = em.getComponent<PlayerDataComponent>(playerEntity);
         auto &level       = em.getSingletonComponent<LevelComponent>();
         auto &physics     = em.getComponent<PhysicsComponent>(playerEntity);
         auto &gameInfo    = em.getSingletonComponent<GameInfoComponent>();
@@ -48,19 +48,19 @@ namespace ztg
 
         if (entity.hasTag(Tags::KEY))
         {
-            if (playerState.keyPicked)
+            if (playerData.keyPicked)
             {
                 return false;
             }
-            playerState.keyPicked = true;
+            playerData.keyPicked = true;
         }
         else if (entity.hasTag(Tags::DOOR))
         {
-            if (!playerState.keyPicked)
+            if (!playerData.keyPicked)
             {
                 return false;
             }
-            playerState.keyPicked = false;
+            playerData.keyPicked = false;
         }
         else if (entity.hasTag(Tags::MUSHROOM))
         {
@@ -68,8 +68,8 @@ namespace ztg
         }
         else if (entity.hasTag(Tags::POISONED_MUSHROOM))
         {
-            auto &playerState     = em.getComponent<PlayerStateComponent>(playerEntity);
-            playerState.currState = PlayerState::Poisoned;
+            auto &playerData     = em.getComponent<PlayerDataComponent>(playerEntity);
+            playerData.currState = PlayerState::Poisoned;
         }
         else if (entity.hasTag(Tags::FLOWER))
         {
@@ -79,8 +79,9 @@ namespace ztg
         {
             gameInfo.score += 100;
         }
-        em.removeComponent<RenderComponent>(entity);
-        em.removeComponent<PhysicsComponent>(entity);
+        em.getSingletonComponent<SfxComponent>().pick.sound.play();
+        em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], entity);
+        em.addComponent<TickComponent>(TickComponent{10}, entity);
         movePlayer(level, nextPos);
         return true;
     }

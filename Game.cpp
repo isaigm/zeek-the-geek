@@ -9,6 +9,7 @@ namespace ztg
         m_gameManager.loadLevel(m_entityManager, 0);
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);
+        m_gameManager.loadSounds(m_entityManager);
     }
     void Game::run()
     {
@@ -86,6 +87,7 @@ namespace ztg
         m_collisionSystem.update(m_entityManager);
         m_physicsSystem.update(m_entityManager, dt);
         m_animationSystem.update(m_entityManager, dt);
+        m_tickSystem.update(m_entityManager);
     }
     void Game::restart()
     {

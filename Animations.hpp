@@ -12,7 +12,9 @@ namespace ztg
         PLAYER_WALK_UP,
         PLAYER_WALK_DOWN,
 
-        PLAYER_STANDING,
+        PLAYER_STANDING_FRAME,
+        EFFECT_FRAME,
+        EXPLOSION_FRAME,
         PLAYER_POISONED,
         PLANT_EATING_APPLE,
         PLANT_EATING_PLAYER,

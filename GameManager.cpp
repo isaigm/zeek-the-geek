@@ -4,6 +4,16 @@ namespace ztg
     GameManager::GameManager() : m_tileSet("assets/spritesheet.png", TILE_SIZE, TILE_SIZE)
     {
     }
+    void GameManager::loadSounds(EntityManager &em)
+    {
+        auto &sfx = em.getSingletonComponent<SfxComponent>();
+        loadSfx(sfx.pick,     "assets/pick.wav");
+        loadSfx(sfx.grab,     "assets/grab.wav");
+        loadSfx(sfx.detonate, "assets/detonate.wav");
+        loadSfx(sfx.poisoned, "assets/poisoned.wav");
+        loadSfx(sfx.crystal,  "assets/crystal.wav");
+        loadSfx(sfx.step,     "assets/step.wav");
+    }
     void GameManager::loadLevel(EntityManager &em, int level)
     {
         auto path = getPathLevel(level);
@@ -22,20 +32,19 @@ namespace ztg
             entity.addTag(tag);
             if (entity.hasTag(Tags::PLANT))
             {
-                PlantStateComponent state;
-                state.currState = TilesID::getPlantState(tileID);
-                em.addComponent<PlantStateComponent>(std::move(state), entity);
+                PlantDataComponent data;
+                data.currState = TilesID::getPlantState(tileID);
+                em.addComponent<PlantDataComponent>(std::move(data), entity);
                 entity.addTag(Tags::REMOVABLE);
             }
             else if (entity.hasTag(Tags::PLAYER))
             {
-                PlayerStateComponent state;
-                em.addComponent<PlayerStateComponent>(std::move(state), entity);
+                PlayerDataComponent data;
+                em.addComponent<PlayerDataComponent>(std::move(data), entity);
             }
             else if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
             {
-                ExplodableStateComponent state;
-                em.addComponent<ExplodableStateComponent>(std::move(state), entity);
+                em.addComponent<ExplodableDataComponent>(ExplodableDataComponent{}, entity);
             }
         };
         bool playerFound = false;
@@ -76,4 +85,12 @@ namespace ztg
         return "assets/level" + std::to_string(level) + ".tmx";
     }
 
+    void GameManager::loadSfx(SfxComponent::Sfx &sfx, std::string path)
+    {
+        if (!sfx.sb.loadFromFile(path))
+        {
+            throw std::runtime_error("cannot load the sound effect");
+        }
+        sfx.sound.setBuffer(sfx.sb);
+    }
 }

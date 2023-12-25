@@ -12,7 +12,7 @@ namespace ztg
             if (dist > 0.7f) return;
             physics.pos = physics.targetPos;
             physics.dir = Direction::None; 
-            if (entity.hasTag(Tags::CRYSTAL)) //specific logic ocurrs when the movable entity reachs its target position 
+            if (entity.hasTag(Tags::CRYSTAL)) //specific logic ocurrs when the movable entity reaches its target position 
             {
                 auto pos = utils::toWoorldCoords(physics.pos);
                 removeCrystals(em, pos);
@@ -25,9 +25,10 @@ namespace ztg
     }
     void PhysicsSystem::processPlayer(EntityManager &em, Entity &entity)
     {
-        auto &playerState = em.getComponent<PlayerStateComponent>(entity);
-        if (playerState.currState != PlayerState::Poisoned) return;
+        auto &playerData = em.getComponent<PlayerDataComponent>(entity);
+        if (playerData.currState != PlayerState::Poisoned) return;
         em.addComponent<AnimationComponent>(animations[PLAYER_POISONED], entity);
+        em.getSingletonComponent<SfxComponent>().poisoned.sound.play();
     }
 
     void PhysicsSystem::removeCrystals(EntityManager &em, sf::Vector2i startPos)
@@ -46,7 +47,7 @@ namespace ztg
             ss >> delim;
             ss >> pos.y;
             auto &entity        = em.getEntityById(level.getId(pos));
-            auto &state         = em.getComponent<ExplodableStateComponent>(entity);
+            auto &state         = em.getComponent<ExplodableDataComponent>(entity);
             state.timeToExplode = 4.1f;
             state.currState     = ExplodableState::Actived;
             em.addComponent<AnimationComponent>(ztg::animations[ztg::CRYSTAL_ACTIVED], entity);

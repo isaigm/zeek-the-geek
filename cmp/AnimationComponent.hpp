@@ -12,19 +12,19 @@ struct AnimationComponent
         int height = TILE_SIZE;
         float duration{};
     };
-    AnimationComponent(std::vector<frame> _frames, float timePerFrame, bool _loop = false)
+    AnimationComponent(std::vector<frame> frames, float timePerFrame, bool loop = false)
     {
-        for (auto &f : _frames)
+        for (auto &f : frames)
         {
             f.duration = timePerFrame;
         }
-        frames = _frames;
-        loop = _loop;
+        this->frames = frames;
+        this->loop   = loop;
     }
-    AnimationComponent(std::vector<frame> _frames, bool _loop = false)
+    AnimationComponent(std::vector<frame> frames, bool loop = false)
     {
-        frames = _frames;
-        loop = _loop;
+        this->frames = frames;
+        this->loop   = loop;
     }
     AnimationComponent() {}
     std::vector<frame> frames;

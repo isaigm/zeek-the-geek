@@ -26,7 +26,13 @@ namespace ztg
         m_animations[PLAYER_WALK_DOWN] = AnimationComponent{frames, 0.1f, true};
 
         frames = {{5, 0}};
-        m_animations[PLAYER_STANDING] = AnimationComponent{frames, 0.0f};
+        m_animations[PLAYER_STANDING_FRAME] = AnimationComponent{frames, 0.0f};
+
+        frames = {{3, 11}};
+        m_animations[EFFECT_FRAME] = AnimationComponent{frames, 0.0f};
+
+        frames = {{3, 12}};
+        m_animations[EXPLOSION_FRAME] = AnimationComponent{frames, 0.0f};
 
         frames = {{2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 0}};
         m_animations[PLANT_EATING_APPLE] = AnimationComponent{frames, 2.0f};

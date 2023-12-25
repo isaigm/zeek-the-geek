@@ -1,6 +1,6 @@
 #pragma once
 #include "../states/ExplodableState.hpp"
-struct ExplodableStateComponent
+struct ExplodableDataComponent
 {
     ExplodableState currState = ExplodableState::Disabled;
     float currTimeInState = 0;

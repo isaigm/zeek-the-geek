@@ -6,6 +6,7 @@
 #include "sys/CollisionSystem.hpp"
 #include "sys/AnimationSystem.hpp"
 #include "sys/AISystem.hpp"
+#include "sys/TickSystem.hpp"
 #include "GameManager.hpp"
 #include "Hud.hpp"
 namespace ztg
@@ -32,6 +33,7 @@ namespace ztg
         RenderSystem     m_renderSystem;
         InputSystem      m_inputSystem;
         AnimationSystem  m_animationSystem;
+        TickSystem       m_tickSystem;
         CollisionSystem  m_collisionSystem;
     };
 }

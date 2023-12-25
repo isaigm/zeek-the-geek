@@ -1,12 +1,12 @@
 #pragma once
 #include <iostream>
-#include <array>
+#include <vector>
 #include <cassert>
 template <class Type, int Capacity>
 struct SlotMap
 {
     using Key = struct { int id; int gen; };
-    SlotMap()
+    SlotMap() : m_index(Capacity), m_data(Capacity), m_erase(Capacity)
     {
         init();
     }
@@ -83,6 +83,7 @@ private:
 
     void init()
     {
+      
         m_size = 0;
         m_freeList = 0;
         m_gen = 0;
@@ -92,9 +93,9 @@ private:
         }
         m_index[Capacity - 1].id = -1; //ultimo elemento no deberia apuntar a ningun lado
     }
-    std::array<Key, Capacity> m_index;
-    std::array<Type, Capacity> m_data;
-    std::array<int, Capacity> m_erase;
+    std::vector<Key>  m_index;
+    std::vector<Type> m_data;
+    std::vector<int>  m_erase;
     int m_size;
     int m_freeList;
     int m_gen;

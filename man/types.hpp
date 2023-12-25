@@ -4,10 +4,12 @@
 #include "../cmp/PhysicsComponent.hpp"
 #include "../cmp/AnimationComponent.hpp"
 #include "../cmp/LevelComponent.hpp"
-#include "../cmp/PlantStateComponent.hpp"
-#include "../cmp/PlayerStateComponent.hpp"
+#include "../cmp/PlantDataComponent.hpp"
+#include "../cmp/PlayerDataComponent.hpp"
 #include "../cmp/GameInfoComponent.hpp"
-#include "../cmp/ExplodableStateComponent.hpp"
+#include "../cmp/ExplodableDataComponent.hpp"
+#include "../cmp/SfxComponent.hpp"
+#include "../cmp/TickComponent.hpp"
 #include "utils/SlotMap.hpp"
 #include <tuple>
 
@@ -22,8 +24,8 @@ template<typename T>
 using ExtractType = typename T::type;
 
 using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
-meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 204>, meta::Pair<PlantStateComponent, 204>,
-meta::Pair<PlayerStateComponent, 1>, meta::Pair<ExplodableStateComponent, 32>>;
+meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 204>, meta::Pair<PlantDataComponent, 204>,
+meta::Pair<TickComponent, 204>, meta::Pair<PlayerDataComponent, 1>, meta::Pair<ExplodableDataComponent, 32>>;
 using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
 
 using ListKeys = meta::forall_insert_template<Key, SlotMapList>::type;
@@ -33,5 +35,5 @@ using ComponentTraits = meta::ComponentTraits<ComponentList>;
 using ListSlots = meta::forall_insert_template<NewSlotMap, SlotMapList>::type;
 using TupleSlots = meta::replace<std::tuple, ListSlots>::type;
 
-using SingletonComponentList = meta::TypeList<LevelComponent, GameInfoComponent>;
+using SingletonComponentList = meta::TypeList<LevelComponent, GameInfoComponent, SfxComponent>;
 using TupleSingleton = meta::replace<std::tuple, SingletonComponentList>::type;

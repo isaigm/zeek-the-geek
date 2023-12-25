@@ -1,6 +1,6 @@
 #pragma once
 #include "../states/PlayerState.hpp"
-struct PlayerStateComponent
+struct PlayerDataComponent
 {
     PlayerState currState = PlayerState::Alive;
     bool keyPicked        = false;  

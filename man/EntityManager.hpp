@@ -5,7 +5,6 @@
 
 struct EntityManager
 {
-
     EntityManager(int numEntities = 1)
     {
         m_entities.reserve(numEntities);
@@ -61,11 +60,12 @@ struct EntityManager
     void removeAllComponents(Entity &e)
     {
         removeComponent<RenderComponent>(e);
-        removeComponent<PlayerStateComponent>(e);
         removeComponent<PhysicsComponent>(e);
-        removeComponent<PlantStateComponent>(e);
+        removeComponent<PlayerDataComponent>(e);
+        removeComponent<PlantDataComponent>(e);
         removeComponent<AnimationComponent>(e);
-        removeComponent<ExplodableStateComponent>(e);
+        removeComponent<ExplodableDataComponent>(e);
+        removeComponent<TickComponent>(e);
     }
     void clear()
     {

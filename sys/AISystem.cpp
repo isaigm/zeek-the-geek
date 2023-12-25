@@ -25,35 +25,49 @@ namespace ztg
     {
         if (!entity.hasComponent<AnimationComponent>()) return;
         auto &animCmp     = em.getComponent<AnimationComponent>(entity);
-        auto &playerState = em.getComponent<PlayerStateComponent>(entity);
-        if (playerState.currState != PlayerState::Poisoned || !animCmp.animationFinished) return;
+        auto &playerData  = em.getComponent<PlayerDataComponent>(entity);
+        if (playerData.currState != PlayerState::Poisoned || !animCmp.animationFinished) return;
         em.removeComponent<PhysicsComponent>(entity);
         em.removeComponent<RenderComponent>(entity);
         em.removeComponent<AnimationComponent>(entity);
-        playerState.currState = PlayerState::Dead;
+        playerData.currState = PlayerState::Dead;
     }
     void AISystem::processExplodable(EntityManager &em, Entity &entity, float dt)
     {
-        auto &state   = em.getComponent<ExplodableStateComponent>(entity);
-        if (state.currState == ExplodableState::Disabled) return;
-        state.currTimeInState += dt;
+        auto &explodableData   = em.getComponent<ExplodableDataComponent>(entity);
+        if (explodableData.currState == ExplodableState::Disabled) return;
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level   = em.getSingletonComponent<LevelComponent>();
-        if (state.currTimeInState >= state.timeToExplode)
+        auto makesCrystalSound = [](EntityManager &em)
         {
-            state.currState = ExplodableState::Disabled;
-            auto pos        = utils::toWoorldCoords(physics.pos);
+            auto &sound = em.getSingletonComponent<SfxComponent>().crystal.sound;
+            if (sound.getStatus() == sf::Sound::Playing) return;
+            sound.play();
+        };
+
+        explodableData.currTimeInState += dt;
+        if (explodableData.currTimeInState >= explodableData.timeToExplode)
+        {
+            explodableData.currState = ExplodableState::Disabled;
+            auto pos                 = utils::toWoorldCoords(physics.pos);
             if (entity.hasTag(Tags::BOMB))
             {
                 processBomb(em, entity);
             }
+            else if (entity.hasTag(Tags::CRYSTAL))
+            {
+                makesCrystalSound(em);
+                em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], entity);
+                em.addComponent<TickComponent>(TickComponent{10}, entity);
+            }
             level.markPosAsEmpty(pos);
-            em.removeAllComponents(entity);
         }      
     }
     void AISystem::processBomb(EntityManager &em, Entity &entity)
     {           
-        
+        em.getSingletonComponent<SfxComponent>().detonate.sound.play();
+        em.addComponent<TickComponent>(TickComponent{10}, entity);
+        em.addComponent<AnimationComponent>(animations[EXPLOSION_FRAME], entity);
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level   = em.getSingletonComponent<LevelComponent>();
         auto [x, y]   = utils::toWoorldCoords(physics.pos);
@@ -64,14 +78,15 @@ namespace ztg
             auto &nearEntity = em.getEntityById(level.getId(pos));
             if (nearEntity.hasTag(Tags::PLAYER))
             {
-                auto &playerState     = em.getComponent<PlayerStateComponent>(nearEntity);
-                playerState.currState = PlayerState::Dead;
+                auto &playerData     = em.getComponent<PlayerDataComponent>(nearEntity);
+                playerData.currState = PlayerState::Dead;
                 em.removeComponent<RenderComponent>(nearEntity);
             }
             else if (nearEntity.hasTag(Tags::REMOVABLE))
             {
                 level.markPosAsEmpty(pos);
-                em.removeAllComponents(nearEntity);
+                em.addComponent<TickComponent>(TickComponent{10}, nearEntity);
+                em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], nearEntity);
             }
             else if (nearEntity.hasTag(Tags::BOMB))
             {
@@ -99,7 +114,7 @@ namespace ztg
     void AISystem::updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos)
     {
         auto &level        = em.getSingletonComponent<LevelComponent>();
-        auto &plantState   = em.getComponent<PlantStateComponent>(plant);
+        auto &plantData    = em.getComponent<PlantDataComponent>(plant);
         auto &plantPhysics = em.getComponent<PhysicsComponent>(plant);
         bool isPlayer      = nearEntity.hasTag(Tags::PLAYER);
         bool isApple       = nearEntity.hasTag(Tags::APPLE);
@@ -109,13 +124,13 @@ namespace ztg
         entityPos  += {float(TILE_SIZE) / 2.0f, float(TILE_SIZE) / 2.0f};
         auto [x, y] = utils::toWoorldCoords(plantPhysics.pos);
 
-        switch (plantState.currState)
+        switch (plantData.currState)
         {
         case PlantState::Closed:
         {
             if (isPlayer)
             {
-                plantState.currState = PlantState::Unfolding;
+                plantData.currState = PlantState::Unfolding;
                 em.addComponent<AnimationComponent>(ztg::animations[ztg::PLANT_UNFOLDING], plant);
             }
         }
@@ -127,20 +142,21 @@ namespace ztg
             {
                 if (isPlayer)
                 {
-                    auto &playerState     = em.getComponent<PlayerStateComponent>(nearEntity);
-                    playerState.currState = PlayerState::Dead;
-                    plantState.currState  = PlantState::AttackingPlayer;
+                    auto &playerData      = em.getComponent<PlayerDataComponent>(nearEntity);
+                    playerData.currState  = PlayerState::Dead;
+                    plantData.currState   = PlantState::AttackingPlayer;
                     em.addComponent<AnimationComponent>(getAnimationForPlayer(pos.dir), plant);
                 }
                 else if (isApple)
                 {
-                    plantState.currState = PlantState::AttackingApple;
+                    plantData.currState = PlantState::AttackingApple;
                     em.addComponent<AnimationComponent>(getAnimationForApple(pos.dir), plant);
                 }
-                alignPlant(plantPhysics, plantState, pos.dir);
+                em.getSingletonComponent<SfxComponent>().grab.sound.play();
+                alignPlant(plantPhysics, plantData, pos.dir);
                 em.removeComponent<RenderComponent>(nearEntity);
                 em.removeComponent<PhysicsComponent>(nearEntity);
-                plantState.blockedPos = {pos.x, pos.y};
+                plantData.blockedPos = {pos.x, pos.y};
                 level.setId(pos.x, pos.y, level.getId(x, y));
             }
         }
@@ -156,17 +172,17 @@ namespace ztg
         }
     }
 
-    void AISystem::restorePlantPosition(PhysicsComponent &physics, PlantStateComponent &state)
+    void AISystem::restorePlantPosition(PhysicsComponent &physics, PlantDataComponent &data)
     {
-        if (state.leftAligned)
+        if (data.leftAligned)
         {
             physics.pos.x    += TILE_SIZE;
-            state.leftAligned = false;
+            data.leftAligned  = false;
         }
-        else if (state.upAligned)
+        else if (data.upAligned)
         {
             physics.pos.y  += TILE_SIZE;
-            state.upAligned = false;
+            data.upAligned  = false;
         }
     }
     void AISystem::handlePlantTransitions(EntityManager &em, Entity &plant)
@@ -177,9 +193,9 @@ namespace ztg
         if (!animCmp.animationFinished)
             return;
         em.removeComponent<AnimationComponent>(plant);
-        auto &plantState = em.getComponent<PlantStateComponent>(plant);
+        auto &plantData  = em.getComponent<PlantDataComponent>(plant);
         auto &physics    = em.getComponent<PhysicsComponent>(plant);
-        auto &currState  = plantState.currState;
+        auto &currState  = plantData.currState;
         auto &level      = em.getSingletonComponent<LevelComponent>();
         bool mustEat     = false;
         ztg::KindOfAnimation whatAnimation;
@@ -207,21 +223,21 @@ namespace ztg
         if (mustEat)
         {
             em.addComponent<AnimationComponent>(ztg::animations[whatAnimation], plant);
-            restorePlantPosition(physics, plantState);
-            level.markPosAsEmpty(plantState.blockedPos);
+            restorePlantPosition(physics, plantData);
+            level.markPosAsEmpty(plantData.blockedPos);
         }
     }
-    void AISystem::alignPlant(PhysicsComponent &physics, PlantStateComponent &state, Direction dir)
+    void AISystem::alignPlant(PhysicsComponent &physics, PlantDataComponent &data, Direction dir)
     {
         if (dir == Direction::Up)
         {
             physics.pos.y  -= TILE_SIZE;
-            state.upAligned = true;
+            data.upAligned  = true;
         }
         else if (dir == Direction::Left)
         {
             physics.pos.x    -= TILE_SIZE;
-            state.leftAligned = true;
+            data.leftAligned  = true;
         }
     }
     AnimationComponent AISystem::getAnimationForApple(Direction dir)

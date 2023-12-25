@@ -4,9 +4,9 @@
 #include <cassert>
 struct LevelComponent
 {
-    sf::Vector2i playerPos;
+    sf::Vector2i     playerPos;
     std::vector<int> mapIds;
-    sf::IntRect playableArea;
+    sf::IntRect      playableArea;
 
     int width;
     int height;

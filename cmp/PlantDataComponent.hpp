@@ -1,7 +1,7 @@
 #pragma once
 #include "../states/PlantState.hpp"
 #include <SFML/System/Vector2.hpp>
-struct PlantStateComponent
+struct PlantDataComponent
 {
     PlantState currState   = PlantState::Closed;
     bool       leftAligned = false;
