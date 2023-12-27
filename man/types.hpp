@@ -10,6 +10,7 @@
 #include "../cmp/ExplodableDataComponent.hpp"
 #include "../cmp/SfxComponent.hpp"
 #include "../cmp/TickComponent.hpp"
+#include "../cmp/MonsterDataComponent.hpp"
 #include "utils/SlotMap.hpp"
 #include <tuple>
 
@@ -25,7 +26,7 @@ using ExtractType = typename T::type;
 
 using SlotMapList = meta::TypeList<meta::Pair<PhysicsComponent, 204>, 
 meta::Pair<RenderComponent, 204>, meta::Pair<AnimationComponent, 204>, meta::Pair<PlantDataComponent, 204>,
-meta::Pair<TickComponent, 204>, meta::Pair<PlayerDataComponent, 1>, meta::Pair<ExplodableDataComponent, 32>>;
+meta::Pair<TickComponent, 204>, meta::Pair<MonsterDataComponent, 1>, meta::Pair<PlayerDataComponent, 1>, meta::Pair<ExplodableDataComponent, 32>>;
 using ComponentList = meta::forall_insert_template<ExtractType, SlotMapList>::type;
 
 using ListKeys = meta::forall_insert_template<Key, SlotMapList>::type;

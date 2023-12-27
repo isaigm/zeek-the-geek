@@ -48,7 +48,7 @@ struct EntityManager
     }
     auto &getEntityById(int id)
     {
-        assert(id < m_entities.size());
+        assert(size_t(id) < m_entities.size());
         return m_entities[id];
     }
     auto &createEntity() { return m_entities.emplace_back(); }
@@ -61,17 +61,18 @@ struct EntityManager
     {
         removeComponent<RenderComponent>(e);
         removeComponent<PhysicsComponent>(e);
-        removeComponent<PlayerDataComponent>(e);
         removeComponent<PlantDataComponent>(e);
         removeComponent<AnimationComponent>(e);
         removeComponent<ExplodableDataComponent>(e);
         removeComponent<TickComponent>(e);
+        removeComponent<MonsterDataComponent>(e);
     }
     void clear()
     {
         for (auto &e : m_entities)
         {
             removeAllComponents(e);
+            removeComponent<PlayerDataComponent>(e);
         }
         m_entities.clear();
     }

@@ -12,7 +12,5 @@ namespace ztg
         bool handleMovableCollisions(EntityManager &em, Entity &entity);
         void movePlayer(LevelComponent &level, sf::Vector2i nextPos);
         sf::Vector2i getNextPos(sf::Vector2i currPos, Direction dir);
-        int m_cmpMaskToCheck = ComponentTraits::getCmpMask<PhysicsComponent>();
-        int m_tagMask = Tags::PLAYER;
     };
 }

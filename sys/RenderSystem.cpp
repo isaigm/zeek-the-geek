@@ -3,10 +3,10 @@ namespace ztg
 {
     void RenderSystem::render(EntityManager &em, sf::RenderTarget &rt)
     {
-        em.forAllMatching([&](Entity &e)
+        em.forAllMatching([&](Entity &entity)
         {
-			auto& renderCmp = em.template getComponent<RenderComponent>(e);
-			auto& phyCmp    = em.template getComponent<PhysicsComponent>(e);
+			auto& renderCmp = em.getComponent<RenderComponent>(entity);
+			auto& phyCmp    = em.getComponent<PhysicsComponent>(entity);
 			renderCmp.sprite.setPosition(phyCmp.pos);
 			rt.draw(renderCmp.sprite); 
         }, m_cmpMaskToCheck, m_tagMask);

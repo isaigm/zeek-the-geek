@@ -17,4 +17,9 @@ struct Tags
 	static const int FLOWER 	   	   = 0b10000000000000;
 	static const int CHEST 		   	   = 0b100000000000000;
 	static const int POISONED_MUSHROOM = 0b1000000000000000;
+	static const int ROTTEN_APPLE      = 0b10000000000000000;
+	static const int ATTACKABLE        = 0b100000000000000000;
+	static const int MONSTER 		   = 0b1000000000000000000;
+	static const int UNKNOW			   = 0b10000000000000000000;
+
 };

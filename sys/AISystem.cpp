@@ -18,18 +18,95 @@ namespace ztg
             {
                 handlePlayerTransitions(em, entity);
             }
+            else if (entity.hasTag(Tags::MONSTER))
+            {
+                moveMonster(em, entity);
+            }
         }, m_cmpMaskToCheck, m_tagMask);
     }
 
+    void AISystem::moveMonster(EntityManager &em, Entity &entity)
+    {
+        auto &physics = em.getComponent<PhysicsComponent>(entity);
+        if (physics.dir != Direction::None) return;
+        auto &level          = em.getSingletonComponent<LevelComponent>();
+        auto &monsterData    = em.getComponent<MonsterDataComponent>(entity); 
+        auto currPos         = utils::toWoorldCoords(physics.pos);
+        auto nextPos         = utils::moveGivenDirection(monsterData.lookingDir, currPos, 1);
+
+        auto mustChangeDirection = [](EntityManager &em, sf::Vector2i targetPos)
+        {
+            auto &level       = em.getSingletonComponent<LevelComponent>();
+            int  targetId     = level.getId(targetPos);
+            bool existsEntity = targetId != LevelComponent::EMPTY;
+            if (existsEntity)
+            {
+                auto &targetEntity      = em.getEntityById(targetId);
+                bool entityIsAttackable = targetEntity.hasTag(Tags::ATTACKABLE);
+                return !entityIsAttackable;
+            }
+            return false;
+        };
+        
+        if (mustChangeDirection(em, nextPos))
+        {
+            std::vector<NearPosition> possibleMoves;
+            auto [x, y] = currPos;
+            switch (monsterData.lookingDir)
+            {
+            case Direction::Left:
+                possibleMoves = {{{x, y - 1}, Direction::Up}, {{x, y + 1}, Direction::Down}, {{x + 1, y}, Direction::Right}};
+                break;
+            case Direction::Right:
+                possibleMoves = {{{x, y - 1}, Direction::Up}, {{x, y + 1}, Direction::Down}, {{x - 1, y}, Direction::Left}};
+                break;
+            case Direction::Up:
+                possibleMoves = {{{x - 1, y}, Direction::Left}, {{x + 1, y}, Direction::Right}, {{x, y + 1}, Direction::Down}};
+                break;
+            case Direction::Down:
+                possibleMoves = {{{x + 1, y}, Direction::Right}, {{x - 1, y}, Direction::Left}, {{x, y - 1}, Direction::Up}};
+                break;
+            default:
+                break;
+            }
+            Direction targetDir = Direction::None;
+            for (auto &move: possibleMoves)
+            {
+                if (!mustChangeDirection(em, move.pos))
+                {
+                    targetDir = move.dir;
+                    break;
+                }
+            }
+            monsterData.lookingDir = targetDir;
+        }
+        auto lookingDir = monsterData.lookingDir;
+        if (lookingDir != Direction::None)
+        {
+            auto targetPos = utils::moveGivenDirection(lookingDir, currPos, 1);
+            if (level.getId(targetPos) != LevelComponent::EMPTY)
+            {
+                auto &targetEntity = em.getEntityById(level.getId(targetPos));
+                em.addComponent<TickComponent>(TickComponent{15}, targetEntity);
+                em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], targetEntity);
+            }
+            int monsterId = level.getId(currPos);
+            level.setId(currPos, LevelComponent::EMPTY);
+            level.setId(targetPos, monsterId);
+            em.addComponent<AnimationComponent>(getAnimationForMonster(lookingDir), entity);
+            physics.targetPos = utils::moveGivenDirection(lookingDir, physics.pos, float(TILE_SIZE));
+        }
+        physics.dir = monsterData.lookingDir;
+      
+    }
     void AISystem::handlePlayerTransitions(EntityManager &em, Entity &entity)
     {
         if (!entity.hasComponent<AnimationComponent>()) return;
         auto &animCmp     = em.getComponent<AnimationComponent>(entity);
         auto &playerData  = em.getComponent<PlayerDataComponent>(entity);
         if (playerData.currState != PlayerState::Poisoned || !animCmp.animationFinished) return;
-        em.removeComponent<PhysicsComponent>(entity);
-        em.removeComponent<RenderComponent>(entity);
-        em.removeComponent<AnimationComponent>(entity);
+        em.addComponent<TickComponent>(TickComponent{15}, entity);
+        em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], entity);
         playerData.currState = PlayerState::Dead;
     }
     void AISystem::processExplodable(EntityManager &em, Entity &entity, float dt)
@@ -44,7 +121,6 @@ namespace ztg
             if (sound.getStatus() == sf::Sound::Playing) return;
             sound.play();
         };
-
         explodableData.currTimeInState += dt;
         if (explodableData.currTimeInState >= explodableData.timeToExplode)
         {
@@ -99,19 +175,20 @@ namespace ztg
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level   = em.getSingletonComponent<LevelComponent>();
         auto [x, y]   = utils::toWoorldCoords(physics.pos);
-        std::vector<NearPosition> lookAtPositions{{x - 1, y, Direction::Left}, {x + 1, y, Direction::Right}, {x, y - 1, Direction::Up}, {x, y + 1, Direction::Down}};
+        std::vector<NearPosition> lookAtPositions{{{x - 1, y}, Direction::Left}, {{x + 1, y}, Direction::Right}, 
+        {{x, y - 1}, Direction::Up}, {{x, y + 1}, Direction::Down}};
         handlePlantTransitions(em, entity);
-        for (auto &pos : lookAtPositions)
+        for (auto &nearPos : lookAtPositions)
         {
-            if (!level.isSafe({pos.x, pos.y})) continue;
-            auto &nearEntity = em.getEntityById(level.getId({pos.x, pos.y}));
+            if (!level.isSafe(nearPos.pos)) continue;
+            auto &nearEntity = em.getEntityById(level.getId(nearPos.pos));
             if (nearEntity.hasTag(Tags::PLAYER) || nearEntity.hasTag(Tags::APPLE))
             {
-                updatePlantState(em, entity, nearEntity, pos);
+                updatePlantState(em, entity, nearEntity, nearPos);
             }
         } 
     }
-    void AISystem::updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition pos)
+    void AISystem::updatePlantState(EntityManager &em, Entity &plant, Entity &nearEntity, NearPosition nearPos)
     {
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &plantData    = em.getComponent<PlantDataComponent>(plant);
@@ -131,7 +208,7 @@ namespace ztg
             if (isPlayer)
             {
                 plantData.currState = PlantState::Unfolding;
-                em.addComponent<AnimationComponent>(ztg::animations[ztg::PLANT_UNFOLDING], plant);
+                em.addComponent<AnimationComponent>(animations[PLANT_UNFOLDING], plant);
             }
         }
         break;
@@ -145,19 +222,19 @@ namespace ztg
                     auto &playerData      = em.getComponent<PlayerDataComponent>(nearEntity);
                     playerData.currState  = PlayerState::Dead;
                     plantData.currState   = PlantState::AttackingPlayer;
-                    em.addComponent<AnimationComponent>(getAnimationForPlayer(pos.dir), plant);
+                    em.addComponent<AnimationComponent>(getAnimationForPlayer(nearPos.dir), plant);
                 }
                 else if (isApple)
                 {
                     plantData.currState = PlantState::AttackingApple;
-                    em.addComponent<AnimationComponent>(getAnimationForApple(pos.dir), plant);
+                    em.addComponent<AnimationComponent>(getAnimationForApple(nearPos.dir), plant);
                 }
                 em.getSingletonComponent<SfxComponent>().grab.sound.play();
-                alignPlant(plantPhysics, plantData, pos.dir);
+                alignPlant(plantPhysics, plantData, nearPos.dir);
                 em.removeComponent<RenderComponent>(nearEntity);
                 em.removeComponent<PhysicsComponent>(nearEntity);
-                plantData.blockedPos = {pos.x, pos.y};
-                level.setId(pos.x, pos.y, level.getId(x, y));
+                plantData.blockedPos = nearPos.pos;
+                level.setId(nearPos.pos, level.getId(x, y));
             }
         }
         break;
@@ -198,7 +275,7 @@ namespace ztg
         auto &currState  = plantData.currState;
         auto &level      = em.getSingletonComponent<LevelComponent>();
         bool mustEat     = false;
-        ztg::KindOfAnimation whatAnimation;
+        KindOfAnimation whatAnimation;
         switch (currState)
         {
         case PlantState::Unfolding:
@@ -210,19 +287,19 @@ namespace ztg
         case PlantState::AttackingApple:
             currState     = PlantState::EatingApple;
             mustEat       = true;
-            whatAnimation = ztg::PLANT_EATING_APPLE;
+            whatAnimation = PLANT_EATING_APPLE;
             break;
         case PlantState::AttackingPlayer:
             currState     = PlantState::EatingPlayer;
             mustEat       = true;
-            whatAnimation = ztg::PLANT_EATING_PLAYER;
+            whatAnimation = PLANT_EATING_PLAYER;
             break;
         default:
             break;
         }
         if (mustEat)
         {
-            em.addComponent<AnimationComponent>(ztg::animations[whatAnimation], plant);
+            em.addComponent<AnimationComponent>(animations[whatAnimation], plant);
             restorePlantPosition(physics, plantData);
             level.markPosAsEmpty(plantData.blockedPos);
         }
@@ -242,37 +319,50 @@ namespace ztg
     }
     AnimationComponent AISystem::getAnimationForApple(Direction dir)
     {
-        assert(dir != Direction::None);
         switch (dir)
         {
         case Direction::Left:
-            return ztg::animations[ztg::PLANT_ATTACKING_LEFT_APPLE];
+            return animations[PLANT_ATTACKING_LEFT_APPLE];
         case Direction::Right:
-            return ztg::animations[ztg::PLANT_ATTACKING_RIGHT_APPLE];
+            return animations[PLANT_ATTACKING_RIGHT_APPLE];
         case Direction::Up:
-            return ztg::animations[ztg::PLANT_ATTACKING_UP_APPLE];
+            return animations[PLANT_ATTACKING_UP_APPLE];
         case Direction::Down:
-            return ztg::animations[ztg::PLANT_ATTACKING_DOWN_APPLE];
+            return animations[PLANT_ATTACKING_DOWN_APPLE];
         default:
-            break;
+            return {};
         }
     }
     AnimationComponent AISystem::getAnimationForPlayer(Direction dir)
     {
-        assert(dir != Direction::None);
         switch (dir)
         {
         case Direction::Left:
-            return ztg::animations[ztg::PLANT_ATTACKING_LEFT_PLAYER];
+            return animations[PLANT_ATTACKING_LEFT_PLAYER];
         case Direction::Right:
-            return ztg::animations[ztg::PLANT_ATTACKING_RIGHT_PLAYER];
+            return animations[PLANT_ATTACKING_RIGHT_PLAYER];
         case Direction::Up:
-            return ztg::animations[ztg::PLANT_ATTACKING_UP_PLAYER];
+            return animations[PLANT_ATTACKING_UP_PLAYER];
         case Direction::Down:
-            return ztg::animations[ztg::PLANT_ATTACKING_DOWN_PLAYER];
+            return animations[PLANT_ATTACKING_DOWN_PLAYER];
         default:
-            break;
+            return {};
         }
     }
-    
+    AnimationComponent AISystem::getAnimationForMonster(Direction dir)
+    {
+        switch (dir)
+        {
+        case Direction::Left:
+            return animations[MONSTER_WALK_LEFT];        
+        case Direction::Right:
+            return animations[MONSTER_WALK_RIGHT];
+        case Direction::Up:
+            return animations[MONSTER_WALK_UP];
+        case Direction::Down:
+            return animations[MONSTER_WALK_DOWN];
+        default:
+            return {};
+        }
+    }
 }

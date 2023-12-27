@@ -15,6 +15,7 @@ namespace ztg
         PLAYER_STANDING_FRAME,
         EFFECT_FRAME,
         EXPLOSION_FRAME,
+        ROTTEN_APPLE,
         PLAYER_POISONED,
         PLANT_EATING_APPLE,
         PLANT_EATING_PLAYER,
@@ -29,6 +30,10 @@ namespace ztg
         PLANT_ATTACKING_DOWN_PLAYER,
         PLANT_ATTACKING_UP_PLAYER,
 
+        MONSTER_WALK_LEFT,
+        MONSTER_WALK_RIGHT,
+        MONSTER_WALK_UP,
+        MONSTER_WALK_DOWN,
         CRYSTAL_ACTIVED,
         BOMB_ACTIVED,
 

@@ -1,4 +1,5 @@
 #include "GameManager.hpp"
+#include "Animations.hpp"
 namespace ztg
 {
     GameManager::GameManager() : m_tileSet("assets/spritesheet.png", TILE_SIZE, TILE_SIZE)
@@ -26,33 +27,40 @@ namespace ztg
             m_tileSet.setTile(renderComponent.sprite, m_currentLevel.getTileAt(x, y) - 1); // tiled specific
             PhysicsComponent physicsComponent;
             physicsComponent.pos = {float(x * TILE_SIZE), float(y * TILE_SIZE)};
-            em.addComponent<RenderComponent>(std::move(renderComponent), entity);
-            em.addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
+            
             int tag = TilesID::getTag(tileID);
             entity.addTag(tag);
-            if (entity.hasTag(Tags::PLANT))
+            if (entity.hasTag(Tags::MONSTER))
+            {
+                em.addComponent<MonsterDataComponent>(MonsterDataComponent{}, entity);
+            }
+            else if (entity.hasTag(Tags::PLANT))
             {
                 PlantDataComponent data;
                 data.currState = TilesID::getPlantState(tileID);
                 em.addComponent<PlantDataComponent>(std::move(data), entity);
                 entity.addTag(Tags::REMOVABLE);
             }
+            else if (entity.hasTag(Tags::ROTTEN_APPLE))
+            {
+                em.addComponent<AnimationComponent>(animations[ROTTEN_APPLE], entity);
+            }
             else if (entity.hasTag(Tags::PLAYER))
             {
-                PlayerDataComponent data;
-                em.addComponent<PlayerDataComponent>(std::move(data), entity);
+                em.addComponent<PlayerDataComponent>(PlayerDataComponent{}, entity);
             }
             else if (entity.hasTag(Tags::CRYSTAL) || entity.hasTag(Tags::BOMB))
             {
                 em.addComponent<ExplodableDataComponent>(ExplodableDataComponent{}, entity);
             }
+            em.addComponent<RenderComponent>(std::move(renderComponent), entity);
+            em.addComponent<PhysicsComponent>(std::move(physicsComponent), entity);
         };
         bool playerFound = false;
         sf::Vector2i playerPos;
         auto &levelComponent                  = em.getSingletonComponent<LevelComponent>();
         levelComponent.width                  = m_currentLevel.getWidth();
         levelComponent.height                 = m_currentLevel.getHeight();
-        levelComponent.playableArea           = {0, 0, 17, 12};
         levelComponent.updatePlayerCollisions = false;
         levelComponent.mapIds.clear();
 

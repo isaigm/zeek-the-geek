@@ -7,7 +7,7 @@ namespace ztg
         {
             auto& physics = em.getComponent<PhysicsComponent>(entity);
             if (physics.dir == Direction::None) return;
-            utils::moveGivenDirection(physics.dir, physics.pos, dt * physics.speed);
+            physics.pos = utils::moveGivenDirection(physics.dir, physics.pos, dt * physics.speed);
             float dist = utils::getDist(physics.pos, physics.targetPos);
             if (dist > 0.7f) return;
             physics.pos = physics.targetPos;
@@ -15,7 +15,7 @@ namespace ztg
             if (entity.hasTag(Tags::CRYSTAL)) //specific logic ocurrs when the movable entity reaches its target position 
             {
                 auto pos = utils::toWoorldCoords(physics.pos);
-                removeCrystals(em, pos);
+                activateCrystals(em, pos);
             }
             else if (entity.hasTag(Tags::PLAYER))
             {
@@ -30,11 +30,10 @@ namespace ztg
         em.addComponent<AnimationComponent>(animations[PLAYER_POISONED], entity);
         em.getSingletonComponent<SfxComponent>().poisoned.sound.play();
     }
-
-    void PhysicsSystem::removeCrystals(EntityManager &em, sf::Vector2i startPos)
+    void PhysicsSystem::activateCrystals(EntityManager &em, sf::Vector2i startPos)
     {
         std::set<std::string> visited;
-        markCrystalsToRemove(em, visited, startPos);
+        markCrystalsToActivate(em, visited, startPos);
         if (visited.size() < 2)
             return;
         auto &level = em.getSingletonComponent<LevelComponent>();
@@ -53,7 +52,7 @@ namespace ztg
             em.addComponent<AnimationComponent>(ztg::animations[ztg::CRYSTAL_ACTIVED], entity);
         }
     }
-    void PhysicsSystem::markCrystalsToRemove(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos)
+    void PhysicsSystem::markCrystalsToActivate(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos)
     {
         std::vector<sf::Vector2i> contiguousPositions{{pos.x - 1, pos.y}, {pos.x + 1, pos.y}, {pos.x, pos.y - 1}, {pos.x, pos.y + 1}};
         visited.insert(utils::getKey(pos));
@@ -66,7 +65,7 @@ namespace ztg
                 auto &entity = em.getEntityById(level.getId(nextPos));
                 if (entity.hasTag(Tags::CRYSTAL) && !visited.contains(key))
                 {
-                    markCrystalsToRemove(em, visited, nextPos);
+                    markCrystalsToActivate(em, visited, nextPos);
                 }
             }
         }

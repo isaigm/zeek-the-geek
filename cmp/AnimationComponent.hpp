@@ -28,7 +28,7 @@ struct AnimationComponent
     }
     AnimationComponent() {}
     std::vector<frame> frames;
-    int                currFrame{};
+    size_t             currFrame{};
     float              currTime{};
     bool               loop = false;
     bool               animationFinished = false;

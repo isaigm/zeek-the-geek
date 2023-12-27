@@ -16,6 +16,9 @@ namespace ztg
         frames = {{6, 12}, {6, 13}, {6, 14}};
         m_animations[PLAYER_WALK_LEFT] = AnimationComponent{frames, 0.1f, true};
 
+        frames = {{1, 0}, {1, 1}};
+        m_animations[ROTTEN_APPLE] = AnimationComponent{frames, 0.30f, true};
+
         frames = {{5, 5}, {5, 6}, {5, 7}};
         m_animations[PLAYER_WALK_RIGHT] = AnimationComponent{frames, 0.1f, true};
 
@@ -79,15 +82,27 @@ namespace ztg
         frames = {{1, 3}, {1, 4}};
         m_animations[BOMB_ACTIVED] = AnimationComponent{frames, 0.25f, true};
 
-        frames = {{5, 0}, {6, 0}, {5, 0}, {6, 0}, {6, 5}, {6, 0}, {6, 5}, {6, 6}, {6, 3}, {6, 6}, {6, 9}, {6, 6}, {6, 9}};        
-        
-        for (int i = 0; i < frames.size() - 1; i++)
+        frames = {{5, 0}, {6, 0}, {5, 0}, {6, 0}, {6, 5}, {6, 0}, {6, 5}, {6, 6}, {6, 3}, {6, 6}, {6, 9}, {6, 6}, {6, 9}};
+
+        for (size_t i = 0; i < frames.size() - 1; i++)
         {
             auto &frame = frames[i];
             frame.duration = 0.15f;
         }
         frames.back().duration = 1.0f;
-        
+
         m_animations[PLAYER_POISONED] = AnimationComponent{frames};
+
+        frames = {{0, 0}, {0, 1}, {0, 2}};
+        m_animations[MONSTER_WALK_RIGHT] = AnimationComponent{frames, 0.1f, true};
+
+        frames = {{0, 9}, {0, 10}, {0, 11}};
+        m_animations[MONSTER_WALK_LEFT] = AnimationComponent{frames, 0.1f, true};
+
+        frames = {{0, 4}, {0, 3}, {0, 5}};
+        m_animations[MONSTER_WALK_DOWN] = AnimationComponent{frames, 0.1f, true};
+
+        frames = {{0, 7}, {0, 6}, {0, 8}};
+        m_animations[MONSTER_WALK_UP] = AnimationComponent{frames, 0.1f, true};
     }
 }

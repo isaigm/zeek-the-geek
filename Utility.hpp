@@ -29,7 +29,7 @@ namespace ztg
             return std::format("{},{}", p.x, p.y);
         }
         template <typename T>
-        static void moveGivenDirection(Direction dir, sf::Vector2<T> &pos, T offset)
+        static sf::Vector2<T> moveGivenDirection(Direction dir, sf::Vector2<T> pos, T offset)
         {
             switch (dir)
             {
@@ -48,6 +48,7 @@ namespace ztg
             case Direction::None:
                 break;
             }
+            return pos;
         }
         static void activateBomb(EntityManager &em, Entity &e)
         {

@@ -107,7 +107,7 @@ namespace ztg
         movablePhysics.targetPos = movablePhysics.pos;
         movablePhysics.dir       = playerPhysics.dir;
         int id                   = level.getId(pos);
-        utils::moveGivenDirection(playerPhysics.dir, movablePhysics.targetPos, float(TILE_SIZE));
+        movablePhysics.targetPos = utils::moveGivenDirection(playerPhysics.dir, movablePhysics.targetPos, float(TILE_SIZE));
         movePlayer(level, pos);
         level.setId(nextPos.x, nextPos.y, id);
         return true;
@@ -120,7 +120,6 @@ namespace ztg
     }
     sf::Vector2i CollisionSystem::getNextPos(sf::Vector2i currPos, Direction dir)
     {
-        utils::moveGivenDirection(dir, currPos, 1);
-        return currPos;
+        return utils::moveGivenDirection(dir, currPos, 1);
     }
 }

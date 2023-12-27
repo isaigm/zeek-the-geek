@@ -1,13 +1,6 @@
 #pragma once
 #include <SFML/System/Vector2.hpp>
-enum class Direction
-{
-	Left,
-	Right,
-	Up,
-	Down,
-	None 
-};
+#include "Direction.hpp"
 struct PhysicsComponent
 {
 	sf::Vector2f pos{};
