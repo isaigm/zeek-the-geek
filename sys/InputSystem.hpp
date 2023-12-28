@@ -1,7 +1,7 @@
 #pragma once
-#include "../man/EntityManager.hpp"
 #include <SFML/Window/Keyboard.hpp>
 #include "../Animations.hpp"
+#include "../man/EntityManager.hpp"
 namespace ztg
 {
     struct InputSystem

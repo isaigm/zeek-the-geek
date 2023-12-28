@@ -49,7 +49,7 @@ namespace ztg
             auto &state         = em.getComponent<ExplodableDataComponent>(entity);
             state.timeToExplode = 4.1f;
             state.currState     = ExplodableState::Actived;
-            em.addComponent<AnimationComponent>(ztg::animations[ztg::CRYSTAL_ACTIVED], entity);
+            em.addComponent<AnimationComponent>(animations[CRYSTAL_ACTIVED], entity);
         }
     }
     void PhysicsSystem::markCrystalsToActivate(EntityManager &em, std::set<std::string> &visited, sf::Vector2i pos)

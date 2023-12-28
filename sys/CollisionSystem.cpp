@@ -45,7 +45,7 @@ namespace ztg
         auto &physics     = em.getComponent<PhysicsComponent>(playerEntity);
         auto &gameInfo    = em.getSingletonComponent<GameInfoComponent>();
         auto nextPos      = utils::toWoorldCoords(physics.targetPos);
-
+        bool removePlayer = false;
         if (entity.hasTag(Tags::KEY))
         {
             if (playerData.keyPicked)
@@ -70,6 +70,7 @@ namespace ztg
         {
             auto &playerData     = em.getComponent<PlayerDataComponent>(playerEntity);
             playerData.currState = PlayerState::Poisoned;
+            removePlayer = true;
         }
         else if (entity.hasTag(Tags::FLOWER))
         {
@@ -80,9 +81,9 @@ namespace ztg
             gameInfo.score += 100;
         }
         em.getSingletonComponent<SfxComponent>().pick.sound.play();
-        em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], entity);
-        em.addComponent<TickComponent>(TickComponent{10}, entity);
+        utils::prepareEntityToDisappear(em, entity, 10);
         movePlayer(level, nextPos);
+        if (removePlayer) level.markPosAsEmpty(nextPos);
         return true;
     }
     bool CollisionSystem::handleMovableCollisions(EntityManager &em, Entity &entity)

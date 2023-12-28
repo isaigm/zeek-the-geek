@@ -86,6 +86,7 @@ namespace ztg
         m_AISystem.update(m_entityManager, dt);
         m_collisionSystem.update(m_entityManager);
         m_physicsSystem.update(m_entityManager, dt);
+        m_playerSoundSystem.update(m_entityManager, dt);
         m_animationSystem.update(m_entityManager, dt);
         m_tickSystem.update(m_entityManager);
     }

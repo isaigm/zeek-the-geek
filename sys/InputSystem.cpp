@@ -7,7 +7,7 @@ namespace ztg
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
         auto &playerData   = em.getComponent<PlayerDataComponent>(playerEntity);
-        if (playerData.currState == PlayerState::Dead || playerData.currState == PlayerState::Poisoned)
+        if (playerData.currState != PlayerState::Alive)
             return;
 
         auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
@@ -18,7 +18,7 @@ namespace ztg
         {
         case DOWN_KEY:
         {
-            em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_DOWN], playerEntity);
+            em.addComponent<AnimationComponent>(animations[PLAYER_WALK_DOWN], playerEntity);
             physics.targetPos   = physics.pos;
             physics.targetPos.y += TILE_SIZE;
             physics.dir         = Direction::Down;
@@ -26,7 +26,7 @@ namespace ztg
         break;
         case UP_KEY:
         {
-            em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_UP], playerEntity);
+            em.addComponent<AnimationComponent>(animations[PLAYER_WALK_UP], playerEntity);
             physics.targetPos   = physics.pos;
             physics.targetPos.y -= TILE_SIZE;
             physics.dir         = Direction::Up;
@@ -34,7 +34,7 @@ namespace ztg
         break;
         case RIGHT_KEY:
         {
-            em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_RIGHT], playerEntity);
+            em.addComponent<AnimationComponent>(animations[PLAYER_WALK_RIGHT], playerEntity);
             physics.targetPos   = physics.pos;
             physics.targetPos.x += TILE_SIZE;
             physics.dir         = Direction::Right;
@@ -42,7 +42,7 @@ namespace ztg
         break;
         case LEFT_KEY:
         {
-            em.addComponent<AnimationComponent>(ztg::animations[ztg::PLAYER_WALK_LEFT], playerEntity);
+            em.addComponent<AnimationComponent>(animations[PLAYER_WALK_LEFT], playerEntity);
             physics.targetPos   = physics.pos;
             physics.targetPos.x -= TILE_SIZE;
             physics.dir         = Direction::Left;

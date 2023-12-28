@@ -87,8 +87,7 @@ namespace ztg
             if (level.getId(targetPos) != LevelComponent::EMPTY)
             {
                 auto &targetEntity = em.getEntityById(level.getId(targetPos));
-                em.addComponent<TickComponent>(TickComponent{15}, targetEntity);
-                em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], targetEntity);
+                utils::prepareEntityToDisappear(em, targetEntity, 15);
             }
             int monsterId = level.getId(currPos);
             level.setId(currPos, LevelComponent::EMPTY);
@@ -97,7 +96,6 @@ namespace ztg
             physics.targetPos = utils::moveGivenDirection(lookingDir, physics.pos, float(TILE_SIZE));
         }
         physics.dir = monsterData.lookingDir;
-      
     }
     void AISystem::handlePlayerTransitions(EntityManager &em, Entity &entity)
     {
@@ -105,8 +103,7 @@ namespace ztg
         auto &animCmp     = em.getComponent<AnimationComponent>(entity);
         auto &playerData  = em.getComponent<PlayerDataComponent>(entity);
         if (playerData.currState != PlayerState::Poisoned || !animCmp.animationFinished) return;
-        em.addComponent<TickComponent>(TickComponent{15}, entity);
-        em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], entity);
+        utils::prepareEntityToDisappear(em, entity, 15);
         playerData.currState = PlayerState::Dead;
     }
     void AISystem::processExplodable(EntityManager &em, Entity &entity, float dt)
@@ -133,8 +130,7 @@ namespace ztg
             else if (entity.hasTag(Tags::CRYSTAL))
             {
                 makesCrystalSound(em);
-                em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], entity);
-                em.addComponent<TickComponent>(TickComponent{10}, entity);
+                utils::prepareEntityToDisappear(em, entity, 10);
             }
             level.markPosAsEmpty(pos);
         }      
@@ -161,8 +157,7 @@ namespace ztg
             else if (nearEntity.hasTag(Tags::REMOVABLE))
             {
                 level.markPosAsEmpty(pos);
-                em.addComponent<TickComponent>(TickComponent{10}, nearEntity);
-                em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], nearEntity);
+                utils::prepareEntityToDisappear(em, nearEntity, 10);
             }
             else if (nearEntity.hasTag(Tags::BOMB))
             {

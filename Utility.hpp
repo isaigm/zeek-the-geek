@@ -52,11 +52,17 @@ namespace ztg
         }
         static void activateBomb(EntityManager &em, Entity &e)
         {
-            auto &bombState         = em.getComponent<ExplodableDataComponent>(e);
-            if (bombState.currState == ExplodableState::Actived) return;
-            bombState.currState     = ExplodableState::Actived;
+            auto &bombState = em.getComponent<ExplodableDataComponent>(e);
+            if (bombState.currState == ExplodableState::Actived)
+                return;
+            bombState.currState = ExplodableState::Actived;
             bombState.timeToExplode = 14.0f;
             em.addComponent<AnimationComponent>(ztg::animations[ztg::BOMB_ACTIVED], e);
+        }
+        static void prepareEntityToDisappear(EntityManager &em, Entity &e, int ticksToDissapear)
+        {
+            em.addComponent<TickComponent>(TickComponent{ticksToDissapear}, e);
+            em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], e);
         }
     }
 }
