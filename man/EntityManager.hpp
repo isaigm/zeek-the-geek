@@ -61,18 +61,18 @@ struct EntityManager
     {
         removeComponent<RenderComponent>(e);
         removeComponent<PhysicsComponent>(e);
-        removeComponent<PlantDataComponent>(e);
         removeComponent<AnimationComponent>(e);
-        removeComponent<ExplodableDataComponent>(e);
         removeComponent<TickComponent>(e);
+        removeComponent<PlantDataComponent>(e);
         removeComponent<MonsterDataComponent>(e);
+        removeComponent<PlayerDataComponent>(e);
+        removeComponent<ExplodableDataComponent>(e);
     }
     void clear()
     {
         for (auto &e : m_entities)
         {
             removeAllComponents(e);
-            removeComponent<PlayerDataComponent>(e);
         }
         m_entities.clear();
     }

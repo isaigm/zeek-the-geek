@@ -2,14 +2,20 @@
 
 namespace ztg
 {
-    Game::Game() : m_window(sf::VideoMode(LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE), "Zeek the Geek"),
+    Game::Game() : m_window(sf::VideoMode(2 * LEVEL_WIDTH * TILE_SIZE, 2 * LEVEL_HEIGHT * TILE_SIZE), "Zeek the Geek"),
                    m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
     {
+        sf::Image icon;
+        icon.loadFromFile("assets/icon.png");
+        m_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
         m_window.setVerticalSyncEnabled(true);
         m_gameManager.loadLevel(m_entityManager, 0);
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);
         m_gameManager.loadSounds(m_entityManager);
+        m_renderTexture.create(2 * LEVEL_WIDTH * TILE_SIZE, 2 * LEVEL_HEIGHT * TILE_SIZE);
+        m_sprite.setTexture(m_renderTexture.getTexture());
+        m_sprite.scale({2, 2});
     }
     void Game::run()
     {
@@ -94,6 +100,7 @@ namespace ztg
     {
         auto &gameInfo        = m_entityManager.getSingletonComponent<GameInfoComponent>();
         gameInfo.advanceLevel = false;
+        gameInfo.gameOver     = false;
         m_currTimeDelay       = 0.0f;
         m_entityManager.clear();
         m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
@@ -103,8 +110,11 @@ namespace ztg
     void Game::render()
     {
         m_window.clear(sf::Color::White);
-        m_renderSystem.render(m_entityManager, m_window);
-        m_hud.render(m_window);
+        m_renderTexture.clear(sf::Color::White);
+        m_renderSystem.render(m_entityManager, m_renderTexture);
+        m_hud.render(m_renderTexture);
+        m_renderTexture.display();
+        m_window.draw(m_sprite);
         m_window.display();
     }
 }

@@ -3,15 +3,16 @@ namespace ztg
 {
     void InputSystem::handleInput(EntityManager &em)
     {
-        auto keyPressed    = getKeyPressed();
-        auto &level        = em.getSingletonComponent<LevelComponent>();
-        auto &playerEntity = em.getEntityById(level.playerId);
-        auto &playerData   = em.getComponent<PlayerDataComponent>(playerEntity);
-        if (playerData.currState != PlayerState::Alive)
+        auto &gameInfo      = em.getSingletonComponent<GameInfoComponent>();
+        if (gameInfo.gameOver) 
             return;
-
-        auto &physics = em.getComponent<PhysicsComponent>(playerEntity);
-        if (physics.dir != Direction::None)
+        auto keyPressed     = getKeyPressed();
+        auto &level         = em.getSingletonComponent<LevelComponent>();
+        auto &playerEntity  = em.getEntityById(level.playerId);
+        auto &playerData    = em.getComponent<PlayerDataComponent>(playerEntity);
+        auto &physics       = em.getComponent<PhysicsComponent>(playerEntity);
+        bool isPlayerMoving = physics.dir != Direction::None;
+        if (playerData.currState != PlayerState::Alive || isPlayerMoving)
             return;
         level.updatePlayerCollisions = true;
         switch (keyPressed)

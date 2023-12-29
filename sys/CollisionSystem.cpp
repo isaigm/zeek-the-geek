@@ -4,6 +4,8 @@ namespace ztg
 {
     void CollisionSystem::update(EntityManager &em)
     {
+        auto &gameInfo     = em.getSingletonComponent<GameInfoComponent>();
+        if (gameInfo.gameOver) return;
         auto &level        = em.getSingletonComponent<LevelComponent>();
         auto &playerEntity = em.getEntityById(level.playerId);
         auto &playerData   = em.getComponent<PlayerDataComponent>(playerEntity);
@@ -70,7 +72,9 @@ namespace ztg
         {
             auto &playerData     = em.getComponent<PlayerDataComponent>(playerEntity);
             playerData.currState = PlayerState::Poisoned;
-            removePlayer = true;
+            auto &gameInfo       = em.getSingletonComponent<GameInfoComponent>();
+            gameInfo.gameOver    = true;
+            removePlayer         = true;
         }
         else if (entity.hasTag(Tags::FLOWER))
         {

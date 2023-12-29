@@ -87,7 +87,7 @@ namespace ztg
             if (level.getId(targetPos) != LevelComponent::EMPTY)
             {
                 auto &targetEntity = em.getEntityById(level.getId(targetPos));
-                utils::prepareEntityToDisappear(em, targetEntity, 15);
+                utils::prepareEntityToDisappear(em, targetEntity, 10);
             }
             int monsterId = level.getId(currPos);
             level.setId(currPos, LevelComponent::EMPTY);
@@ -151,6 +151,8 @@ namespace ztg
             if (nearEntity.hasTag(Tags::PLAYER))
             {
                 auto &playerData     = em.getComponent<PlayerDataComponent>(nearEntity);
+                auto &gameInfo       = em.getSingletonComponent<GameInfoComponent>();
+                gameInfo.gameOver    = true;
                 playerData.currState = PlayerState::Dead;
                 em.removeComponent<RenderComponent>(nearEntity);
             }
@@ -215,6 +217,8 @@ namespace ztg
                 if (isPlayer)
                 {
                     auto &playerData      = em.getComponent<PlayerDataComponent>(nearEntity);
+                    auto &gameInfo        = em.getSingletonComponent<GameInfoComponent>();
+                    gameInfo.gameOver     = true;
                     playerData.currState  = PlayerState::Dead;
                     plantData.currState   = PlantState::AttackingPlayer;
                     em.addComponent<AnimationComponent>(getAnimationForPlayer(nearPos.dir), plant);
@@ -225,9 +229,9 @@ namespace ztg
                     em.addComponent<AnimationComponent>(getAnimationForApple(nearPos.dir), plant);
                 }
                 em.getSingletonComponent<SfxComponent>().grab.sound.play();
-                alignPlant(plantPhysics, plantData, nearPos.dir);
                 em.removeComponent<RenderComponent>(nearEntity);
                 em.removeComponent<PhysicsComponent>(nearEntity);
+                alignPlant(plantPhysics, plantData, nearPos.dir);
                 plantData.blockedPos = nearPos.pos;
                 level.setId(nearPos.pos, level.getId(x, y));
             }
