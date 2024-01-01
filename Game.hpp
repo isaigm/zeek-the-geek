@@ -22,14 +22,12 @@ namespace ztg
         void update(float dt);
         void restart();
         void render();
-        const int             WIDTH           = LEVEL_WIDTH * TILE_SIZE;
-        const int             HEIGHT          = LEVEL_HEIGHT * TILE_SIZE;
-        const int             m_maxLevels     = 15;
-        bool                  m_shouldDelay   = false;
+        bool                  m_shouldDelay = false;
         float                 m_currTimeDelay = 0.0f;
         sf::RenderWindow      m_window;
         sf::Clock             m_bonusTimer;
-        sf::View              m_view;
+        sf::RenderTexture     m_renderTexture;
+        sf::Sprite            m_sprite;
         Hud                   m_hud;
         EntityManager         m_entityManager;
         GameManager           m_gameManager;

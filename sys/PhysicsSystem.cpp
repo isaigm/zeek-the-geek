@@ -8,8 +8,8 @@ namespace ztg
             auto& physics = em.getComponent<PhysicsComponent>(entity);
             if (physics.dir == Direction::None) return;
             physics.pos = utils::moveGivenDirection(physics.dir, physics.pos, dt * physics.speed);
-            float dist  = utils::getDist(physics.pos, physics.targetPos);
-            if (dist > 1.0f) return;
+            float dist = utils::getDist(physics.pos, physics.targetPos);
+            if (dist > 0.7f) return;
             physics.pos = physics.targetPos;
             physics.dir = Direction::None; 
             if (entity.hasTag(Tags::CRYSTAL)) //specific logic ocurrs when the movable entity reaches its target position 
