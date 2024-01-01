@@ -6,9 +6,9 @@ namespace ztg
         if (!m_font.loadFromFile("assets/font.ttf"))
             throw std::runtime_error("cannot load the font");
 
-        m_score.setPosition(506, 5);
-        m_level.setPosition(506, 50);
-        m_bonus.setPosition(506, 90);
+        m_score.setPosition(1020, 10);
+        m_level.setPosition(1020, 95);
+        m_bonus.setPosition(1020, 185);
         m_bonus.setSpaces(5);
         m_level.setSpaces(6);
         m_score.setSpaces(6);

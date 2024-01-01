@@ -2,8 +2,9 @@
 
 namespace ztg
 {
-    Game::Game() : m_window(sf::VideoMode(2 * LEVEL_WIDTH * TILE_SIZE, 2 * LEVEL_HEIGHT * TILE_SIZE), "Zeek the Geek"),
-                   m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
+    Game::Game() : m_window(sf::VideoMode(2 * WIDTH, 2 * HEIGHT), "Zeek the Geek"),
+                   m_view({0, 0, float(WIDTH), float(HEIGHT)}),
+                   m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)      
     {
         sf::Image icon;
         icon.loadFromFile("assets/icon.png");
@@ -13,9 +14,7 @@ namespace ztg
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);
         m_gameManager.loadSounds(m_entityManager);
-        m_renderTexture.create(2 * LEVEL_WIDTH * TILE_SIZE, 2 * LEVEL_HEIGHT * TILE_SIZE);
-        m_sprite.setTexture(m_renderTexture.getTexture());
-        m_sprite.scale({2, 2});
+        m_view.setViewport({0, 0, 1.0f, 1.0f});
     }
     void Game::run()
     {
@@ -60,6 +59,7 @@ namespace ztg
                 {
                     auto &gameInfo        = m_entityManager.getSingletonComponent<GameInfoComponent>();
                     gameInfo.currLevel   += 1;
+                    gameInfo.currLevel = std::min(gameInfo.currLevel, m_maxLevels - 1);
                     gameInfo.bonus        = 8000;
                     restart();
                 }
@@ -84,6 +84,7 @@ namespace ztg
         if (gameInfo.advanceLevel)
         {
             gameInfo.currLevel += 1;
+            gameInfo.currLevel = std::min(gameInfo.currLevel, m_maxLevels - 1);
             gameInfo.score     += gameInfo.bonus;
             gameInfo.bonus      = 8000;
             m_shouldDelay       = true;
@@ -110,11 +111,10 @@ namespace ztg
     void Game::render()
     {
         m_window.clear(sf::Color::White);
-        m_renderTexture.clear(sf::Color::White);
-        m_renderSystem.render(m_entityManager, m_renderTexture);
-        m_hud.render(m_renderTexture);
-        m_renderTexture.display();
-        m_window.draw(m_sprite);
+        m_window.setView(m_view);
+        m_renderSystem.render(m_entityManager, m_window);
+        m_window.setView(m_window.getDefaultView());
+        m_hud.render(m_window);
         m_window.display();
     }
 }

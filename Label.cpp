@@ -4,7 +4,7 @@ namespace ztg
     Label::Label(sf::Font &font, std::string name)
     {
         m_text.setFont(font);
-        m_text.scale(0.4, 0.4);
+        m_text.scale(0.7, 0.7);
         m_text.setFillColor(sf::Color::Black);
         m_name = name;
     }
