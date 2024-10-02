@@ -59,10 +59,15 @@ namespace ztg
             bombState.timeToExplode = 14.0f;
             em.addComponent<AnimationComponent>(ztg::animations[ztg::BOMB_ACTIVED], e);
         }
-        static void prepareEntityToDisappear(EntityManager &em, Entity &e, int ticksToDissapear)
+        static int timeToTicks(float time)
         {
-            em.addComponent<TickComponent>(TickComponent{ticksToDissapear}, e);
+            return std::ceil(time * FPS);
+        }
+        static void prepareEntityToDisappear(EntityManager &em, Entity &e, float timeToDissapear)
+        {
+            em.addComponent<TickComponent>(TickComponent{timeToTicks(timeToDissapear)}, e);
             em.addComponent<AnimationComponent>(animations[EFFECT_FRAME], e);
         }
+      
     }
 }

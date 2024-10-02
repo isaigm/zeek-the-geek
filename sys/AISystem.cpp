@@ -87,7 +87,7 @@ namespace ztg
             if (level.getId(targetPos) != LevelComponent::EMPTY)
             {
                 auto &targetEntity = em.getEntityById(level.getId(targetPos));
-                utils::prepareEntityToDisappear(em, targetEntity, 10);
+                utils::prepareEntityToDisappear(em, targetEntity, 0.075f);
             }
             int monsterId = level.getId(currPos);
             level.setId(currPos, LevelComponent::EMPTY);
@@ -103,7 +103,7 @@ namespace ztg
         auto &animCmp     = em.getComponent<AnimationComponent>(entity);
         auto &playerData  = em.getComponent<PlayerDataComponent>(entity);
         if (playerData.currState != PlayerState::Poisoned || !animCmp.animationFinished) return;
-        utils::prepareEntityToDisappear(em, entity, 15);
+        utils::prepareEntityToDisappear(em, entity, 0.15f);
         playerData.currState = PlayerState::Dead;
     }
     void AISystem::processExplodable(EntityManager &em, Entity &entity, float dt)
@@ -130,7 +130,7 @@ namespace ztg
             else if (entity.hasTag(Tags::CRYSTAL))
             {
                 makesCrystalSound(em);
-                utils::prepareEntityToDisappear(em, entity, 10);
+                utils::prepareEntityToDisappear(em, entity, 0.1f);
             }
             level.markPosAsEmpty(pos);
         }      
@@ -138,7 +138,7 @@ namespace ztg
     void AISystem::processBomb(EntityManager &em, Entity &entity)
     {           
         em.getSingletonComponent<SfxComponent>().detonate.sound.play();
-        em.addComponent<TickComponent>(TickComponent{10}, entity);
+        em.addComponent<TickComponent>(TickComponent{utils::timeToTicks(0.075f)}, entity);
         em.addComponent<AnimationComponent>(animations[EXPLOSION_FRAME], entity);
         auto &physics = em.getComponent<PhysicsComponent>(entity);
         auto &level   = em.getSingletonComponent<LevelComponent>();
@@ -159,7 +159,7 @@ namespace ztg
             else if (nearEntity.hasTag(Tags::REMOVABLE))
             {
                 level.markPosAsEmpty(pos);
-                utils::prepareEntityToDisappear(em, nearEntity, 10);
+                utils::prepareEntityToDisappear(em, nearEntity, 0.1f);
             }
             else if (nearEntity.hasTag(Tags::BOMB))
             {

@@ -9,7 +9,7 @@ namespace ztg
         sf::Image icon;
         icon.loadFromFile("assets/icon.png");
         m_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-        m_window.setVerticalSyncEnabled(true);
+        m_window.setFramerateLimit(FPS);
         m_gameManager.loadLevel(m_entityManager, 0);
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);

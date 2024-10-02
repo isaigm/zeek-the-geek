@@ -85,7 +85,7 @@ namespace ztg
             gameInfo.score += 100;
         }
         em.getSingletonComponent<SfxComponent>().pick.sound.play();
-        utils::prepareEntityToDisappear(em, entity, 10);
+        utils::prepareEntityToDisappear(em, entity, 0.075f);
         movePlayer(level, nextPos);
         if (removePlayer) level.markPosAsEmpty(nextPos);
         return true;
