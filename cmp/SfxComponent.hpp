@@ -2,8 +2,10 @@
 #include <SFML/Audio.hpp>
 struct SfxComponent
 {
+  
     struct Sfx
     {
+        Sfx() : sound(sb){ }
         sf::SoundBuffer sb;
         sf::Sound sound;
     };

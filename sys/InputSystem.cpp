@@ -62,6 +62,6 @@ namespace ztg
             if (sf::Keyboard::isKeyPressed(key))
                 return key;
         }
-        return sf::Keyboard::Unknown;
+        return sf::Keyboard::Key::Unknown;
     }
 }

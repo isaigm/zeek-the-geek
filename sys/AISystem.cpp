@@ -115,7 +115,7 @@ namespace ztg
         auto makesCrystalSound = [](EntityManager &em)
         {
             auto &sound = em.getSingletonComponent<SfxComponent>().crystal.sound;
-            if (sound.getStatus() == sf::Sound::Playing) return;
+            if (sound.getStatus() == sf::Sound::Status::Playing) return;
             sound.play();
         };
         explodableData.currTimeInState += dt;

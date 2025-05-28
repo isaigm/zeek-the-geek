@@ -22,8 +22,8 @@ namespace ztg
         void update(float dt);
         void restart();
         void render();
-        const int             WIDTH           = LEVEL_WIDTH * TILE_SIZE;
-        const int             HEIGHT          = LEVEL_HEIGHT * TILE_SIZE;
+        const unsigned int    WIDTH           = LEVEL_WIDTH * TILE_SIZE;
+        const unsigned int    HEIGHT          = LEVEL_HEIGHT * TILE_SIZE;
         const int             m_maxLevels     = 15;
         bool                  m_shouldDelay   = false;
         float                 m_currTimeDelay = 0.0f;

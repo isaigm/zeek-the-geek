@@ -24,9 +24,12 @@ namespace ztg
             auto &entity = em.createEntity();
             entity.addTag(Tags::OBJECT);
             RenderComponent renderComponent;
+            renderComponent.sprite = std::make_shared<sf::Sprite>(m_tileSet.getTexture());
+            
             m_tileSet.setTile(renderComponent.sprite, m_currentLevel.getTileAt(x, y) - 1); // tiled specific
             PhysicsComponent physicsComponent;
             physicsComponent.pos = {float(x * TILE_SIZE), float(y * TILE_SIZE)};
+
             
             int tag = TilesID::getTag(tileID);
             entity.addTag(tag);
@@ -83,6 +86,7 @@ namespace ztg
                 }
                 em.getSingletonComponent<LevelComponent>().addId(em.getSize());
                 addEntitiy(tileID, x, y);
+                
             }
         }
         if (!playerFound)

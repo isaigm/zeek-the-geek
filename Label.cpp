@@ -1,16 +1,15 @@
 #include "Label.hpp"
 namespace ztg
 {
-    Label::Label(sf::Font &font, std::string name)
+    Label::Label(sf::Font &font, std::string name) : m_text(font)
     {
-        m_text.setFont(font);
-        m_text.scale(0.7, 0.7);
+        m_text.scale({0.7, 0.7});
         m_text.setFillColor(sf::Color::Black);
         m_name = name;
     }
     void Label::setPosition(float x, float y)
     {
-        m_text.setPosition(x, y);
+        m_text.setPosition({x, y});
     }
     void Label::update(int offset)
     {

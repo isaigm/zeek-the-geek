@@ -58,7 +58,7 @@ namespace ztg
     void AnimationSystem::setFrame(AnimationComponent &animCmp, RenderComponent &renderCmp)
     {
         auto frame = animCmp.frames[animCmp.currFrame];
-        sf::IntRect rect{frame.x * TILE_SIZE, frame.y * TILE_SIZE, frame.width, frame.height};
-        renderCmp.sprite.setTextureRect(rect);
+        sf::IntRect rect{{frame.x * TILE_SIZE, frame.y * TILE_SIZE}, {frame.width, frame.height}};
+        renderCmp.sprite->setTextureRect(rect);
     }
 }

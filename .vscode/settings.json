@@ -78,6 +78,8 @@
         "cfenv": "cpp",
         "strstream": "cpp",
         "complex": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "text_encoding": "cpp",
+        "typeindex": "cpp"
     }
 }

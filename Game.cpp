@@ -2,19 +2,22 @@
 
 namespace ztg
 {
-    Game::Game() : m_window(sf::VideoMode(2 * WIDTH, 2 * HEIGHT), "Zeek the Geek"),
-                   m_view({0, 0, float(WIDTH), float(HEIGHT)}),
-                   m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)      
+    Game::Game() : m_window(sf::VideoMode({2 * WIDTH, 2 * HEIGHT}), "Zeek the Geek"),
+                   m_view(),
+                   m_entityManager(LEVEL_WIDTH * LEVEL_HEIGHT)
     {
+        
         sf::Image icon;
         icon.loadFromFile("assets/icon.png");
-        m_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+        m_window.setIcon({icon.getSize().x, icon.getSize().y}, icon.getPixelsPtr());
         m_window.setFramerateLimit(FPS);
         m_gameManager.loadLevel(m_entityManager, 0);
         m_hud.getBonus().setValue(8000);
         m_hud.getLevel().setValue(1);
+        m_view.setCenter({WIDTH/2.0f, HEIGHT/2.0f});
+        m_view.setSize({float(WIDTH), float(HEIGHT)});
         m_gameManager.loadSounds(m_entityManager);
-        m_view.setViewport({0, 0, 1.0f, 1.0f});
+        m_view.setViewport({{0, 0}, {1.0f, 1.0f}});
     }
     void Game::run()
     {
@@ -26,9 +29,10 @@ namespace ztg
             if (m_shouldDelay)
             {
                 m_currTimeDelay += dt;
-                if (m_currTimeDelay >= 0.7f) m_shouldDelay  = false;
+                if (m_currTimeDelay >= 0.7f)
+                    m_shouldDelay = false;
             }
-            else 
+            else
             {
                 update(dt);
             }
@@ -38,37 +42,36 @@ namespace ztg
 
     void Game::events()
     {
-        sf::Event ev;
-        while (m_window.pollEvent(ev))
+        while (const std::optional event = m_window.pollEvent())
         {
-            switch (ev.type)
+            if (event->is<sf::Event::Closed>())
             {
-            case sf::Event::Closed:
                 m_window.close();
                 break;
-            case sf::Event::KeyPressed:
-                if (ev.key.code == sf::Keyboard::R)
+            }
+            else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
+            {
+
+                if (keyPressed->code == sf::Keyboard::Key::R)
                 {
                     restart();
                 }
-                else if (ev.key.code == sf::Keyboard::Q)
+                else if (keyPressed->code == sf::Keyboard::Key::Q)
                 {
                     m_window.close();
                 }
-                else if (ev.key.code == sf::Keyboard::N)
+                else if (keyPressed->code == sf::Keyboard::Key::N)
                 {
-                    auto &gameInfo        = m_entityManager.getSingletonComponent<GameInfoComponent>();
-                    gameInfo.currLevel   += 1;
+                    auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
+                    gameInfo.currLevel += 1;
                     gameInfo.currLevel = std::min(gameInfo.currLevel, m_maxLevels - 1);
-                    gameInfo.bonus        = 8000;
+                    gameInfo.bonus = 8000;
                     restart();
                 }
-                break;
-            default:
-                break;
             }
         }
     }
+
     void Game::update(float dt)
     {
         m_inputSystem.handleInput(m_entityManager);
@@ -85,9 +88,9 @@ namespace ztg
         {
             gameInfo.currLevel += 1;
             gameInfo.currLevel = std::min(gameInfo.currLevel, m_maxLevels - 1);
-            gameInfo.score     += gameInfo.bonus;
-            gameInfo.bonus      = 8000;
-            m_shouldDelay       = true;
+            gameInfo.score += gameInfo.bonus;
+            gameInfo.bonus = 8000;
+            m_shouldDelay = true;
             restart();
         }
         m_AISystem.update(m_entityManager, dt);
@@ -99,10 +102,10 @@ namespace ztg
     }
     void Game::restart()
     {
-        auto &gameInfo        = m_entityManager.getSingletonComponent<GameInfoComponent>();
+        auto &gameInfo = m_entityManager.getSingletonComponent<GameInfoComponent>();
         gameInfo.advanceLevel = false;
-        gameInfo.gameOver     = false;
-        m_currTimeDelay       = 0.0f;
+        gameInfo.gameOver = false;
+        m_currTimeDelay = 0.0f;
         m_entityManager.clear();
         m_gameManager.loadLevel(m_entityManager, gameInfo.currLevel);
         m_hud.getLevel().setValue(gameInfo.currLevel + 1);

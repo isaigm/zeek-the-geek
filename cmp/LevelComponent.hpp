@@ -4,10 +4,11 @@
 #include <cassert>
 struct LevelComponent
 {
+    LevelComponent() {}
     sf::Vector2i     playerPos;
     std::vector<int> mapIds;
-    sf::IntRect      playableArea   = {0, 0, 17, 12};
-    sf::IntRect      unplayableArea = {14, 0, 3, 3};
+    sf::IntRect      playableArea   = {{0, 0}, {17, 12}};
+    sf::IntRect      unplayableArea = {{14, 0}, {3, 3}};
 
     int width;
     int height;

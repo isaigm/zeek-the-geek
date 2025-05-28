@@ -3,7 +3,7 @@ namespace ztg
 {
     Hud::Hud() : m_level(m_font, "Level"), m_bonus(m_font, "Bonus"), m_score(m_font, "Score")
     {
-        if (!m_font.loadFromFile("assets/font.ttf"))
+        if (!m_font.openFromFile("assets/font.ttf"))
             throw std::runtime_error("cannot load the font");
 
         m_score.setPosition(1020, 10);

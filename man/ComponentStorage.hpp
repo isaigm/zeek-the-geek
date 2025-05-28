@@ -3,6 +3,7 @@
 #include "types.hpp"
 struct ComponentStorage
 {
+	ComponentStorage() {}
 	
 	template<typename T>
 	auto &getComponent(Entity &e)

@@ -7,8 +7,9 @@ namespace ztg
         {
 			auto& renderCmp = em.getComponent<RenderComponent>(entity);
 			auto& phyCmp    = em.getComponent<PhysicsComponent>(entity);
-			renderCmp.sprite.setPosition(phyCmp.pos);
-			rt.draw(renderCmp.sprite); 
+            auto pos = phyCmp.pos;
+			renderCmp.sprite->setPosition(phyCmp.pos);
+			rt.draw(*renderCmp.sprite); 
         }, m_cmpMaskToCheck, m_tagMask);
     }
 }
